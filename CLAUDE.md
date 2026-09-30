@@ -4,14 +4,61 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository is
 
-This is a **design handoff**, not a codebase. No application exists yet — there is no `package.json`,
-build tool, linter, or test suite, and nothing to run `npm install`/`build`/`test` against. The repo
-contains high-fidelity HTML/CSS/JS **prototypes** for the Kargatox marketing site and admin panel, meant
-to be rebuilt from scratch in a real stack (see "Recommended stack" below).
+A Next.js 16 (App Router, TypeScript, Tailwind v4) app for the Kargatox marketing site + admin panel,
+scaffolded at the repo root, living alongside the original **design handoff** reference material
+(`design_handoff_kargatox/`, the root `.dc.html` prototypes, `uploads/`). The handoff files are not code
+to copy from — they're the spec the app is being built against. See "Design reference material" below.
 
-The authoritative handoff lives in `design_handoff_kargatox/`:
-- `design_handoff_kargatox/README.md` — the full spec: design tokens, per-screen behaviour, interactions/animations, responsiveness rules, a Prisma data-model sketch, and a suggested build order. **Read this file before doing any implementation work** — it is far more detailed than the summary below.
-- `design_handoff_kargatox/content/Website-content.pdf` — the client's source copy. Site copy must be taken from it **word for word**.
+Only the home page has real content so far (a token smoke-test placeholder at `src/app/page.tsx`); the
+rest of step 1 of the handoff's suggested build order (scaffold + tokens + fonts) is done. Steps 2+
+(header/footer/`<Reveal>` primitives, the five public pages, contact API, revenue check, Prisma/auth/admin
+shell, etc.) are not started — see "Suggested build order" below.
+
+## Commands
+
+- `npm run dev` — start the dev server (Turbopack) at `http://localhost:3000`.
+- `npm run build` — production build (also type-checks; fails the build on TS errors).
+- `npm start` — serve the production build (`build` must run first).
+- `npm run lint` — ESLint (`eslint-config-next`).
+- No test suite exists yet.
+
+## Architecture
+
+- App Router only, under `src/app/`. `src/app/layout.tsx` loads fonts and sets global `<html>`/`<body>`
+  classes; `src/app/globals.css` holds the Tailwind v4 theme.
+- **Tailwind v4 is CSS-first here — there is no `tailwind.config.js`.** All design tokens live in the
+  `@theme inline { ... }` block in `src/app/globals.css`, sourced from
+  `design_handoff_kargatox/README.md`'s Design tokens section:
+  - Brand colours (`navy-900/800/700`, `orange-500/400`, `blue-500/600/700/300`, `paper`, `ink`, `slate`,
+    `mist`/`mist-2`, `line`/`line-2`, `chip-neutral`/`chip-cool`/`chip-blue`, `success`/`success-dark`).
+  - Enquiry status colours (`status-new/contacted/proposal/won/lost`) for the admin pipeline.
+  - Admin light/dark theme (`admin-bg/panel/panel-2/border/text/muted/soft`) — these are plain CSS custom
+    properties on `:root` and `[data-theme="dark"]` (not `prefers-color-scheme`: the admin theme is a
+    user-toggled preference per the README, saved per user, not OS-driven), re-exposed as Tailwind colours
+    via `@theme inline` so `bg-admin-panel`, `text-admin-text`, etc. work and repaint when `data-theme` is
+    set on `<html>`. The public marketing site doesn't use this — it's navy/paper by design, not
+    light/dark adaptive.
+  - `--font-display` / `--font-body` / `--font-mono`, and `--width-site: 1240px` (the README's container
+    max-width), `--radius-chip/input/card/panel/pill` (midpoints of the README's stated ranges).
+  - When adding a token, add it to this `@theme inline` block, matching the README's naming/hex values
+    exactly — don't invent new colours or radii.
+- **Fonts:** the README specifies Fontshare's Clash Display (display) + Satoshi (body) + Google's
+  JetBrains Mono. Clash Display/Satoshi aren't on Google Fonts and need self-hosting via `next/font/local`
+  with real font files, which this repo doesn't have yet. `src/app/layout.tsx` currently loads **Bricolage
+  Grotesque + Figtree** via `next/font/google` as a stand-in — this is one of the README's own "tested"
+  alternative pairs (it's what the root `Kargatox Website.dc.html` prototype actually uses), not an
+  improvisation. Swap in real Clash Display/Satoshi files via `next/font/local` before this ships; don't
+  just rename the Google Fonts to make the diff look done.
+- No backend/database/auth exists yet (Prisma, Auth.js, API routes) — see the data model and route list in
+  `design_handoff_kargatox/README.md` when building those.
+
+## Design reference material
+
+- `design_handoff_kargatox/README.md` — the full spec: design tokens, per-screen behaviour,
+  interactions/animations, responsiveness rules, a Prisma data-model sketch, and a suggested build order.
+  **Read this file before doing any implementation work** — it is far more detailed than the summary above.
+- `design_handoff_kargatox/content/Website-content.pdf` — the client's source copy. Site copy must be taken
+  from it **word for word**.
 - `design_handoff_kargatox/designs/*.dc.html` — the prototype screens (see below).
 
 The `.dc.html`/`support.js` files at the repo root are duplicates of `design_handoff_kargatox/designs/`
@@ -19,7 +66,7 @@ The `.dc.html`/`support.js` files at the repo root are duplicates of `design_han
 PDF and a pasted screenshot; not authoritative. `Kargatox Website.dc.html` (root only) is an earlier
 single-page-scroll concept (one page with `#capabilities`/`#services`/`#process`/`#faq`/`#contact`
 anchors) — it predates and is superseded by the multi-page structure in `designs/`; don't treat it as a
-spec.
+spec, though its font `<link>` is the source for the Bricolage Grotesque + Figtree stand-in above.
 
 ## Working with the `.dc.html` prototype files
 
@@ -38,18 +85,24 @@ rebuild the behaviour it shows using the target stack's normal patterns.
 
 ## Recommended stack for the real build (from the handoff README)
 
-- Next.js 14+ (App Router) + TypeScript + Tailwind CSS, deployed on Vercel.
-- PostgreSQL (Supabase or Neon) with Prisma.
-- Auth.js (NextAuth), email magic links, role-based access control (OWNER/ADMIN/EDITOR/SALES).
-- Resend (or SMTP) for enquiry notifications, auto-replies, and admin replies.
-- Framer Motion for animation (or keep the plain Web Animations API approach from the prototype).
+- Next.js 14+ (App Router) + TypeScript + Tailwind CSS, deployed on Vercel — scaffolded here with Next.js
+  16 / React 19 / Tailwind v4 (`npx create-next-app@latest` ran with `--typescript --tailwind --eslint --app
+  --src-dir`, no version pinned, so re-scaffolding today would land on whatever's current).
+- PostgreSQL (Supabase or Neon) with Prisma. **Not set up yet.**
+- Auth.js (NextAuth), email magic links, role-based access control (OWNER/ADMIN/EDITOR/SALES). **Not set up
+  yet.**
+- Resend (or SMTP) for enquiry notifications, auto-replies, and admin replies. **Not set up yet.**
+- Framer Motion for animation (or keep the plain Web Animations API approach from the prototype). **Not set
+  up yet.**
 - Page copy, services, FAQ and posts live in the database, edited via the admin panel, read by public
   pages at build time with ISR revalidation on publish.
 
 Suggested routes, the Prisma data-model sketch, and the 9-step build order are in
 `design_handoff_kargatox/README.md` — follow that order (scaffold → public pages → contact API → revenue
 check → Prisma/auth/admin shell → enquiries/revenue-checks/dashboard → pages/content/posts → team/settings
-→ SEO/analytics/a11y) rather than re-deriving a sequence.
+→ SEO/analytics/a11y) rather than re-deriving a sequence. **Step 1 (scaffold + tokens + fonts) is done;
+step 2 (header, footer, `<Reveal>` animation primitives, then the five public pages with static content)
+is next.**
 
 ## Key constraints to preserve when rebuilding
 
