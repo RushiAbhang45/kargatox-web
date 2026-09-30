@@ -67,10 +67,65 @@
   --font-mono: var(--font-jetbrains-mono);
 
   --width-site: 1240px;
+  /* Header nav breakpoint — README: "below 900px hide the links and show the menu button" */
+  --breakpoint-nav: 900px;
 
   --radius-chip: 6px;
   --radius-input: 12px;
   --radius-card: 20px;
   --radius-panel: 30px;
   --radius-pill: 999px;
+}
+
+/* Decorative infinite-loop animations (background orbs, the sub-service marquee) live in
+   plain CSS rather than framer-motion — see README's Animations section. Scroll-triggered
+   reveals use framer-motion + MotionConfig(reducedMotion:"user") instead, in
+   src/components/motion/reveal.tsx. */
+@keyframes kx-float-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(60px, 40px) scale(1.12);
+  }
+}
+
+@keyframes kx-float-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-60px, 40px) scale(1.12);
+  }
+}
+
+@keyframes kx-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.kx-float {
+  animation: kx-float-a 11s ease-in-out infinite;
+}
+
+.kx-float-alt {
+  animation: kx-float-b 12.5s ease-in-out infinite;
+}
+
+.kx-marquee-track {
+  animation: kx-marquee 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kx-float,
+  .kx-float-alt,
+  .kx-marquee-track {
+    animation: none;
+  }
 }
