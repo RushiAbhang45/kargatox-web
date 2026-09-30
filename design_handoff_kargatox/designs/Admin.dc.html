@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+:root{--font-display:'Clash Display',sans-serif;--font-body:'Satoshi',system-ui,sans-serif}
+body{margin:0;background:#0b1430;font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#2f6cf0;text-decoration:none}
+a:hover{color:#f26a1b}
+h1,h2,h3,h4,p{margin:0}
+input::placeholder,textarea::placeholder{color:#8a93a8}
+</style>
+</helmet>
+
+<div style="--bg:{{ t.bg }};--panel:{{ t.panel }};--panel2:{{ t.panel2 }};--border:{{ t.border }};--text:{{ t.text }};--muted:{{ t.muted }};--soft:{{ t.soft }};background:var(--bg,#f5f4f0);color:var(--text,#141a2b);min-height:100vh;display:flex;flex-wrap:wrap;font-family:var(--font-body)">
+
+  <aside data-screen-label="Sidebar" style="flex:0 0 240px;background:#0b1430;color:#fff;padding:22px 14px;display:flex;flex-direction:column;gap:22px;min-height:100vh;position:sticky;top:0;align-self:flex-start;border-right:1px solid rgba(255,255,255,0.06)">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 10px">
+      <span style="position:relative;width:26px;height:26px;display:block">
+        <span style="position:absolute;left:0;top:0;width:17px;height:17px;border-radius:4px;background:#f26a1b"></span>
+        <span style="position:absolute;right:0;bottom:0;width:17px;height:17px;border-radius:4px;background:#2f6cf0;mix-blend-mode:screen"></span>
+      </span>
+      <span style="font-family:var(--font-display);font-weight:600;font-size:20px">Karga<span style="color:#ff8a3d">tox</span></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#6f9bff;border:1px solid rgba(111,155,255,0.4);padding:2px 6px;border-radius:5px">ADMIN</span>
+    </div>
+    <nav style="display:grid;gap:2px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="8">
+        <button onClick="{{ n.go }}" style="display:flex;align-items:center;gap:12px;width:100%;border:0;cursor:pointer;text-align:left;padding:10px 12px;border-radius:10px;background:{{ n.bg }};color:{{ n.fg }};font-family:var(--font-body);font-size:14.5px;font-weight:500" style-hover="background:rgba(255,255,255,0.06);color:#fff">
+          <span style="width:18px;text-align:center;font-size:14px;opacity:0.85">{{ n.icon }}</span>
+          <span style="flex:1">{{ n.label }}</span>
+          <sc-if value="{{ n.count }}" hint-placeholder-val="{{ false }}">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;background:#f26a1b;color:#fff;padding:2px 7px;border-radius:999px">{{ n.count }}</span>
+          </sc-if>
+        </button>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;display:grid;gap:10px">
+      <a href="Home.dc.html" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:12px;background:rgba(255,255,255,0.05);color:#c9d2ea;font-size:13.5px" style-hover="color:#fff;background:rgba(255,255,255,0.09)">View live site <span>↗</span></a>
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 10px">
+        <span style="width:34px;height:34px;border-radius:50%;background:#f26a1b;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">AM</span>
+        <div style="display:grid;line-height:1.3">
+          <span style="font-size:14px;font-weight:600">Aarav Mehta</span>
+          <span style="font-size:12px;color:#8a97bd">Owner</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex:1 1 640px;min-width:0;display:flex;flex-direction:column">
+    <div style="position:sticky;top:0;z-index:10;background:var(--bg,#f5f4f0);border-bottom:1px solid var(--border,#e6e3dc);padding:16px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;color:var(--muted,#5a6380)">{{ crumb }}</div>
+        <h1 style="font-family:var(--font-display);font-size:26px;font-weight:600;letter-spacing:-0.01em;margin-top:2px">{{ title }}</h1>
+      </div>
+      <input placeholder="Search enquiries, posts…" value="{{ q }}" onChange="{{ onSearch }}" style="width:260px;max-width:100%;background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:999px;padding:10px 16px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;outline:none" style-focus="border-color:#2f6cf0">
+      <div style="display:flex;padding:4px;border-radius:999px;background:var(--soft,#eeece6);gap:2px">
+        <sc-for list="{{ themes }}" as="th" hint-placeholder-count="2">
+          <button onClick="{{ th.set }}" style="border:0;cursor:pointer;padding:7px 14px;border-radius:999px;background:{{ th.bg }};color:{{ th.fg }};font-family:var(--font-body);font-size:13px;font-weight:600">{{ th.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="padding:28px;display:grid;gap:22px">
+
+      <sc-if value="{{ is.dashboard }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:20px;display:grid;gap:8px">
+              <span style="font-size:13px;color:var(--muted,#5a6380)">{{ k.label }}</span>
+              <span style="font-family:var(--font-display);font-size:34px;font-weight:600;line-height:1">{{ k.value }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#1f9d63">{{ k.delta }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:14px">
+          <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:22px;display:grid;gap:18px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+              <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600">Enquiries per week</h3>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted,#5a6380)">LAST 12 WEEKS</span>
+            </div>
+            <div style="display:flex;align-items:flex-end;gap:8px;height:180px">
+              <sc-for list="{{ weekly }}" as="w" hint-placeholder-count="12">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted,#5a6380)">{{ w.v }}</span>
+                  <div style="width:100%;height:{{ w.h }};background:{{ w.c }};border-radius:6px 6px 2px 2px" style-hover="background:#ff8a3d"></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:22px;display:grid;gap:16px;align-content:start">
+            <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600">Traffic sources</h3>
+            <sc-for list="{{ sources }}" as="s" hint-placeholder-count="4">
+              <div style="display:grid;gap:7px">
+                <div style="display:flex;justify-content:space-between;font-size:14px"><span>{{ s.name }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted,#5a6380)">{{ s.w }}</span></div>
+                <div style="height:8px;border-radius:8px;background:var(--soft,#eeece6);overflow:hidden"><div style="height:100%;width:{{ s.w }};background:{{ s.c }};border-radius:8px"></div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:14px">
+          <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:22px;display:grid;gap:6px;align-content:start">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600">Latest enquiries</h3>
+              <button onClick="{{ goEnquiries }}" style="border:0;background:none;cursor:pointer;color:#2f6cf0;font-family:var(--font-body);font-weight:600;font-size:13.5px">View all →</button>
+            </div>
+            <sc-for list="{{ latest }}" as="e" hint-placeholder-count="4">
+              <div onClick="{{ e.open }}" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer" style-hover="background:var(--soft,#eeece6)">
+                <span style="width:34px;height:34px;border-radius:50%;background:var(--soft,#eeece6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none">{{ e.initials }}</span>
+                <div style="flex:1;min-width:0;display:grid">
+                  <span style="font-size:14px;font-weight:600">{{ e.name }} · <span style="color:var(--muted,#5a6380);font-weight:500">{{ e.company }}</span></span>
+                  <span style="font-size:13px;color:var(--muted,#5a6380);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.service }}</span>
+                </div>
+                <span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:{{ e.pillBg }};color:{{ e.pillFg }}">{{ e.status }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:22px;display:grid;gap:4px;align-content:start">
+            <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin-bottom:10px">Top pages</h3>
+            <sc-for list="{{ topPages }}" as="p" hint-placeholder-count="5">
+              <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border,#e6e3dc);font-size:14px"><span>{{ p.name }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted,#5a6380)">{{ p.views }} views</span></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ is.enquiries }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex:1">
+            <sc-for list="{{ filters }}" as="f" hint-placeholder-count="6">
+              <button onClick="{{ f.set }}" style="border:1px solid {{ f.border }};cursor:pointer;padding:8px 14px;border-radius:999px;background:{{ f.bg }};color:{{ f.fg }};font-family:var(--font-body);font-size:13.5px;font-weight:600">{{ f.label }} <span style="opacity:0.6">{{ f.count }}</span></button>
+            </sc-for>
+          </div>
+          <button onClick="{{ exportCsv }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:var(--text,#141a2b);cursor:pointer;padding:10px 16px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600">↓ Export CSV</button>
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+          <div style="flex:1 1 520px;min-width:0;background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;overflow:auto">
+            <div style="min-width:820px">
+              <div style="display:grid;grid-template-columns:minmax(220px,2fr) minmax(0,1.6fr) 110px 130px 70px;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border,#e6e3dc);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">
+                <span>CONTACT</span><span>SERVICE</span><span>STATUS</span><span>OWNER</span><span>DATE</span>
+              </div>
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+                <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:minmax(220px,2fr) minmax(0,1.6fr) 110px 130px 70px;gap:12px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border,#e6e3dc);cursor:pointer;background:{{ r.bg }}" style-hover="background:var(--soft,#eeece6)">
+                  <div style="display:grid;min-width:0">
+                    <span style="font-size:14.5px;font-weight:600;display:flex;gap:8px;align-items:center;white-space:nowrap;overflow:hidden;min-width:0">{{ r.name }}<sc-if value="{{ r.fromCheck }}" hint-placeholder-val="{{ false }}"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#f26a1b;border:1px solid rgba(242,106,27,0.4);padding:1px 6px;border-radius:5px">CHECK</span></sc-if></span>
+                    <span style="font-size:13px;color:var(--muted,#5a6380);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.company }} · {{ r.email }}</span>
+                  </div>
+                  <span style="font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.service }}</span>
+                  <span style="justify-self:start;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:{{ r.pillBg }};color:{{ r.pillFg }}">{{ r.status }}</span>
+                  <span style="font-size:13.5px;color:var(--muted,#5a6380);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.owner }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted,#5a6380)">{{ r.date }}</span>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:40px;text-align:center;color:var(--muted,#5a6380);font-size:14px">No enquiries match this filter.</div>
+              </sc-if>
+            </div>
+          </div>
+          <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:0 1 420px;min-width:300px;background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:22px;display:grid;gap:18px">
+              <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+                <div style="display:grid;gap:4px">
+                  <h3 style="font-family:var(--font-display);font-size:22px;font-weight:600">{{ sel.name }}</h3>
+                  <span style="font-size:13.5px;color:var(--muted,#5a6380)">{{ sel.company }} · {{ sel.source }}</span>
+                </div>
+                <button onClick="{{ closeSel }}" style="border:0;background:var(--soft,#eeece6);color:var(--text,#141a2b);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px">✕</button>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13.5px">
+                <div style="display:grid;gap:3px"><span style="color:var(--muted,#5a6380);font-size:12px">Email</span><a href="mailto:{{ sel.email }}">{{ sel.email }}</a></div>
+                <div style="display:grid;gap:3px"><span style="color:var(--muted,#5a6380);font-size:12px">Phone</span><span>{{ sel.phone }}</span></div>
+                <div style="display:grid;gap:3px"><span style="color:var(--muted,#5a6380);font-size:12px">Service</span><span>{{ sel.service }}</span></div>
+                <div style="display:grid;gap:3px"><span style="color:var(--muted,#5a6380);font-size:12px">Received</span><span>{{ sel.date }}</span></div>
+              </div>
+              <div style="display:grid;gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">PIPELINE</span>
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  <sc-for list="{{ pipeline }}" as="p" hint-placeholder-count="5">
+                    <button onClick="{{ p.set }}" style="flex:1;min-width:64px;border:1px solid {{ p.border }};cursor:pointer;padding:8px 6px;border-radius:8px;background:{{ p.bg }};color:{{ p.fg }};font-family:var(--font-body);font-size:12.5px;font-weight:600">{{ p.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <label style="display:grid;gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">ASSIGNED TO</span>
+                <select value="{{ sel.owner }}" onChange="{{ onAssign }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:10px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px">
+                  <sc-for list="{{ owners }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <div style="display:grid;gap:10px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">CONVERSATION</span>
+                <div style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:12px;padding:14px;display:grid;gap:6px">
+                  <span style="font-size:12px;color:var(--muted,#5a6380)">{{ sel.name }} · {{ sel.date }}</span>
+                  <p style="font-size:14px;line-height:1.55;white-space:pre-wrap">{{ sel.msg }}</p>
+                </div>
+                <sc-for list="{{ sel.thread }}" as="m" hint-placeholder-count="0">
+                  <div style="background:rgba(47,108,240,0.1);border:1px solid rgba(47,108,240,0.25);border-radius:12px;padding:14px;display:grid;gap:6px;margin-left:24px">
+                    <span style="font-size:12px;color:var(--muted,#5a6380)">{{ m.from }} · {{ m.time }}</span>
+                    <p style="font-size:14px;line-height:1.55;white-space:pre-wrap">{{ m.text }}</p>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:grid;gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">REPLY BY EMAIL · TO {{ sel.email }}</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <sc-for list="{{ templates }}" as="tp" hint-placeholder-count="3">
+                    <button onClick="{{ tp.use }}" style="border:1px dashed var(--border,#e6e3dc);background:none;color:var(--muted,#5a6380);cursor:pointer;padding:6px 10px;border-radius:8px;font-family:var(--font-body);font-size:12.5px">+ {{ tp.label }}</button>
+                  </sc-for>
+                </div>
+                <textarea rows="5" value="{{ reply }}" onChange="{{ onReply }}" placeholder="Write a reply…" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;line-height:1.5;outline:none;resize:vertical" style-focus="border-color:#2f6cf0"></textarea>
+                <button onClick="{{ sendReply }}" style="justify-self:end;border:0;background:#f26a1b;color:#fff;cursor:pointer;padding:11px 20px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600" style-hover="background:#ff8a3d">Send reply</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ is.checks }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+          <sc-for list="{{ checkStats }}" as="k" hint-placeholder-count="4">
+            <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:20px;display:grid;gap:8px">
+              <span style="font-size:13px;color:var(--muted,#5a6380)">{{ k.label }}</span>
+              <span style="font-family:var(--font-display);font-size:32px;font-weight:600;line-height:1;color:{{ k.c }}">{{ k.value }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;overflow:auto">
+          <div style="min-width:800px">
+            <div style="display:grid;grid-template-columns:minmax(0,1.8fr) repeat(3,minmax(0,1fr)) 110px 120px;gap:14px;padding:12px 18px;border-bottom:1px solid var(--border,#e6e3dc);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">
+              <span>VISITOR</span><span>LEADS</span><span>SALES</span><span>RETENTION</span><span>WEAKEST</span><span>OUTCOME</span>
+            </div>
+            <sc-for list="{{ checks }}" as="c" hint-placeholder-count="8">
+              <div style="display:grid;grid-template-columns:minmax(0,1.8fr) repeat(3,minmax(0,1fr)) 110px 120px;gap:14px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border,#e6e3dc)">
+                <div style="display:grid;min-width:0"><span style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.who }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted,#5a6380)">{{ c.date }}</span></div>
+                <sc-for list="{{ c.bars }}" as="b" hint-placeholder-count="3">
+                  <div style="height:8px;border-radius:8px;background:var(--soft,#eeece6);overflow:hidden"><div style="height:100%;width:{{ b.w }};background:{{ b.c }};border-radius:8px"></div></div>
+                </sc-for>
+                <span style="font-size:13.5px;font-weight:600;color:#f26a1b">{{ c.weakest }}</span>
+                <sc-if value="{{ c.converted }}" hint-placeholder-val="{{ false }}">
+                  <span style="justify-self:start;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(31,157,99,0.14);color:#1f9d63">Sent enquiry</span>
+                </sc-if>
+                <sc-if value="{{ c.notConverted }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:13px;color:var(--muted,#5a6380)">No enquiry</span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ is.pages }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+          <div style="flex:0 0 220px;background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:8px;display:grid;gap:2px">
+            <sc-for list="{{ pageList }}" as="p" hint-placeholder-count="5">
+              <button onClick="{{ p.pick }}" style="display:flex;justify-content:space-between;align-items:center;border:0;cursor:pointer;text-align:left;padding:11px 12px;border-radius:10px;background:{{ p.bg }};color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;font-weight:600">{{ p.label }}<span style="width:7px;height:7px;border-radius:50%;background:{{ p.dot }}"></span></button>
+            </sc-for>
+          </div>
+          <div style="flex:1 1 480px;min-width:0;background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:24px;display:grid;gap:20px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+              <div style="display:grid;gap:4px">
+                <h3 style="font-family:var(--font-display);font-size:22px;font-weight:600">{{ page.label }}</h3>
+                <span style="font-size:13px;color:var(--muted,#5a6380)">{{ page.statusText }}</span>
+              </div>
+              <div style="display:flex;gap:8px">
+                <a href="{{ page.href }}" target="_blank" style="border:1px solid var(--border,#e6e3dc);color:var(--text,#141a2b);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600">Preview ↗</a>
+                <button onClick="{{ publishPage }}" style="border:0;background:#f26a1b;color:#fff;cursor:pointer;padding:10px 18px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600" style-hover="background:#ff8a3d">Publish</button>
+              </div>
+            </div>
+            <sc-for list="{{ page.fields }}" as="f" hint-placeholder-count="4">
+              <label style="display:grid;gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">{{ f.label }}</span>
+                <textarea rows="{{ f.rows }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:15px;line-height:1.5;outline:none;resize:vertical" style-focus="border-color:#2f6cf0"></textarea>
+              </label>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ is.content }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;padding:4px;border-radius:12px;background:var(--soft,#eeece6);gap:2px;justify-self:start">
+          <sc-for list="{{ sfTabs }}" as="tb" hint-placeholder-count="2">
+            <button onClick="{{ tb.set }}" style="border:0;cursor:pointer;padding:9px 18px;border-radius:9px;background:{{ tb.bg }};color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;font-weight:600">{{ tb.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ showServices }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ svcEdit }}" as="s" hint-placeholder-count="2">
+            <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:22px;display:grid;gap:14px">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+                <h3 style="font-family:var(--font-display);font-size:20px;font-weight:600">{{ s.title }}</h3>
+                <button onClick="{{ s.add }}" style="border:1px solid var(--border,#e6e3dc);background:none;color:var(--text,#141a2b);cursor:pointer;padding:8px 14px;border-radius:9px;font-family:var(--font-body);font-size:13.5px;font-weight:600">+ Add sub-service</button>
+              </div>
+              <sc-for list="{{ s.items }}" as="it" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:12px;align-items:start;padding:14px;border-radius:12px;background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc)">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#2f6cf0;padding-top:10px">{{ it.num }}</span>
+                  <div style="display:grid;gap:8px">
+                    <input value="{{ it.title }}" onChange="{{ it.onTitle }}" style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:9px;padding:9px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:15px;font-weight:600;outline:none" style-focus="border-color:#2f6cf0">
+                    <textarea rows="3" value="{{ it.body }}" onChange="{{ it.onBody }}" style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:9px;padding:9px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;line-height:1.5;outline:none;resize:vertical" style-focus="border-color:#2f6cf0"></textarea>
+                  </div>
+                  <div style="display:grid;gap:4px">
+                    <button onClick="{{ it.up }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:var(--text,#141a2b);width:30px;height:30px;border-radius:8px;cursor:pointer">↑</button>
+                    <button onClick="{{ it.down }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:var(--text,#141a2b);width:30px;height:30px;border-radius:8px;cursor:pointer">↓</button>
+                    <button onClick="{{ it.del }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:#d4452b;width:30px;height:30px;border-radius:8px;cursor:pointer">✕</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ showFaq }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:22px;display:grid;gap:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+              <h3 style="font-family:var(--font-display);font-size:20px;font-weight:600">FAQ</h3>
+              <button onClick="{{ addFaq }}" style="border:1px solid var(--border,#e6e3dc);background:none;color:var(--text,#141a2b);cursor:pointer;padding:8px 14px;border-radius:9px;font-family:var(--font-body);font-size:13.5px;font-weight:600">+ Add question</button>
+            </div>
+            <sc-for list="{{ faqEdit }}" as="it" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:12px;align-items:start;padding:14px;border-radius:12px;background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc)">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#f26a1b;padding-top:10px">{{ it.num }}</span>
+                <div style="display:grid;gap:8px">
+                  <input value="{{ it.q }}" onChange="{{ it.onQ }}" placeholder="Question" style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:9px;padding:9px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:15px;font-weight:600;outline:none" style-focus="border-color:#2f6cf0">
+                  <textarea rows="3" value="{{ it.a }}" onChange="{{ it.onA }}" placeholder="Answer" style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:9px;padding:9px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;line-height:1.5;outline:none;resize:vertical" style-focus="border-color:#2f6cf0"></textarea>
+                </div>
+                <div style="display:grid;gap:4px">
+                  <button onClick="{{ it.up }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:var(--text,#141a2b);width:30px;height:30px;border-radius:8px;cursor:pointer">↑</button>
+                  <button onClick="{{ it.down }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:var(--text,#141a2b);width:30px;height:30px;border-radius:8px;cursor:pointer">↓</button>
+                  <button onClick="{{ it.del }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:#d4452b;width:30px;height:30px;border-radius:8px;cursor:pointer">✕</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="display:flex;justify-content:flex-end">
+          <button onClick="{{ saveContent }}" style="border:0;background:#f26a1b;color:#fff;cursor:pointer;padding:12px 22px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600" style-hover="background:#ff8a3d">Save changes</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ is.blogList }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="display:flex;gap:6px">
+            <sc-for list="{{ postFilters }}" as="f" hint-placeholder-count="3">
+              <button onClick="{{ f.set }}" style="border:1px solid {{ f.border }};cursor:pointer;padding:8px 14px;border-radius:999px;background:{{ f.bg }};color:{{ f.fg }};font-family:var(--font-body);font-size:13.5px;font-weight:600">{{ f.label }}</button>
+            </sc-for>
+          </div>
+          <button onClick="{{ newPost }}" style="border:0;background:#f26a1b;color:#fff;cursor:pointer;padding:11px 18px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600" style-hover="background:#ff8a3d">+ New post</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">
+          <sc-for list="{{ postCards }}" as="p" hint-placeholder-count="6">
+            <div onClick="{{ p.open }}" style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;overflow:hidden;cursor:pointer;display:grid" style-hover="border-color:#2f6cf0">
+              <div style="height:130px;background:repeating-linear-gradient(135deg,var(--soft,#eeece6) 0 10px,var(--panel2,#f9f8f5) 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted,#5a6380)">cover image</div>
+              <div style="padding:16px;display:grid;gap:10px">
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.06em;padding:3px 8px;border-radius:6px;background:{{ p.typeBg }};color:{{ p.typeFg }}">{{ p.type }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.06em;padding:3px 8px;border-radius:6px;background:{{ p.statusBg }};color:{{ p.statusFg }}">{{ p.status }}</span>
+                </div>
+                <h4 style="font-family:var(--font-display);font-size:18px;font-weight:600;line-height:1.25">{{ p.title }}</h4>
+                <span style="font-size:13px;color:var(--muted,#5a6380)">{{ p.author }} · {{ p.date }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ is.blogEdit }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <button onClick="{{ closePost }}" style="border:0;background:none;cursor:pointer;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;font-weight:600">← All posts</button>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{ deletePost }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:#d4452b;cursor:pointer;padding:10px 16px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600">Delete</button>
+            <button onClick="{{ saveDraft }}" style="border:1px solid var(--border,#e6e3dc);background:var(--panel,#fff);color:var(--text,#141a2b);cursor:pointer;padding:10px 16px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600">Save draft</button>
+            <button onClick="{{ publishPost }}" style="border:0;background:#f26a1b;color:#fff;cursor:pointer;padding:10px 18px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600" style-hover="background:#ff8a3d">Publish</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+          <div style="flex:1 1 520px;min-width:0;background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:24px;display:grid;gap:16px">
+            <input value="{{ post.title }}" onChange="{{ postField.title }}" placeholder="Post title" style="background:transparent;border:0;border-bottom:1px solid var(--border,#e6e3dc);padding:8px 0;color:var(--text,#141a2b);font-family:var(--font-display);font-size:30px;font-weight:600;outline:none">
+            <div style="height:200px;border-radius:12px;background:repeating-linear-gradient(135deg,var(--soft,#eeece6) 0 10px,var(--panel2,#f9f8f5) 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted,#5a6380)">drop cover image</div>
+            <textarea rows="3" value="{{ post.excerpt }}" onChange="{{ postField.excerpt }}" placeholder="Short excerpt shown on cards" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:15px;line-height:1.5;outline:none;resize:vertical" style-focus="border-color:#2f6cf0"></textarea>
+            <textarea rows="12" value="{{ post.body }}" onChange="{{ postField.body }}" placeholder="Write the post…" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:14px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:15px;line-height:1.65;outline:none;resize:vertical" style-focus="border-color:#2f6cf0"></textarea>
+          </div>
+          <div style="flex:0 1 320px;min-width:260px;background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:22px;display:grid;gap:16px">
+            <label style="display:grid;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">TYPE</span>
+              <select value="{{ post.type }}" onChange="{{ postField.type }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:10px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px"><option value="Blog">Blog</option><option value="Case study">Case study</option></select>
+            </label>
+            <label style="display:grid;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">AUTHOR</span>
+              <select value="{{ post.author }}" onChange="{{ postField.author }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:10px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px"><sc-for list="{{ owners }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+            </label>
+            <label style="display:grid;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">URL SLUG</span>
+              <input value="{{ post.slug }}" onChange="{{ postField.slug }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:10px 12px;color:var(--text,#141a2b);font-family:'JetBrains Mono',monospace;font-size:13px;outline:none">
+            </label>
+            <label style="display:grid;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">SEO TITLE</span>
+              <input value="{{ post.seoTitle }}" onChange="{{ postField.seoTitle }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:10px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;outline:none">
+            </label>
+            <label style="display:grid;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">META DESCRIPTION</span>
+              <textarea rows="3" value="{{ post.seoDesc }}" onChange="{{ postField.seoDesc }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:10px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;line-height:1.5;outline:none;resize:vertical"></textarea>
+            </label>
+            <div style="border-radius:12px;border:1px solid var(--border,#e6e3dc);padding:14px;display:grid;gap:4px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#1f9d63">kargatox.com/blog/{{ post.slug }}</span>
+              <span style="font-size:15px;color:#2f6cf0;font-weight:600">{{ post.seoTitle }}</span>
+              <span style="font-size:13px;color:var(--muted,#5a6380);line-height:1.45">{{ post.seoDesc }}</span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ is.team }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:14px;color:var(--muted,#5a6380)">{{ teamCount }} of 5 seats used</span>
+          <button onClick="{{ toggleInvite }}" style="border:0;background:#f26a1b;color:#fff;cursor:pointer;padding:11px 18px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600" style-hover="background:#ff8a3d">+ Invite member</button>
+        </div>
+        <sc-if value="{{ showInvite }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--panel,#fff);border:1px solid #2f6cf0;border-radius:16px;padding:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <input value="{{ invite.name }}" onChange="{{ onInviteName }}" placeholder="Full name" style="flex:1 1 160px;background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:11px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;outline:none">
+            <input value="{{ invite.email }}" onChange="{{ onInviteEmail }}" placeholder="name@kargatox.com" style="flex:1 1 200px;background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:11px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;outline:none">
+            <select value="{{ invite.role }}" onChange="{{ onInviteRole }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:11px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px"><sc-for list="{{ roleNames }}" as="r" hint-placeholder-count="4"><option value="{{ r }}">{{ r }}</option></sc-for></select>
+            <button onClick="{{ sendInvite }}" style="border:0;background:#2f6cf0;color:#fff;cursor:pointer;padding:11px 18px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600">Send invite</button>
+          </div>
+        </sc-if>
+        <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;overflow:auto">
+          <div style="min-width:680px">
+            <sc-for list="{{ teamRows }}" as="m" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:minmax(0,2fr) 150px 120px 40px;gap:14px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border,#e6e3dc)">
+                <div style="display:flex;gap:12px;align-items:center;min-width:0">
+                  <span style="width:38px;height:38px;border-radius:50%;background:{{ m.color }};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none">{{ m.initials }}</span>
+                  <div style="display:grid;min-width:0"><span style="font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }}</span><span style="font-size:13px;color:var(--muted,#5a6380);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.email }}</span></div>
+                </div>
+                <select value="{{ m.role }}" onChange="{{ m.onRole }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:9px;padding:8px 10px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:13.5px"><sc-for list="{{ roleNames }}" as="r" hint-placeholder-count="4"><option value="{{ r }}">{{ r }}</option></sc-for></select>
+                <span style="font-size:13px;color:var(--muted,#5a6380)">{{ m.active }}</span>
+                <button onClick="{{ m.remove }}" style="border:0;background:none;color:#d4452b;cursor:pointer;font-size:14px">✕</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+          <sc-for list="{{ roles }}" as="r" hint-placeholder-count="4">
+            <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:18px;display:grid;gap:8px;align-content:start">
+              <span style="font-family:var(--font-display);font-size:17px;font-weight:600">{{ r.name }}</span>
+              <span style="font-size:13.5px;line-height:1.5;color:var(--muted,#5a6380)">{{ r.desc }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ is.settings }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;padding:4px;border-radius:12px;background:var(--soft,#eeece6);gap:2px;justify-self:start">
+          <sc-for list="{{ setTabs }}" as="tb" hint-placeholder-count="3">
+            <button onClick="{{ tb.set }}" style="border:0;cursor:pointer;padding:9px 18px;border-radius:9px;background:{{ tb.bg }};color:var(--text,#141a2b);font-family:var(--font-body);font-size:14px;font-weight:600">{{ tb.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ showGeneral }}" hint-placeholder-val="{{ true }}">
+          <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:24px;display:grid;gap:18px;max-width:760px">
+            <sc-for list="{{ generalFields }}" as="f" hint-placeholder-count="3">
+              <label style="display:grid;gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">{{ f.label }}</span>
+                <textarea rows="{{ f.rows }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:11px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14.5px;line-height:1.5;outline:none;resize:vertical" style-focus="border-color:#2f6cf0"></textarea>
+                <span style="font-size:12.5px;color:var(--muted,#5a6380)">{{ f.hint }}</span>
+              </label>
+            </sc-for>
+            <sc-for list="{{ generalToggles }}" as="tg" hint-placeholder-count="2">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0;border-top:1px solid var(--border,#e6e3dc)">
+                <div style="display:grid;gap:3px"><span style="font-size:14.5px;font-weight:600">{{ tg.label }}</span><span style="font-size:13px;color:var(--muted,#5a6380)">{{ tg.hint }}</span></div>
+                <button onClick="{{ tg.toggle }}" style="flex:none;width:44px;height:26px;border-radius:999px;border:0;cursor:pointer;background:{{ tg.track }};position:relative;padding:0"><span style="position:absolute;top:3px;left:{{ tg.knob }};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s"></span></button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showSeo }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--panel,#fff);border:1px solid var(--border,#e6e3dc);border-radius:16px;padding:24px;display:grid;gap:18px;max-width:760px">
+            <sc-for list="{{ seoFields }}" as="f" hint-placeholder-count="2">
+              <label style="display:grid;gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--muted,#5a6380)">{{ f.label }}</span>
+                <textarea rows="{{ f.rows }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="background:var(--panel2,#f9f8f5);border:1px solid var(--border,#e6e3dc);border-radius:10px;padding:11px 12px;color:var(--text,#141a2b);font-family:var(--font-body);font-size:14.5px;line-height:1.5;outline:none;resize:vertical" style-focus="border-color:#2f6cf0"></textarea>
+                <span style="font-size:12.5px;color:var(--muted,#5a6380)">{{ f.hint }}</span>
+              </label>
+            </sc-for>
+            <div style="height:140px;border-radius:12px;background:repeating-linear-gradient(135deg,var(--soft,#eeece6) 0 10px,var(--panel2,#f9f8f5) 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted,#5a6380)">default social share image · 1200×630</div>
+            <sc-for list="{{ seoToggles }}" as="tg" hint-placeholder-count="2">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0;border-top:1px solid var(--border,#e6e3dc)">
+                <div style="display:grid;gap:3px"><span style="font-size:14.5px;font-weight:600">{{ tg.label }}</span><span style="font-size:13px;color:var(--muted,#5a6380)">{{ tg.hint }}</span></div>
+                <button onClick="{{ tg.toggle }}" style="flex:none;width:44px;height:26px;border-radius:999px;border:0;cursor:pointer;background:{{ tg.track }};position:relative;padding:0"><span style="position:absolute;top:3px;left:{{ tg.knob }};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s"></span></button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showIntegrations }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">
+            <sc-for list="{{ integrations }}" as="ig" hint-placeholder-count="6">
+              <div style="background:var(--panel,#fff);border:1px solid {{ ig.border }};border-radius:16px;padding:20px;display:grid;gap:12px;align-content:start">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+                  <span style="width:40px;height:40px;border-radius:10px;background:var(--soft,#eeece6);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:600;font-size:16px">{{ ig.letter }}</span>
+                  <button onClick="{{ ig.toggle }}" style="flex:none;width:44px;height:26px;border-radius:999px;border:0;cursor:pointer;background:{{ ig.track }};position:relative;padding:0"><span style="position:absolute;top:3px;left:{{ ig.knob }};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s"></span></button>
+                </div>
+                <span style="font-family:var(--font-display);font-size:17px;font-weight:600">{{ ig.name }}</span>
+                <span style="font-size:13.5px;line-height:1.5;color:var(--muted,#5a6380)">{{ ig.desc }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:{{ ig.stateC }}">{{ ig.state }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="display:flex;justify-content:flex-end;max-width:760px">
+          <button onClick="{{ saveSettings }}" style="border:0;background:#f26a1b;color:#fff;cursor:pointer;padding:12px 22px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600" style-hover="background:#ff8a3d">Save settings</button>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;right:24px;bottom:24px;z-index:100;background:#0b1430;color:#fff;padding:14px 18px;border-radius:12px;font-size:14px;font-weight:500;display:flex;gap:10px;align-items:center;box-shadow:0 20px 40px -20px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1)"><span style="color:#4fd1a5">✓</span>{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TEAM0 = [
+  { id: 1, name: 'Aarav Mehta', email: 'aarav@kargatox.com', role: 'Owner', active: 'Online now', color: '#f26a1b' },
+  { id: 2, name: 'Priya Nair', email: 'priya@kargatox.com', role: 'Sales', active: '12 min ago', color: '#2f6cf0' },
+  { id: 3, name: 'Rohan Kulkarni', email: 'rohan@kargatox.com', role: 'Editor', active: '2 hours ago', color: '#8b5cf6' },
+  { id: 4, name: 'Sneha Iyer', email: 'sneha@kargatox.com', role: 'Admin', active: 'Yesterday', color: '#1f9d63' }
+];
+const ENQ0 = [
+  { id: 1, name: 'Karan Shah', company: 'Brewline Foods', email: 'karan@brewline.in', phone: '+91 98200 11234', service: 'Market Research', status: 'New', owner: 'Unassigned', date: '30 Sep', source: 'Contact form', msg: 'We are launching a cold brew range in Pune and Bengaluru and need to size the market and understand pricing sensitivity before Q1.' },
+  { id: 2, name: 'Ananya Rao', company: 'Fitloop', email: 'ananya@fitloop.co', phone: '+91 99001 22876', service: 'SEO Services', status: 'New', owner: 'Priya Nair', date: '29 Sep', source: 'Revenue check', msg: 'Revenue check result: Leads needs attention.\n\nMost of our members come from referrals. We want predictable inbound from search.' },
+  { id: 3, name: 'Vikram Desai', company: 'Northgate Realty', email: 'vikram@northgate.in', phone: '—', service: 'Brand Campaigns Strategy', status: 'Contacted', owner: 'Aarav Mehta', date: '27 Sep', source: 'Contact form', msg: 'Planning a festive campaign for two new residential projects. Looking for a partner for strategy and execution.' },
+  { id: 4, name: 'Meera Joshi', company: 'Kaya Skin Labs', email: 'meera@kayalabs.in', phone: '+91 97300 44512', service: 'Consumer Behaviour & Satisfaction Analysis', status: 'Proposal', owner: 'Sneha Iyer', date: '24 Sep', source: 'Contact form', msg: 'Repeat purchase rate has dropped over two quarters. We need to understand why customers are not coming back.' },
+  { id: 5, name: 'Arjun Menon', company: 'Tapri Chai Co.', email: 'arjun@tapri.co', phone: '+91 98450 77120', service: 'Social Media Marketing', status: 'Won', owner: 'Priya Nair', date: '19 Sep', source: 'Revenue check', msg: 'Revenue check result: Retention needs attention.\n\nWe have 40 outlets and want to build a real community on Instagram.' },
+  { id: 6, name: 'Divya Kapoor', company: 'Ledgerly', email: 'divya@ledgerly.io', phone: '—', service: 'Campaign Analytics', status: 'Contacted', owner: 'Rohan Kulkarni', date: '17 Sep', source: 'Contact form', msg: 'We run campaigns on Google, Meta and print but cannot tell which ones drive signups.' },
+  { id: 7, name: 'Nikhil Batra', company: 'Urban Ply', email: 'nikhil@urbanply.in', phone: '+91 98110 90021', service: 'General Inquiry', status: 'Lost', owner: 'Aarav Mehta', date: '11 Sep', source: 'Contact form', msg: 'Exploring options for a go-to-market plan for a new product line.' },
+  { id: 8, name: 'Farah Siddiqui', company: 'Nestwell Clinics', email: 'farah@nestwell.in', phone: '+91 90040 33218', service: 'SEO Services', status: 'Proposal', owner: 'Priya Nair', date: '08 Sep', source: 'Revenue check', msg: 'Revenue check result: Leads needs attention.\n\nWe want to rank for clinic searches in Mumbai suburbs.' }
+];
+const STATUS = { New: '#2f6cf0', Contacted: '#8b5cf6', Proposal: '#f26a1b', Won: '#1f9d63', Lost: '#8a93a8' };
+const PAGES0 = {
+  home: { label: 'Home', href: 'Home.dc.html', dirty: false, fields: [['Hero headline', 'Turning Ideas Into Products That Grow.', 2], ['Hero subheading', 'We partner with founders and leadership teams to shape strategy, validate opportunities, build products and execute go-to-market across India', 3], ['Capabilities heading', 'Capabilities That Keep Your Business Moving Forward.', 2], ['Capabilities body', 'At Kargatox, we bring strategy, customer understanding and marketing together to help businesses move in the right direction. We understand your audience, identify opportunities, design the right solutions and create the pathways to reach, engage and grow your market.', 4]] },
+  services: { label: 'Services', href: 'Services.dc.html', dirty: false, fields: [['Intro headline', "We don't simply deliver research or marketing services. We become an extension of your team, working alongside you to understand your business, solve challenges and create sustainable growth.", 3], ['Intro paragraph 1', 'Our hands-on approach starts with understanding your business, defining the right strategy, mapping your audience and learning how they behave. We then turn those insights into focused execution across consulting, technology and marketing.', 4], ['Intro paragraph 2', 'Every engagement is driven by clear objectives and measurable KPIs, with transparent progress at every stage. You always know what we are doing, why we are doing it and how it contributes to your growth.', 4]] },
+  process: { label: 'How we work', href: 'Process.dc.html', dirty: false, fields: [['Headline', 'We do the work. You keep the system.', 2], ['Subline', 'Here is exactly what happens after you say yes.', 2], ['Straight up note', 'If we are not the right fix for your problem, we will tell you on the first call.', 2]] },
+  faq: { label: 'FAQ', href: 'FAQ.dc.html', dirty: false, fields: [['Heading', 'You have questions. We have straight answers.', 2]] },
+  contact: { label: 'Contact', href: 'Contact.dc.html', dirty: false, fields: [['Heading', 'Initiate a Project', 1], ['Intro', 'Connect with our team to discuss your specific research, data structuring, or lead generation requirements. We will review your scope and provide a structured proposal.', 3]] }
+};
+const SVC0 = [
+  { title: 'Research Services', items: [['Market Research', 'We harness the power of analytics to identify market trends and formulate practical action plans for business growth.'], ['Consumer Behaviour & Satisfaction Analysis', 'Our strategic research process decodes consumer behaviours, enabling you to empathise with your prospects and deliver personalized solutions that speak to their needs.'], ['Campaign Analytics', 'If it’s not measured, it didn’t happen! We provide a custom tech stack to help you understand and optimize key campaign performance metrics on digital as well as mainline platforms.']] },
+  { title: 'Marketing Services', items: [['SEO Services', "Appear where customers are searching. Kargatox offers comprehensive SEO, AEO and GEO services that improve your website's visibility across Google Search, AI-powered search engines, voice assistants, and generative AI platforms."], ['Social Media Marketing', 'Kargatox helps businesses build engaging social media communities through strategic content, storytelling, creative campaigns, and consistent audience interaction.'], ['Brand Campaigns Strategy', 'Every successful campaign tells a compelling story. We develop integrated brand campaigns that connect emotionally with audiences while delivering measurable business outcomes.']] }
+];
+const FAQ0 = [
+  ['What exactly do you do?', 'We fix what is stopping your revenue from growing, across three areas: leads, sales, and retention. We find what is broken, do the actual work to fix it, and leave you with a system your team can run. Not advice, not a deck, real work.'],
+  ['How fast can you start?', 'Quickly. You get a clear plan of what is broken and how we will fix it within 7 days of starting. Real changes follow in the weeks after.'],
+  ['Do you replace a full-time hire?', 'Often, yes, at least for a while. We also help you figure out whether you actually need that senior hire yet, and if you do, we help you hire the right person.'],
+  ['What does it cost?', 'Flat-fee engagements, scoped to your stage and what needs fixing. Roughly the cost of one senior hire, for a full team. We give you an exact number on the call, no hidden pricing.']
+];
+const POSTS0 = [
+  { id: 1, title: 'Why most D2C brands in India stall at ₹5 crore', type: 'Blog', status: 'Published', author: 'Aarav Mehta', date: '22 Sep', slug: 'd2c-brands-stall', excerpt: '', body: '', seoTitle: 'Why D2C brands stall at ₹5 crore | Kargatox', seoDesc: 'The three revenue leaks we see most often in growing D2C brands.' },
+  { id: 2, title: 'How a chai chain grew repeat visits with community', type: 'Case study', status: 'Published', author: 'Priya Nair', date: '15 Sep', slug: 'tapri-community', excerpt: '', body: '', seoTitle: 'Case study: Tapri Chai Co. | Kargatox', seoDesc: 'Building an Instagram community across 40 outlets.' },
+  { id: 3, title: 'SEO, AEO and GEO explained for founders', type: 'Blog', status: 'Draft', author: 'Rohan Kulkarni', date: '28 Sep', slug: 'seo-aeo-geo', excerpt: '', body: '', seoTitle: 'SEO vs AEO vs GEO | Kargatox', seoDesc: 'What changes when customers search with AI assistants.' },
+  { id: 4, title: 'Reading your won and lost deals', type: 'Blog', status: 'Draft', author: 'Sneha Iyer', date: '26 Sep', slug: 'won-lost-deals', excerpt: '', body: '', seoTitle: 'Reading your won and lost deals | Kargatox', seoDesc: 'A simple method to find where deals stall.' },
+  { id: 5, title: 'Sizing a new market before launch: a skincare example', type: 'Case study', status: 'Published', author: 'Sneha Iyer', date: '02 Sep', slug: 'skincare-market-sizing', excerpt: '', body: '', seoTitle: 'Case study: market sizing for skincare | Kargatox', seoDesc: 'Field and desk research combined into a launch plan.' }
+];
+const CHECKS0 = [
+  ['ananya@fitloop.co', '29 Sep', 0, 2, 1, true], ['visitor · Mumbai', '29 Sep', 1, 0, 1, false], ['rahul@studiobloom.in', '28 Sep', 2, 1, 0, false],
+  ['visitor · Delhi', '27 Sep', 0, 1, 1, false], ['arjun@tapri.co', '19 Sep', 2, 1, 0, true], ['visitor · Pune', '18 Sep', 1, 1, 2, false],
+  ['farah@nestwell.in', '08 Sep', 0, 1, 2, true], ['visitor · Bengaluru', '06 Sep', 1, 0, 0, false]
+];
+const ini = n => n.split(' ').map(x => x[0]).slice(0, 2).join('').toUpperCase();
+const move = (arr, i, d) => { const j = i + d; if (j < 0 || j >= arr.length) return arr; const a = [...arr]; [a[i], a[j]] = [a[j], a[i]]; return a; };
+
+class Component extends DCLogic {
+  state = {
+    section: 'dashboard', theme: 'light', q: '', filter: 'All', selId: null, reply: '', toast: '',
+    enquiries: ENQ0, team: TEAM0, pages: PAGES0, pageSel: 'home',
+    sfTab: 'services', services: SVC0, faqs: FAQ0, posts: POSTS0, postFilter: 'All', postId: null,
+    showInvite: false, invite: { name: '', email: '', role: 'Editor' }, setTab: 'general',
+    settings: { siteName: 'Kargatox', notify: 'hello@kargatox.com', recipients: 'aarav@kargatox.com, priya@kargatox.com', autoReply: 'Thanks for reaching out to Kargatox. Our team will review your scope and reply within one business day.', metaTitle: 'Kargatox | Strategy, Research & Growth Marketing in India', metaDesc: 'We partner with founders and leadership teams to shape strategy, validate opportunities, build products and execute go-to-market across India.' },
+    toggles: { autoReplyOn: true, slackAlerts: false, sitemap: true, indexing: true },
+    integrations: { ga: true, crm: false, smtp: true, wa: false, slack: false, meta: true }
+  };
+  flash(msg) { clearTimeout(this.tt); this.setState({ toast: msg }); this.tt = setTimeout(() => this.setState({ toast: '' }), 2200); }
+  updEnq(id, patch) { this.setState(s => ({ enquiries: s.enquiries.map(e => e.id === id ? { ...e, ...patch } : e) })); }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  renderVals() {
+    const s = this.state, dark = s.theme === 'dark';
+    const t = dark ? { bg: '#0a1026', panel: '#111a38', panel2: '#0d1531', border: 'rgba(255,255,255,0.09)', text: '#eef1f8', muted: '#9aa6c7', soft: 'rgba(255,255,255,0.06)' }
+      : { bg: '#f5f4f0', panel: '#ffffff', panel2: '#f9f8f5', border: '#e6e3dc', text: '#141a2b', muted: '#5a6380', soft: '#eeece6' };
+    const pill = st => ({ pillBg: STATUS[st] + '22', pillFg: STATUS[st] });
+    const go = sec => () => this.setState({ section: sec, selId: null, postId: null });
+    const newCount = s.enquiries.filter(e => e.status === 'New').length;
+    const NAV = [['dashboard', '◧', 'Dashboard'], ['enquiries', '✉', 'Enquiries', newCount], ['checks', '◔', 'Revenue checks'], ['pages', '▤', 'Pages'], ['content', '☰', 'Services & FAQ'], ['blog', '✎', 'Blog & case studies'], ['team', '◎', 'Team'], ['settings', '⚙', 'Settings']];
+    const nav = NAV.map(([id, icon, label, count]) => ({ icon, label, count: count || false, go: go(id), bg: s.section === id ? 'rgba(255,255,255,0.1)' : 'transparent', fg: s.section === id ? '#fff' : '#aeb9d8' }));
+    const cur = NAV.find(n => n[0] === s.section);
+    const is = { dashboard: s.section === 'dashboard', enquiries: s.section === 'enquiries', checks: s.section === 'checks', pages: s.section === 'pages', content: s.section === 'content', blogList: s.section === 'blog' && !s.postId, blogEdit: s.section === 'blog' && !!s.postId, team: s.section === 'team', settings: s.section === 'settings' };
+    const themes = ['light', 'dark'].map(k => ({ label: k === 'light' ? '☀ Light' : '☾ Dark', set: () => this.setState({ theme: k }), bg: s.theme === k ? t.panel : 'transparent', fg: s.theme === k ? t.text : t.muted }));
+    const openEnq = id => () => this.setState({ section: 'enquiries', selId: id, reply: '' });
+
+    const weeklyV = [3, 5, 4, 6, 5, 8, 7, 6, 9, 8, 11, 12];
+    const weekly = weeklyV.map((v, i) => ({ v, h: (v / 12 * 85) + '%', c: i >= 10 ? '#f26a1b' : '#2f6cf0' }));
+    const kpis = [{ label: 'Enquiries (30 days)', value: '38', delta: '↑ 22% vs last month' }, { label: 'Revenue checks completed', value: '126', delta: '↑ 41%' }, { label: 'Check → enquiry rate', value: '18%', delta: '↑ 3 pts' }, { label: 'Site visitors', value: '8,140', delta: '↑ 12%' }];
+    const sources = [{ name: 'Organic search', w: '46%', c: '#2f6cf0' }, { name: 'Social', w: '24%', c: '#f26a1b' }, { name: 'Direct', w: '18%', c: '#6f9bff' }, { name: 'Referral', w: '12%', c: '#8a93a8' }];
+    const topPages = [['Home', '4,210'], ['Services', '1,980'], ['Contact', '860'], ['How we work', '640'], ['FAQ', '410']].map(([name, views]) => ({ name, views }));
+    const latest = s.enquiries.slice(0, 4).map(e => ({ ...e, initials: ini(e.name), ...pill(e.status), open: openEnq(e.id) }));
+
+    const ql = s.q.toLowerCase();
+    const matchQ = e => !ql || [e.name, e.company, e.email, e.service].join(' ').toLowerCase().includes(ql);
+    const filtered = s.enquiries.filter(e => (s.filter === 'All' || e.status === s.filter) && matchQ(e));
+    const filters = ['All', ...Object.keys(STATUS)].map(f => {
+      const on = s.filter === f;
+      return { label: f, count: f === 'All' ? s.enquiries.length : s.enquiries.filter(e => e.status === f).length, set: () => this.setState({ filter: f }), bg: on ? (dark ? '#2f6cf0' : '#0b1430') : t.panel, fg: on ? '#fff' : t.text, border: on ? (dark ? '#2f6cf0' : '#0b1430') : t.border };
+    });
+    const rows = filtered.map(e => ({ ...e, ...pill(e.status), fromCheck: e.source === 'Revenue check', open: openEnq(e.id), bg: e.id === s.selId ? t.soft : 'transparent' }));
+    const selE = s.enquiries.find(e => e.id === s.selId);
+    const sel = selE ? { ...selE, thread: selE.thread || [] } : { name: '', company: '', source: '', email: '', phone: '', service: '', date: '', msg: '', owner: '', thread: [] };
+    const pipeline = Object.keys(STATUS).map(st => { const on = selE && selE.status === st; return { label: st, set: () => { this.updEnq(s.selId, { status: st }); this.flash('Moved to ' + st); }, bg: on ? STATUS[st] : 'transparent', fg: on ? '#fff' : t.muted, border: on ? STATUS[st] : t.border }; });
+    const owners = ['Unassigned', ...s.team.map(m => m.name)];
+    const first = sel.name.split(' ')[0];
+    const templates = [
+      { label: 'Book discovery call', text: `Hi ${first},\n\nThanks for reaching out to Kargatox. We'd like to set up a 30-minute discovery call to understand your requirements. Could you share two or three time slots that work for you this week?\n\nBest,\nAarav` },
+      { label: 'Request details', text: `Hi ${first},\n\nThanks for your enquiry. To prepare a structured proposal, could you share your current numbers (monthly leads, conversion rate, repeat rate) and your timeline?\n\nBest,\nAarav` },
+      { label: 'Send proposal', text: `Hi ${first},\n\nPlease find our proposal attached. It covers scope, timeline and a flat fee. Happy to walk you through it on a call.\n\nBest,\nAarav` }
+    ].map(x => ({ label: x.label, use: () => this.setState({ reply: x.text }) }));
+    const sendReply = () => {
+      if (!s.reply.trim() || !selE) return;
+      this.updEnq(s.selId, { thread: [...(selE.thread || []), { from: 'Aarav Mehta', time: 'Just now', text: s.reply }], status: selE.status === 'New' ? 'Contacted' : selE.status });
+      this.setState({ reply: '' }); this.flash('Reply sent to ' + selE.email);
+    };
+    const exportCsv = () => {
+      const head = ['Name', 'Company', 'Email', 'Phone', 'Service', 'Status', 'Owner', 'Date', 'Source', 'Message'];
+      const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+      const csv = [head, ...filtered.map(e => [e.name, e.company, e.email, e.phone, e.service, e.status, e.owner, e.date, e.source, e.msg])].map(r => r.map(esc).join(',')).join('\n');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'kargatox-enquiries.csv'; document.body.appendChild(a); a.click(); a.remove();
+      this.flash(`Exported ${filtered.length} enquiries`);
+    };
+
+    const areaC = ['#ff8a3d', '#6f9bff', '#1f9d63'], areas = ['Leads', 'Sales', 'Retention'];
+    const checks = CHECKS0.map(([who, date, l, sa, r, conv]) => { const v = [l, sa, r]; const wi = v.indexOf(Math.min(...v)); return { who, date, converted: conv, notConverted: !conv, weakest: areas[wi], bars: v.map(x => ({ w: ['25%', '60%', '100%'][x], c: areaC[x] })) }; });
+    const wc = a => checks.filter(c => c.weakest === a).length;
+    const checkStats = [{ label: 'Checks completed', value: '126', c: t.text }, { label: 'Weakest: Leads', value: Math.round(wc('Leads') / checks.length * 100) + '%', c: '#f26a1b' }, { label: 'Weakest: Sales', value: Math.round(wc('Sales') / checks.length * 100) + '%', c: '#2f6cf0' }, { label: 'Weakest: Retention', value: Math.round(wc('Retention') / checks.length * 100) + '%', c: '#8b5cf6' }];
+
+    const pageList = Object.entries(s.pages).map(([k, p]) => ({ label: p.label, pick: () => this.setState({ pageSel: k }), bg: s.pageSel === k ? t.soft : 'transparent', dot: p.dirty ? '#f26a1b' : '#1f9d63' }));
+    const P = s.pages[s.pageSel];
+    const page = { label: P.label, href: P.href, statusText: P.dirty ? 'Unpublished changes' : 'Published · live on kargatox.com',
+      fields: P.fields.map(([label, value, rows], i) => ({ label: label.toUpperCase(), value, rows, onChange: e => { const v = e.target.value; this.setState(st => { const pg = st.pages[st.pageSel]; const f = pg.fields.map((x, j) => j === i ? [x[0], v, x[2]] : x); return { pages: { ...st.pages, [st.pageSel]: { ...pg, fields: f, dirty: true } } }; }); } })) };
+    const publishPage = () => { this.setState(st => ({ pages: { ...st.pages, [st.pageSel]: { ...st.pages[st.pageSel], dirty: false } } })); this.flash(P.label + ' published'); };
+
+    const sfTabs = [['services', 'Services'], ['faq', 'FAQ']].map(([k, label]) => ({ label, set: () => this.setState({ sfTab: k }), bg: s.sfTab === k ? t.panel : 'transparent' }));
+    const setSvc = fn => this.setState(st => ({ services: fn(st.services) }));
+    const svcEdit = s.services.map((sv, si) => ({ title: sv.title,
+      add: () => setSvc(a => a.map((x, j) => j === si ? { ...x, items: [...x.items, ['New sub-service', '']] } : x)),
+      items: sv.items.map(([title, body], ii) => {
+        const setItems = f => setSvc(a => a.map((x, j) => j === si ? { ...x, items: f(x.items) } : x));
+        return { num: String(ii + 1).padStart(2, '0'), title, body,
+          onTitle: e => { const v = e.target.value; setItems(it => it.map((y, k) => k === ii ? [v, y[1]] : y)); },
+          onBody: e => { const v = e.target.value; setItems(it => it.map((y, k) => k === ii ? [y[0], v] : y)); },
+          up: () => setItems(it => move(it, ii, -1)), down: () => setItems(it => move(it, ii, 1)), del: () => setItems(it => it.filter((_, k) => k !== ii)) };
+      }) }));
+    const setFaq = f => this.setState(st => ({ faqs: f(st.faqs) }));
+    const faqEdit = s.faqs.map(([q, a], i) => ({ num: String(i + 1).padStart(2, '0'), q, a,
+      onQ: e => { const v = e.target.value; setFaq(x => x.map((y, k) => k === i ? [v, y[1]] : y)); },
+      onA: e => { const v = e.target.value; setFaq(x => x.map((y, k) => k === i ? [y[0], v] : y)); },
+      up: () => setFaq(x => move(x, i, -1)), down: () => setFaq(x => move(x, i, 1)), del: () => setFaq(x => x.filter((_, k) => k !== i)) }));
+
+    const postFilters = ['All', 'Blog', 'Case study'].map(f => { const on = s.postFilter === f; return { label: f, set: () => this.setState({ postFilter: f }), bg: on ? (dark ? '#2f6cf0' : '#0b1430') : t.panel, fg: on ? '#fff' : t.text, border: on ? (dark ? '#2f6cf0' : '#0b1430') : t.border }; });
+    const postCards = s.posts.filter(p => (s.postFilter === 'All' || p.type === s.postFilter) && (!ql || p.title.toLowerCase().includes(ql))).map(p => ({ ...p, open: () => this.setState({ postId: p.id }),
+      typeBg: p.type === 'Blog' ? 'rgba(47,108,240,0.12)' : 'rgba(242,106,27,0.12)', typeFg: p.type === 'Blog' ? '#2f6cf0' : '#f26a1b',
+      statusBg: p.status === 'Published' ? 'rgba(31,157,99,0.12)' : t.soft, statusFg: p.status === 'Published' ? '#1f9d63' : t.muted }));
+    const post = s.posts.find(p => p.id === s.postId) || POSTS0[0];
+    const setPost = patch => this.setState(st => ({ posts: st.posts.map(p => p.id === st.postId ? { ...p, ...patch } : p) }));
+    const postField = {}; ['title', 'excerpt', 'body', 'type', 'author', 'slug', 'seoTitle', 'seoDesc'].forEach(k => { postField[k] = e => setPost({ [k]: e.target.value }); });
+    const newPost = () => { const id = Date.now(); this.setState(st => ({ posts: [{ id, title: '', type: 'Blog', status: 'Draft', author: 'Aarav Mehta', date: '30 Sep', slug: 'new-post', excerpt: '', body: '', seoTitle: '', seoDesc: '' }, ...st.posts], postId: id })); };
+
+    const roles = [{ name: 'Owner', desc: 'Full access, including billing, team and deleting content.' }, { name: 'Admin', desc: 'Manages all content, enquiries, settings and team members.' }, { name: 'Editor', desc: 'Edits pages, services, FAQ, blog and case studies.' }, { name: 'Sales', desc: 'Works enquiries and revenue checks. Can reply and export.' }];
+    const teamRows = s.team.map(m => ({ ...m, initials: ini(m.name), onRole: e => { const v = e.target.value; this.setState(st => ({ team: st.team.map(x => x.id === m.id ? { ...x, role: v } : x) })); }, remove: () => { if (m.role === 'Owner') return this.flash('The owner cannot be removed'); this.setState(st => ({ team: st.team.filter(x => x.id !== m.id) })); this.flash(m.name + ' removed'); } }));
+    const inv = f => e => { const v = e.target.value; this.setState(st => ({ invite: { ...st.invite, [f]: v } })); };
+    const sendInvite = () => {
+      const { name, email, role } = s.invite;
+      if (!name.trim() || !/^\S+@\S+\.\S+$/.test(email)) return this.flash('Add a name and valid email');
+      if (s.team.length >= 5) return this.flash('All 5 seats are in use');
+      this.setState(st => ({ team: [...st.team, { id: Date.now(), name, email, role, active: 'Invite pending', color: '#6f9bff' }], invite: { name: '', email: '', role: 'Editor' }, showInvite: false }));
+      this.flash('Invite sent to ' + email);
+    };
+
+    const setTabs = [['general', 'General'], ['seo', 'SEO'], ['integrations', 'Integrations']].map(([k, label]) => ({ label, set: () => this.setState({ setTab: k }), bg: s.setTab === k ? t.panel : 'transparent' }));
+    const sf = (k, label, rows, hint) => ({ label, rows, hint, value: s.settings[k], onChange: e => { const v = e.target.value; this.setState(st => ({ settings: { ...st.settings, [k]: v } })); } });
+    const tg = (k, label, hint) => ({ label, hint, track: s.toggles[k] ? '#2f6cf0' : (dark ? 'rgba(255,255,255,0.18)' : '#d6d3cb'), knob: s.toggles[k] ? '21px' : '3px', toggle: () => this.setState(st => ({ toggles: { ...st.toggles, [k]: !st.toggles[k] } })) });
+    const generalFields = [sf('siteName', 'SITE NAME', 1, ''), sf('notify', 'NOTIFICATION EMAIL', 1, 'New enquiries and revenue check submissions are sent here.'), sf('recipients', 'ALSO NOTIFY', 1, 'Comma-separated team emails.'), sf('autoReply', 'AUTO-REPLY MESSAGE', 3, 'Sent to the customer right after they submit the enquiry form.')];
+    const generalToggles = [tg('autoReplyOn', 'Send auto-reply', 'Email customers a confirmation after they submit.'), tg('slackAlerts', 'Slack alerts', 'Post new enquiries to a Slack channel.')];
+    const seoFields = [sf('metaTitle', 'DEFAULT META TITLE', 2, 'Used when a page has no title of its own. Keep under 60 characters.'), sf('metaDesc', 'DEFAULT META DESCRIPTION', 3, 'Keep under 160 characters.')];
+    const seoToggles = [tg('sitemap', 'Generate sitemap.xml', 'Updated automatically when you publish.'), tg('indexing', 'Allow search engines to index', 'Turn off only for staging.')];
+    const IG = [['ga', 'G', 'Google Analytics', 'Site traffic, sources and page views on the dashboard.'], ['crm', 'Z', 'CRM (Zoho / HubSpot)', 'Sync enquiries and pipeline status to your CRM.'], ['smtp', '@', 'Email (SMTP / Gmail)', 'Send replies and auto-replies from your domain.'], ['wa', 'W', 'WhatsApp Business', 'Get alerts and reply to enquiries on WhatsApp.'], ['slack', 'S', 'Slack', 'Post new enquiries to a team channel.'], ['meta', 'M', 'Meta Pixel', 'Track campaign conversions from social ads.']];
+    const integrations = IG.map(([k, letter, name, desc]) => { const on = s.integrations[k]; return { letter, name, desc, state: on ? 'CONNECTED' : 'NOT CONNECTED', stateC: on ? '#1f9d63' : t.muted, border: on ? 'rgba(47,108,240,0.45)' : t.border, track: on ? '#2f6cf0' : (dark ? 'rgba(255,255,255,0.18)' : '#d6d3cb'), knob: on ? '21px' : '3px', toggle: () => { this.setState(st => ({ integrations: { ...st.integrations, [k]: !on } })); this.flash(name + (on ? ' disconnected' : ' connected')); } }; });
+
+    return {
+      t, nav, is, themes, q: s.q, onSearch: e => this.setState({ q: e.target.value }),
+      crumb: 'KARGATOX ADMIN / ' + cur[2].toUpperCase(), title: is.blogEdit ? (post.title || 'Untitled post') : cur[2],
+      kpis, weekly, sources, topPages, latest, goEnquiries: go('enquiries'),
+      filters, rows, noRows: rows.length === 0, exportCsv, hasSel: !!selE, sel, pipeline, owners, templates,
+      closeSel: () => this.setState({ selId: null }), onAssign: e => { const v = e.target.value; this.updEnq(s.selId, { owner: v }); this.flash('Assigned to ' + v); },
+      reply: s.reply, onReply: e => this.setState({ reply: e.target.value }), sendReply,
+      checks, checkStats, pageList, page, publishPage,
+      sfTabs, showServices: s.sfTab === 'services', showFaq: s.sfTab === 'faq', svcEdit, faqEdit,
+      addFaq: () => setFaq(x => [...x, ['', '']]), saveContent: () => this.flash('Services & FAQ saved'),
+      postFilters, postCards, newPost, post, postField,
+      closePost: () => this.setState({ postId: null }), saveDraft: () => { setPost({ status: 'Draft' }); this.flash('Draft saved'); },
+      publishPost: () => { setPost({ status: 'Published' }); this.flash('Post published'); },
+      deletePost: () => { this.setState(st => ({ posts: st.posts.filter(p => p.id !== st.postId), postId: null })); this.flash('Post deleted'); },
+      teamRows, teamCount: s.team.length, roles, roleNames: roles.map(r => r.name), showInvite: s.showInvite, invite: s.invite,
+      toggleInvite: () => this.setState(st => ({ showInvite: !st.showInvite })), onInviteName: inv('name'), onInviteEmail: inv('email'), onInviteRole: inv('role'), sendInvite,
+      setTabs, showGeneral: s.setTab === 'general', showSeo: s.setTab === 'seo', showIntegrations: s.setTab === 'integrations',
+      generalFields, generalToggles, seoFields, seoToggles, integrations, saveSettings: () => this.flash('Settings saved'),
+      toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

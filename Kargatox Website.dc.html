@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#f7f6f3;color:#141a2b;font-family:'Figtree',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1f5fd6;text-decoration:none}
+a:hover{color:#f26a1b}
+h1,h2,h3,p{margin:0}
+</style>
+</helmet>
+
+<header style="position:sticky;top:0;z-index:20;background:rgba(11,20,48,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08)">
+  <div style="max-width:1240px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+    <a href="#top" style="display:flex;align-items:center;gap:10px;color:#fff">
+      <span style="position:relative;width:30px;height:30px;display:block">
+        <span style="position:absolute;left:0;top:0;width:20px;height:20px;border-radius:5px;background:#f26a1b"></span>
+        <span style="position:absolute;right:0;bottom:0;width:20px;height:20px;border-radius:5px;background:#2f6cf0;mix-blend-mode:screen"></span>
+      </span>
+      <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.02em;color:#fff">Karga<span style="color:#ff8a3d">tox</span></span>
+    </a>
+    <nav style="display:flex;align-items:center;gap:28px;flex:1 1 auto;min-width:0;justify-content:flex-end">
+      <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;column-gap:28px;height:22px;overflow:hidden;min-width:0;flex:1 1 auto">
+        <a href="#capabilities" style="color:#c9d2ea;font-size:15px;font-weight:500;line-height:22px;white-space:nowrap" style-hover="color:#fff">Capabilities</a>
+        <a href="#services" style="color:#c9d2ea;font-size:15px;font-weight:500;line-height:22px;white-space:nowrap" style-hover="color:#fff">Services</a>
+        <a href="#process" style="color:#c9d2ea;font-size:15px;font-weight:500;line-height:22px;white-space:nowrap" style-hover="color:#fff">How we work</a>
+        <a href="#faq" style="color:#c9d2ea;font-size:15px;font-weight:500;line-height:22px;white-space:nowrap" style-hover="color:#fff">FAQ</a>
+      </div>
+      <a href="#contact" style="flex:none;white-space:nowrap;background:#f26a1b;color:#fff;padding:10px 18px;border-radius:999px;font-size:15px;font-weight:600" style-hover="background:#ff8a3d;color:#fff">Book a call</a>
+    </nav>
+  </div>
+</header>
+
+<section id="top" data-screen-label="Hero" style="background:#0b1430;color:#fff;position:relative;overflow:hidden">
+  <div style="position:absolute;right:-180px;top:-160px;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(47,108,240,0.45),rgba(47,108,240,0) 70%)"></div>
+  <div style="position:absolute;left:-200px;bottom:-260px;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(242,106,27,0.32),rgba(242,106,27,0) 70%)"></div>
+  <div style="position:relative;max-width:1240px;margin:0 auto;padding:110px 24px 90px">
+    <div style="display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border:1px solid rgba(255,255,255,0.16);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#c9d2ea">
+      <span style="width:7px;height:7px;border-radius:50%;background:#ff8a3d"></span>Strategy · Research · Growth
+    </div>
+    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(44px,7.4vw,104px);line-height:0.98;letter-spacing:-0.035em;margin-top:28px;max-width:1000px;text-wrap:balance">Turning Ideas Into Products <span style="color:#ff8a3d">That Grow.</span></h1>
+    <p style="font-size:clamp(17px,1.6vw,21px);line-height:1.55;color:#c9d2ea;max-width:680px;margin-top:28px;text-wrap:pretty">We partner with founders and leadership teams to shape strategy, validate opportunities, build products and execute go-to-market across India</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:40px">
+      <a href="#contact" style="background:#f26a1b;color:#fff;padding:16px 28px;border-radius:999px;font-weight:600;font-size:16px" style-hover="background:#ff8a3d;color:#fff">Book a strategy call →</a>
+      <a href="#services" style="border:1px solid rgba(255,255,255,0.25);color:#fff;padding:16px 28px;border-radius:999px;font-weight:600;font-size:16px" style-hover="border-color:#6f9bff;color:#fff">Explore services</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;margin-top:88px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden">
+      <sc-for list="{{ pillars }}" as="p" hint-placeholder-count="3">
+        <div style="background:#0e1a3d;padding:32px 28px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#ff8a3d">{{ p.num }}</div>
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:600;margin-top:14px;letter-spacing:-0.01em">{{ p.title }}</h3>
+          <p style="color:#aeb9d8;font-size:16px;line-height:1.55;margin-top:10px">{{ p.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="capabilities" data-screen-label="Capabilities" style="padding:120px 24px">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:48px 80px;align-items:end">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#1f5fd6">OUR CAPABILITIES</div>
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(36px,4.6vw,64px);line-height:1.02;letter-spacing:-0.03em;margin-top:18px;text-wrap:balance">Capabilities That Keep Your Business <span style="color:#f26a1b">Moving Forward.</span></h2>
+    </div>
+    <p style="font-size:19px;line-height:1.65;color:#4a5370;text-wrap:pretty">At Kargatox, we bring strategy, customer understanding and marketing together to help businesses move in the right direction. We understand your audience, identify opportunities, design the right solutions and create the pathways to reach, engage and grow your market.</p>
+  </div>
+</section>
+
+<section id="services" data-screen-label="Services" style="padding:0 24px 120px">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="background:#fff;border:1px solid #e6e3dc;border-radius:28px;padding:clamp(28px,5vw,64px)">
+      <div style="display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#1f5fd6">SERVICES</div>
+        <div style="display:grid;gap:18px;max-width:760px;font-size:18px;line-height:1.65;color:#4a5370">
+          <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(24px,2.6vw,34px);line-height:1.25;color:#141a2b;font-weight:500;letter-spacing:-0.015em;text-wrap:pretty">We don't simply deliver research or marketing services. We become an extension of your team, working alongside you to understand your business, solve challenges and create sustainable growth.</p>
+          <p>Our hands-on approach starts with understanding your business, defining the right strategy, mapping your audience and learning how they behave. We then turn those insights into focused execution across consulting, technology and marketing.</p>
+          <p>Every engagement is driven by clear objectives and measurable KPIs, with transparent progress at every stage. You always know what we are doing, why we are doing it and how it contributes to your growth.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:56px;padding:6px;background:#eceae4;border-radius:999px;width:max-content;max-width:100%">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2">
+        <button onClick="{{ t.onClick }}" style="border:0;cursor:pointer;padding:12px 24px;border-radius:999px;font-family:'Figtree',sans-serif;font-size:16px;font-weight:600;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:40px 64px;margin-top:40px;align-items:start">
+      <div>
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(32px,3.6vw,48px);letter-spacing:-0.025em;line-height:1.05">{{ svc.title }}</h3>
+        <p style="font-size:18px;line-height:1.65;color:#4a5370;margin-top:18px;text-wrap:pretty">{{ svc.intro }}</p>
+        <sc-if value="{{ svc.tagline }}" hint-placeholder-val="{{ false }}">
+          <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:600;color:#f26a1b;margin-top:24px;letter-spacing:-0.01em">{{ svc.tagline }}</p>
+        </sc-if>
+        <div style="margin-top:32px;height:280px;border-radius:20px;background:repeating-linear-gradient(135deg,#e9edf7 0 10px,#f1f3f9 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7695">{{ svc.imageHint }}</div>
+      </div>
+      <div style="display:grid;gap:16px">
+        <sc-for list="{{ svc.items }}" as="it" hint-placeholder-count="3">
+          <div style="background:#fff;border:1px solid #e6e3dc;border-radius:20px;padding:28px" style-hover="border-color:#2f6cf0">
+            <div style="display:flex;gap:16px;align-items:baseline">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#2f6cf0">{{ it.num }}</span>
+              <div style="flex:1">
+                <h4 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:600;letter-spacing:-0.01em">{{ it.title }}</h4>
+                <p style="font-size:16px;line-height:1.65;color:#4a5370;margin-top:10px;text-wrap:pretty">{{ it.body }}</p>
+                <sc-if value="{{ it.link }}" hint-placeholder-val="{{ false }}">
+                  <a href="#" style="display:inline-block;margin-top:14px;font-weight:600;font-size:15px;color:#f26a1b" style-hover="color:#1f5fd6">{{ it.link }} →</a>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="process" data-screen-label="How we work" style="background:#0b1430;color:#fff;padding:120px 24px">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:40px 80px;align-items:end">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#ff8a3d">HOW WE WORK</div>
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(40px,5vw,72px);line-height:1;letter-spacing:-0.03em;margin-top:18px">We do the work.<br><span style="color:#6f9bff">You keep the system.</span></h2>
+      </div>
+      <div>
+        <p style="font-size:19px;line-height:1.6;color:#c9d2ea">Here is exactly what happens after you say yes.</p>
+        <p style="font-size:17px;line-height:1.6;color:#fff;margin-top:18px;padding:18px 20px;border-radius:14px;background:rgba(242,106,27,0.14);border:1px solid rgba(255,138,61,0.35)"><strong style="color:#ff8a3d">Straight up:</strong> If we are not the right fix for your problem, we will tell you on the first call.</p>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:72px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+        <div style="background:#0e1a3d;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px" style-hover="border-color:#ff8a3d">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:44px;font-weight:600;color:#ff8a3d;line-height:1">{{ s.num }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#6f9bff;text-transform:uppercase;text-align:right">{{ s.when }}</span>
+          </div>
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:600;letter-spacing:-0.01em">{{ s.title }}</h3>
+          <p style="font-size:15px;line-height:1.6;color:#aeb9d8">{{ s.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="faq" data-screen-label="FAQ" style="padding:120px 24px">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:48px 80px;align-items:start">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#1f5fd6">BEFORE YOU ASK</div>
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(36px,4.2vw,56px);line-height:1.04;letter-spacing:-0.03em;margin-top:18px">You have questions. <span style="color:#f26a1b">We have straight answers.</span></h2>
+    </div>
+    <div style="border-top:1px solid #dcd8cf">
+      <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="4">
+        <div style="border-bottom:1px solid #dcd8cf">
+          <button onClick="{{ f.toggle }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:20px;background:none;border:0;cursor:pointer;padding:26px 0;text-align:left;font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:600;color:#141a2b;letter-spacing:-0.01em">
+            <span>{{ f.q }}</span>
+            <span style="flex:none;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Figtree',sans-serif;font-size:20px;background:{{ f.iconBg }};color:{{ f.iconFg }}">{{ f.icon }}</span>
+          </button>
+          <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+            <p style="font-size:17px;line-height:1.65;color:#4a5370;padding:0 56px 28px 0;text-wrap:pretty">{{ f.a }}</p>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="contact" data-screen-label="CTA" style="padding:0 24px 120px">
+  <div style="max-width:1240px;margin:0 auto;border-radius:32px;background:#f26a1b;color:#fff;padding:clamp(40px,7vw,96px);position:relative;overflow:hidden">
+    <div style="position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;background:#1f4fc4"></div>
+    <div style="position:relative;max-width:760px">
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(38px,5vw,72px);line-height:1;letter-spacing:-0.03em">We move the only number that matters. Yours.</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:36px">
+        <a href="#" style="background:#0b1430;color:#fff;padding:16px 28px;border-radius:999px;font-weight:600;font-size:16px" style-hover="background:#16244f;color:#fff">Book a strategy call →</a>
+        <a href="mailto:hello@kargatox.com" style="background:#fff;color:#0b1430;padding:16px 28px;border-radius:999px;font-weight:600;font-size:16px" style-hover="color:#f26a1b">hello@kargatox.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#0b1430;color:#aeb9d8;padding:64px 24px 40px">
+  <div style="max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;align-items:flex-start">
+    <div style="display:grid;gap:14px;max-width:340px">
+      <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:26px;color:#fff;letter-spacing:-0.02em">Karga<span style="color:#ff8a3d">tox</span></span>
+      <p style="font-size:15px;line-height:1.6">Strategy, research and marketing for founders and leadership teams across India.</p>
+    </div>
+    <div style="display:flex;gap:28px;flex-wrap:wrap;font-size:15px">
+      <a href="#capabilities" style="color:#c9d2ea" style-hover="color:#ff8a3d">Capabilities</a>
+      <a href="#services" style="color:#c9d2ea" style-hover="color:#ff8a3d">Services</a>
+      <a href="#process" style="color:#c9d2ea" style-hover="color:#ff8a3d">How we work</a>
+      <a href="#faq" style="color:#c9d2ea" style-hover="color:#ff8a3d">FAQ</a>
+    </div>
+  </div>
+  <div style="max-width:1240px;margin:48px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);font-size:14px">© 2026 Kargatox. All rights reserved.</div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 0, faq: 0 };
+  renderVals() {
+    const pillars = [
+      { num: '01', title: 'Founder Led', body: 'Built by entrepreneurs & experts who understand what it takes to build and scale businesses.' },
+      { num: '02', title: 'Hands-On', body: 'Work alongside your team to turn strategy into decisions, actions and outcomes.' },
+      { num: '03', title: 'Outcome Driven', body: 'Practical strategies designed to create tangible business impact-not just presentations.' }
+    ];
+    const services = [
+      { label: 'Research Services', title: 'Research Services', imageHint: 'research / analytics image',
+        intro: 'Consulting & Research for Businesses: We believe quality insights are the bedrock of any successful strategy. Our Research team dives deep into big data and also conducts extensive field research to drive informed business decisions.',
+        items: [
+          { title: 'Market Research', body: 'We harness the power of analytics to identify market trends and formulate practical action plans for business growth.' },
+          { title: 'Consumer Behaviour & Satisfaction Analysis', body: 'Our strategic research process decodes consumer behaviours, enabling you to empathise with your prospects and deliver personalized solutions that speak to their needs.' },
+          { title: 'Campaign Analytics', body: 'If it’s not measured, it didn’t happen! We provide a custom tech stack to help you understand and optimize key campaign performance metrics on digital as well as mainline platforms.' }
+        ] },
+      { label: 'Marketing Services', title: 'Marketing Services', imageHint: 'campaign / creative image', tagline: 'We move the only number that matters. Yours.',
+        intro: 'Our strategists, designers, content creators, and digital specialists work together to build a strong digital presence for your business from everyday content and social media to high-impact campaigns designed to drive visibility, engagement, and growth.',
+        items: [
+          { title: 'SEO Services', link: 'Click here for detailed section', body: "That Increase Organic Traffic & Qualified Leads Appear where customers are searching. Your customers are searching for products and services every day. If your business doesn't appear in search results, you're losing valuable opportunities. SEO determines how easily your business is found when customers search on Google. It's often the first digital interaction a potential customer has with your brand. Kargatox offers comprehensive Search Engine Optimization (SEO), Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) services that improve your website's visibility across Google Search, AI-powered search engines, voice assistants, and generative AI platforms." },
+          { title: 'Social Media Marketing', link: 'Click here', body: 'Social media is no longer just about posting content—it is where brands build relationships, earn trust, and influence purchasing decisions. It is often the first place customers check before deciding to trust a business. Consistent engagement here shapes how your brand is perceived across Instagram, LinkedIn, Facebook, YouTube and more. Kargatox helps businesses build engaging social media communities through strategic content, storytelling, creative campaigns, and consistent audience interaction. We create Social Media Engagement Strategies that help businesses grow meaningful communities while increasing brand awareness, customer interaction, and lead generation.' },
+          { title: 'Brand Campaigns Strategy', link: 'Click here', body: 'Every successful campaign tells a compelling story. we develop integrated brand campaigns that connect emotionally with audiences while delivering measurable business outcomes. From festive campaigns and product launches to awareness initiatives and employer branding, we combine creativity with marketing intelligence to maximize impact.' }
+        ] }
+    ];
+    const s = services[this.state.tab];
+    const svc = { ...s, items: s.items.map((it, i) => ({ ...it, num: String(i + 1).padStart(2, '0') })) };
+    const tabs = services.map((x, i) => ({
+      label: x.label,
+      bg: i === this.state.tab ? '#0b1430' : 'transparent',
+      fg: i === this.state.tab ? '#fff' : '#4a5370',
+      onClick: () => this.setState({ tab: i })
+    }));
+    const steps = [
+      { title: 'We listen', when: 'Days 1 to 7', body: 'We sit in on your calls, talk to won and lost customers, and study your numbers. We learn what is actually happening before we touch anything.' },
+      { title: 'You get the plan', when: 'Day 7', body: 'By day 7, you know exactly what is costing you revenue and the plan to fix it. Prioritized, clear, no fluff.' },
+      { title: 'We build it', when: 'Weeks 2 to 8', body: 'We get into your CRM, your tools, your team. We do the actual work and wire the fixes into how you already operate.' },
+      { title: 'We fix what is costing you', when: 'Weeks 4 to 10', body: 'Outbound, sales motion, retention systems, whatever the diagnosis called for. You see changes happening, not slides stacking up.' },
+      { title: 'You keep the system', when: 'Weeks 11 to 12', body: "We hand over the playbooks, dashboards, and a clear hire-or-don't-hire call. Your team owns it from here. The growth stays when we go." }
+    ].map((x, i) => ({ ...x, num: String(i + 1).padStart(2, '0') }));
+    const faqs = [
+      { q: 'What exactly do you do?', a: 'We fix what is stopping your revenue from growing, across three areas: leads, sales, and retention. We find what is broken, do the actual work to fix it, and leave you with a system your team can run. Not advice, not a deck, real work.' },
+      { q: 'How fast can you start?', a: 'Quickly. You get a clear plan of what is broken and how we will fix it within 7 days of starting. Real changes follow in the weeks after.' },
+      { q: 'Do you replace a full-time hire?', a: 'Often, yes, at least for a while. We also help you figure out whether you actually need that senior hire yet, and if you do, we help you hire the right person.' },
+      { q: 'What does it cost?', a: 'Flat-fee engagements, scoped to your stage and what needs fixing. Roughly the cost of one senior hire, for a full team. We give you an exact number on the call, no hidden pricing.' }
+    ].map((f, i) => {
+      const open = this.state.faq === i;
+      return { ...f, open, icon: open ? '−' : '+', iconBg: open ? '#f26a1b' : '#eceae4', iconFg: open ? '#fff' : '#141a2b',
+        toggle: () => this.setState({ faq: open ? -1 : i }) };
+    });
+    return { pillars, tabs, svc, steps, faqs };
+  }
+}
+</script>
+</body>
+</html>

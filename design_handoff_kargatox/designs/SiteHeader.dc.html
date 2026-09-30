@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<header style="position:sticky;top:0;z-index:50;background:rgba(11,20,48,0.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08)">
+  <div style="max-width:1240px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+    <a href="Home.dc.html" style="display:flex;align-items:center;gap:10px;color:#fff;flex:none">
+      <span style="position:relative;width:30px;height:30px;display:block">
+        <span style="position:absolute;left:0;top:0;width:20px;height:20px;border-radius:5px;background:#f26a1b"></span>
+        <span style="position:absolute;right:0;bottom:0;width:20px;height:20px;border-radius:5px;background:#2f6cf0;mix-blend-mode:screen"></span>
+      </span>
+      <span style="font-family:var(--font-display);font-weight:700;font-size:22px;letter-spacing:-0.02em;color:#fff">Karga<span style="color:#ff8a3d">tox</span></span>
+    </a>
+    <nav style="display:flex;align-items:center;gap:20px;flex:1 1 auto;min-width:0;justify-content:flex-end">
+      <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;column-gap:28px;height:24px;overflow:hidden;min-width:0;flex:1 1 auto">
+        <sc-for list="{{ links }}" as="l" hint-placeholder-count="4">
+          <a href="{{ l.href }}" style="color:{{ l.color }};font-size:15px;font-weight:500;line-height:24px;white-space:nowrap;border-bottom:2px solid {{ l.line }}" style-hover="color:#fff">{{ l.label }}</a>
+        </sc-for>
+      </div>
+      <a href="Contact.dc.html" style="flex:none;white-space:nowrap;background:#f26a1b;color:#fff;padding:10px 18px;border-radius:999px;font-size:15px;font-weight:600" style-hover="background:#ff8a3d;color:#fff">Start an Inquiry</a>
+      <button onClick="{{ toggle }}" aria-label="Menu" style="flex:none;width:40px;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:transparent;color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">{{ menuIcon }}</button>
+    </nav>
+  </div>
+  <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <div style="border-top:1px solid rgba(255,255,255,0.08);background:#0b1430">
+      <div style="max-width:1240px;margin:0 auto;padding:12px 24px 24px;display:grid">
+        <sc-for list="{{ links }}" as="l" hint-placeholder-count="4">
+          <a href="{{ l.href }}" style="color:{{ l.color }};font-family:var(--font-display);font-size:24px;font-weight:600;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08)" style-hover="color:#ff8a3d">{{ l.label }}</a>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;72px&quot;},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;services&quot;,&quot;process&quot;,&quot;faq&quot;,&quot;contact&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { open: false };
+  componentDidMount() {
+    const P = { 'Clash + Satoshi': ['Clash Display', 'Satoshi'], 'Cabinet + General Sans': ['Cabinet Grotesk', 'General Sans'], 'Bricolage + Figtree': ['Bricolage Grotesque', 'Figtree'] };
+    try { const k = localStorage.getItem('kx-font'); if (P[k]) { const r = document.documentElement.style; r.setProperty('--font-display', `'${P[k][0]}',sans-serif`); r.setProperty('--font-body', `'${P[k][1]}',system-ui,sans-serif`); } } catch (e) {}
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const seen = new WeakSet(), ease = 'cubic-bezier(.2,.7,.1,1)';
+    this.io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.__kx && e.target.__kx.play(); this.io.unobserve(e.target); } }), { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    const reveal = (el, delay) => { const a = el.animate([{ opacity: 0, transform: 'translateY(32px)' }, { opacity: 1, transform: 'none' }], { duration: 900, delay, easing: ease, fill: 'both' }); a.pause(); el.__kx = a; this.io.observe(el); };
+    const scan = () => {
+      document.querySelectorAll('[data-rise]').forEach(el => { if (seen.has(el)) return; seen.add(el); el.animate([{ transform: 'translateY(110%)' }, { transform: 'none' }], { duration: 1000, delay: 150 + (+el.dataset.rise) * 80, easing: ease, fill: 'both' }); });
+      document.querySelectorAll('[data-stagger] > *').forEach(el => { if (seen.has(el)) return; seen.add(el); reveal(el, Array.prototype.indexOf.call(el.parentNode.children, el) % 6 * 90); });
+      document.querySelectorAll('section h1, section h2, section p, section a[style*="border-radius:999px"]').forEach(el => { if (seen.has(el) || el.closest('header') || el.closest('[data-stagger] > *') || el.querySelector('[data-rise]')) return; seen.add(el); reveal(el, el.tagName === 'A' ? 120 : 0); });
+      document.querySelectorAll('[data-grow]').forEach(el => { if (seen.has(el)) return; seen.add(el); const x = el.dataset.grow === 'x'; const a = el.animate([{ transform: x ? 'scaleX(0)' : 'scaleY(0)' }, { transform: 'none' }], { duration: 1100, delay: 200 + Array.prototype.indexOf.call(el.parentNode.children, el) * 50, easing: ease, fill: 'both' }); a.pause(); el.__kx = a; this.io.observe(el); });
+      document.querySelectorAll('[data-float]').forEach((el, i) => { if (seen.has(el)) return; seen.add(el); el.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${i % 2 ? -60 : 60}px,40px) scale(1.12)` }], { duration: 9000 + i * 1500, direction: 'alternate', iterations: Infinity, easing: 'ease-in-out' }); });
+      document.querySelectorAll('[data-marquee]').forEach(el => { if (seen.has(el)) return; seen.add(el); el.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-50%)' }], { duration: 40000, iterations: Infinity }); });
+    };
+    let t; this.mo = new MutationObserver(() => { clearTimeout(t); t = setTimeout(scan, 30); });
+    this.mo.observe(document.body, { childList: true, subtree: true });
+    scan();
+  }
+  componentWillUnmount() { this.io && this.io.disconnect(); this.mo && this.mo.disconnect(); }
+  renderVals() {
+    const active = this.props.active ?? '';
+    const links = [
+      { id: 'home', label: 'Home', href: 'Home.dc.html' },
+      { id: 'services', label: 'Services', href: 'Services.dc.html' },
+      { id: 'process', label: 'How we work', href: 'Process.dc.html' },
+      { id: 'faq', label: 'FAQ', href: 'FAQ.dc.html' },
+      { id: 'contact', label: 'Contact', href: 'Contact.dc.html' }
+    ].map(l => ({ ...l, color: l.id === active ? '#fff' : '#c9d2ea', line: l.id === active ? '#f26a1b' : 'transparent' }));
+    return { links, open: this.state.open, menuIcon: this.state.open ? '✕' : '☰', toggle: () => this.setState(s => ({ open: !s.open })) };
+  }
+}
+</script>
+</body>
+</html>

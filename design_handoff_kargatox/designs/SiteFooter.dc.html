@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<sc-if value="{{ showCta }}" hint-placeholder-val="{{ true }}">
+  <section data-screen-label="CTA" style="padding:0 24px 120px;background:#f7f6f3">
+    <div style="max-width:1240px;margin:0 auto;border-radius:32px;background:#f26a1b;color:#fff;padding:clamp(40px,7vw,96px);position:relative;overflow:hidden">
+      <div data-float="1" style="position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;background:#1f4fc4"></div>
+      <div style="position:relative;max-width:760px">
+        <h2 style="margin:0;font-family:var(--font-display);font-weight:600;font-size:clamp(38px,5vw,72px);line-height:1;letter-spacing:-0.03em">We move the only number that matters. Yours.</h2>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:36px">
+          <a href="Contact.dc.html" style="background:#0b1430;color:#fff;padding:16px 28px;border-radius:999px;font-weight:600;font-size:16px" style-hover="background:#16244f;color:#fff">Start an Inquiry →</a>
+          <a href="Services.dc.html" style="background:#fff;color:#0b1430;padding:16px 28px;border-radius:999px;font-weight:600;font-size:16px" style-hover="color:#f26a1b">See our services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</sc-if>
+<footer style="background:#0b1430;color:#aeb9d8;padding:64px 24px 40px;font-family:var(--font-body)">
+  <div style="max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;align-items:flex-start">
+    <div style="display:grid;gap:14px;max-width:340px">
+      <span style="font-family:var(--font-display);font-weight:700;font-size:26px;color:#fff;letter-spacing:-0.02em">Karga<span style="color:#ff8a3d">tox</span></span>
+      <p style="margin:0;font-size:15px;line-height:1.6">Strategy, research and marketing for founders and leadership teams across India.</p>
+    </div>
+    <div style="display:flex;gap:28px;flex-wrap:wrap;font-size:15px">
+      <a href="Home.dc.html" style="color:#c9d2ea" style-hover="color:#ff8a3d">Home</a>
+      <a href="Services.dc.html" style="color:#c9d2ea" style-hover="color:#ff8a3d">Services</a>
+      <a href="Process.dc.html" style="color:#c9d2ea" style-hover="color:#ff8a3d">How we work</a>
+      <a href="FAQ.dc.html" style="color:#c9d2ea" style-hover="color:#ff8a3d">FAQ</a>
+      <a href="Contact.dc.html" style="color:#c9d2ea" style-hover="color:#ff8a3d">Contact</a>
+    </div>
+  </div>
+  <div style="max-width:1240px;margin:48px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);font-size:14px">© 2026 Kargatox. All rights reserved.</div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;},&quot;showCta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() { return { showCta: this.props.showCta ?? true }; }
+}
+</script>
+</body>
+</html>

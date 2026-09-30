@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+<style>
+:root{--font-display:'Clash Display',sans-serif;--font-body:'Satoshi',system-ui,sans-serif}
+body{margin:0;background:#f7f6f3;color:#141a2b;font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1f5fd6;text-decoration:none}
+a:hover{color:#f26a1b}
+h1,h2,h3,h4,p{margin:0}
+</style>
+</helmet>
+<dc-import name="SiteHeader" active="home" hint-size="100%,72px"></dc-import>
+
+<section data-screen-label="Hero" style="background:#0b1430;color:#fff;position:relative;overflow:hidden">
+  <div data-float="1" style="position:absolute;right:-180px;top:-160px;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(47,108,240,0.45),rgba(47,108,240,0) 70%)"></div>
+  <div data-float="1" style="position:absolute;left:-200px;bottom:-260px;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(242,106,27,0.32),rgba(242,106,27,0) 70%)"></div>
+  <div style="position:relative;max-width:1240px;margin:0 auto;padding:110px 24px 90px">
+    <div style="display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border:1px solid rgba(255,255,255,0.16);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#c9d2ea">
+      <span style="width:7px;height:7px;border-radius:50%;background:#ff8a3d"></span>Strategy · Research · Growth
+    </div>
+    <h1 style="font-family:var(--font-display);font-weight:600;font-size:clamp(44px,7.4vw,104px);line-height:0.98;letter-spacing:-0.02em;margin-top:28px;max-width:1000px;text-wrap:balance"><span style="display:inline-block;overflow:hidden;padding-bottom:0.08em;vertical-align:top;margin-right:0.18em"><span data-rise="0" style="display:inline-block">Turning</span></span> <span style="display:inline-block;overflow:hidden;padding-bottom:0.08em;vertical-align:top;margin-right:0.18em"><span data-rise="1" style="display:inline-block">Ideas</span></span> <span style="display:inline-block;overflow:hidden;padding-bottom:0.08em;vertical-align:top;margin-right:0.18em"><span data-rise="2" style="display:inline-block">Into</span></span> <span style="display:inline-block;overflow:hidden;padding-bottom:0.08em;vertical-align:top;margin-right:0.18em"><span data-rise="3" style="display:inline-block">Products</span></span> <span style="display:inline-block;overflow:hidden;padding-bottom:0.08em;vertical-align:top;margin-right:0.18em"><span data-rise="4" style="display:inline-block;color:#ff8a3d">That</span></span> <span style="display:inline-block;overflow:hidden;padding-bottom:0.08em;vertical-align:top;margin-right:0.18em"><span data-rise="5" style="display:inline-block;color:#ff8a3d">Grow.</span></span></h1>
+    <p style="font-size:clamp(17px,1.6vw,21px);line-height:1.55;color:#c9d2ea;max-width:680px;margin-top:28px;text-wrap:pretty">We partner with founders and leadership teams to shape strategy, validate opportunities, build products and execute go-to-market across India</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:40px">
+      <a href="Contact.dc.html" style="background:#f26a1b;color:#fff;padding:16px 28px;border-radius:999px;font-weight:600;font-size:16px" style-hover="background:#ff8a3d;color:#fff">Start an Inquiry →</a>
+      <a href="Services.dc.html" style="border:1px solid rgba(255,255,255,0.25);color:#fff;padding:16px 28px;border-radius:999px;font-weight:600;font-size:16px" style-hover="border-color:#6f9bff;color:#fff">Explore services</a>
+    </div>
+    <div data-stagger="1" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;margin-top:88px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.1);border-radius:20px;overflow:hidden">
+      <sc-for list="{{ pillars }}" as="p" hint-placeholder-count="3">
+        <div style="background:#0e1a3d;padding:32px 28px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#ff8a3d">{{ p.num }}</div>
+          <h3 style="font-family:var(--font-display);font-size:26px;font-weight:600;margin-top:14px;letter-spacing:-0.01em">{{ p.title }}</h3>
+          <p style="color:#aeb9d8;font-size:16px;line-height:1.55;margin-top:10px">{{ p.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+
+<div data-screen-label="Marquee" style="background:#0b1430;border-top:1px solid rgba(255,255,255,0.08);overflow:hidden;padding:26px 0">
+  <div data-marquee="1" style="display:flex;width:max-content">
+    <sc-for list="{{ ticker }}" as="t" hint-placeholder-count="12">
+      <span style="display:flex;align-items:center;gap:28px;padding-right:28px;font-family:var(--font-display);font-size:clamp(24px,3vw,40px);font-weight:600;color:#fff;white-space:nowrap;letter-spacing:-0.01em"><span style="width:12px;height:12px;border-radius:3px;background:{{ t.dot }}"></span>{{ t.label }}</span>
+    </sc-for>
+  </div>
+</div>
+<section data-screen-label="Capabilities" style="padding:120px 24px">
+  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:48px 80px;align-items:end">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#1f5fd6">OUR CAPABILITIES</div>
+      <h2 style="font-family:var(--font-display);font-weight:600;font-size:clamp(36px,4.6vw,64px);line-height:1.02;letter-spacing:-0.03em;margin-top:18px;text-wrap:balance">Capabilities That Keep Your Business <span style="color:#f26a1b">Moving Forward.</span></h2>
+    </div>
+    <p style="font-size:19px;line-height:1.65;color:#4a5370;text-wrap:pretty">At Kargatox, we bring strategy, customer understanding and marketing together to help businesses move in the right direction. We understand your audience, identify opportunities, design the right solutions and create the pathways to reach, engage and grow your market.</p>
+  </div>
+  <div data-stagger="1" style="max-width:1240px;margin:64px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:20px">
+    <sc-for list="{{ services }}" as="s" hint-placeholder-count="2">
+      <a href="Services.dc.html" style="display:flex;flex-direction:column;gap:18px;background:#fff;border:1px solid #e6e3dc;border-radius:24px;padding:36px;color:#141a2b;transition:transform .5s cubic-bezier(.2,.7,.1,1),border-color .3s" style-hover="border-color:#2f6cf0;color:#141a2b;transform:translateY(-6px)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#2f6cf0">{{ s.num }}</div>
+        <h3 style="font-family:var(--font-display);font-size:34px;font-weight:600;letter-spacing:-0.02em">{{ s.title }}</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ s.subs }}" as="t" hint-placeholder-count="3">
+            <span style="padding:8px 14px;border-radius:999px;background:#f1f3f9;font-size:14px;font-weight:500;color:#2a3354">{{ t }}</span>
+          </sc-for>
+        </div>
+        <span style="font-weight:600;font-size:15px;color:#f26a1b;margin-top:8px">View details →</span>
+      </a>
+    </sc-for>
+  </div>
+</section>
+
+<section data-screen-label="Revenue check" style="padding:0 24px 120px">
+  <div style="max-width:1240px;margin:0 auto;background:#fff;border:1px solid #e6e3dc;border-radius:32px;overflow:hidden;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))">
+    <div style="padding:clamp(28px,5vw,56px);display:grid;gap:22px;align-content:start">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#1f5fd6">REVENUE CHECK · 30 SECONDS</div>
+      <h2 style="font-family:var(--font-display);font-weight:600;font-size:clamp(34px,4vw,54px);line-height:1.02;letter-spacing:-0.02em">Where is your revenue <span style="color:#f26a1b">leaking?</span></h2>
+      <p style="font-size:18px;line-height:1.6;color:#4a5370">Answer three questions. We'll show you which area to fix first.</p>
+      <sc-if value="{{ showQuiz }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;gap:18px;margin-top:12px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="display:flex;gap:6px;flex:1">
+              <sc-for list="{{ progress }}" as="pr" hint-placeholder-count="3">
+                <div style="flex:1;height:4px;border-radius:4px;background:{{ pr.bg }};transition:background .4s"></div>
+              </sc-for>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6b7695;white-space:nowrap">{{ stepLabel }}</span>
+          </div>
+          <span style="justify-self:start;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#f26a1b;background:#fdebe0;padding:6px 12px;border-radius:999px">{{ q.area }}</span>
+          <h3 style="font-family:var(--font-display);font-size:clamp(24px,2.4vw,30px);font-weight:600;letter-spacing:-0.01em">{{ q.text }}</h3>
+          <div style="display:grid;gap:10px">
+            <sc-for list="{{ q.options }}" as="o" hint-placeholder-count="3">
+              <button onClick="{{ o.pick }}" style="display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer;padding:18px 20px;border-radius:14px;border:1.5px solid {{ o.border }};background:{{ o.bg }};font-family:var(--font-body);font-size:17px;font-weight:500;color:#141a2b;transition:border-color .2s,transform .3s" style-hover="border-color:#2f6cf0;transform:translateX(4px)">
+                <span>{{ o.label }}</span><span style="color:#2f6cf0">→</span>
+              </button>
+            </sc-for>
+          </div>
+          <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ back }}" style="justify-self:start;background:none;border:0;cursor:pointer;font-family:var(--font-body);font-size:15px;font-weight:600;color:#4a5370;padding:4px 0">← Back</button>
+          </sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ showResult }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:18px;margin-top:12px">
+          <span style="justify-self:start;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#fff;background:#f26a1b;padding:6px 12px;border-radius:999px">YOUR RESULT</span>
+          <h3 style="font-family:var(--font-display);font-size:clamp(26px,2.8vw,36px);font-weight:600;letter-spacing:-0.015em">{{ result.title }}</h3>
+          <p style="font-size:17px;line-height:1.65;color:#4a5370;text-wrap:pretty">{{ result.body }}</p>
+          <div style="display:grid;gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.1em;color:#6b7695">WHERE WE'D START</span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ result.services }}" as="rs" hint-placeholder-count="2">
+                <a href="Services.dc.html" style="padding:9px 14px;border-radius:999px;background:#e8eefc;color:#1f4fc4;font-size:14px;font-weight:600" style-hover="background:#d6e1fb;color:#1f4fc4">{{ rs }}</a>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+            <a href="{{ result.href }}" style="background:#f26a1b;color:#fff;padding:15px 24px;border-radius:999px;font-weight:600;font-size:16px" style-hover="background:#ff8a3d;color:#fff">{{ result.cta }}</a>
+            <button onClick="{{ restart }}" style="background:transparent;border:1px solid #dcd8cf;color:#141a2b;padding:15px 24px;border-radius:999px;font-family:var(--font-body);font-weight:600;font-size:16px;cursor:pointer">Retake</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    <div style="background:#0b1430;color:#fff;padding:clamp(28px,5vw,56px);display:grid;gap:28px;align-content:start;position:relative;overflow:hidden">
+      <div data-float="1" style="position:absolute;right:-120px;bottom:-140px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(47,108,240,0.4),rgba(47,108,240,0) 70%)"></div>
+      <div style="position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:16px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#6f9bff">REVENUE HEALTH</span>
+        <span style="font-family:var(--font-display);font-size:44px;font-weight:600;line-height:1">{{ scoreLabel }}</span>
+      </div>
+      <div style="position:relative;display:grid;gap:26px">
+        <sc-for list="{{ meters }}" as="m" hint-placeholder-count="3">
+          <div style="display:grid;gap:10px">
+            <div style="display:flex;justify-content:space-between;gap:12px">
+              <span style="font-family:var(--font-display);font-size:22px;font-weight:600">{{ m.label }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.06em;color:{{ m.c }};text-transform:uppercase;align-self:center">{{ m.status }}</span>
+            </div>
+            <div style="height:10px;border-radius:10px;background:rgba(255,255,255,0.1);overflow:hidden">
+              <div style="height:100%;width:{{ m.w }};background:{{ m.c }};border-radius:10px;transition:width .9s cubic-bezier(.2,.7,.1,1),background .4s"></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="position:relative;font-size:14px;color:#aeb9d8">Updates as you answer.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Process teaser" style="background:#0b1430;color:#fff;padding:110px 24px">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#ff8a3d">HOW WE WORK</div>
+        <h2 style="font-family:var(--font-display);font-weight:600;font-size:clamp(38px,4.6vw,64px);line-height:1;letter-spacing:-0.03em;margin-top:18px">We do the work.<br><span style="color:#6f9bff">You keep the system.</span></h2>
+      </div>
+      <a href="Process.dc.html" style="border:1px solid rgba(255,255,255,0.25);color:#fff;padding:14px 24px;border-radius:999px;font-weight:600;font-size:15px;white-space:nowrap" style-hover="border-color:#ff8a3d;color:#fff">See the full process →</a>
+    </div>
+    <div data-stagger="1" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;margin-top:56px;background:rgba(255,255,255,0.1);border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+        <div style="background:#0e1a3d;padding:24px">
+          <div style="font-family:var(--font-display);font-size:36px;font-weight:600;color:#ff8a3d">{{ s.num }}</div>
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:600;margin-top:10px">{{ s.title }}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#6f9bff;text-transform:uppercase;margin-top:8px">{{ s.when }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="FAQ teaser" style="padding:110px 24px">
+  <div style="max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#1f5fd6">BEFORE YOU ASK</div>
+      <h2 style="font-family:var(--font-display);font-weight:600;font-size:clamp(32px,3.6vw,48px);line-height:1.05;letter-spacing:-0.03em;margin-top:14px">You have questions. <span style="color:#f26a1b">We have straight answers.</span></h2>
+    </div>
+    <a href="FAQ.dc.html" style="background:#0b1430;color:#fff;padding:14px 24px;border-radius:999px;font-weight:600;font-size:15px;white-space:nowrap" style-hover="background:#16244f;color:#fff">Read the FAQ →</a>
+  </div>
+</section>
+
+<dc-import name="SiteFooter" hint-size="100%,600px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;fontPair&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Clash + Satoshi&quot;,&quot;Cabinet + General Sans&quot;,&quot;Bricolage + Figtree&quot;],&quot;default&quot;:&quot;Clash + Satoshi&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Typography&quot;}}">
+class Component extends DCLogic {
+  state = { answers: [null, null, null], step: 0 };
+  applyFont() {
+    const P = { 'Clash + Satoshi': ['Clash Display', 'Satoshi'], 'Cabinet + General Sans': ['Cabinet Grotesk', 'General Sans'], 'Bricolage + Figtree': ['Bricolage Grotesque', 'Figtree'] };
+    const k = this.props.fontPair; if (!P[k]) return;
+    const r = document.documentElement.style;
+    r.setProperty('--font-display', `'${P[k][0]}',sans-serif`); r.setProperty('--font-body', `'${P[k][1]}',system-ui,sans-serif`);
+    try { localStorage.setItem('kx-font', k); } catch (e) {}
+  }
+  componentDidMount() { this.applyFont(); }
+  componentDidUpdate(p) { if (p.fontPair !== this.props.fontPair) this.applyFont(); }
+  renderVals() {
+    const pillars = [
+      { num: '01', title: 'Founder Led', body: 'Built by entrepreneurs & experts who understand what it takes to build and scale businesses.' },
+      { num: '02', title: 'Hands-On', body: 'Work alongside your team to turn strategy into decisions, actions and outcomes.' },
+      { num: '03', title: 'Outcome Driven', body: 'Practical strategies designed to create tangible business impact-not just presentations.' }
+    ];
+    const services = [
+      { num: '01', title: 'Research Services', subs: ['Market Research', 'Consumer Behaviour & Satisfaction Analysis', 'Campaign Analytics'] },
+      { num: '02', title: 'Marketing Services', subs: ['SEO Services', 'Social Media Marketing', 'Brand Campaigns Strategy'] }
+    ];
+    const steps = [['We listen', 'Days 1 to 7'], ['You get the plan', 'Day 7'], ['We build it', 'Weeks 2 to 8'], ['We fix what is costing you', 'Weeks 4 to 10'], ['You keep the system', 'Weeks 11 to 12']]
+      .map(([title, when], i) => ({ title, when, num: String(i + 1).padStart(2, '0') }));
+    const subs = services.flatMap(x => x.subs);
+    const ticker = [...subs, ...subs].map((label, i) => ({ label, dot: i % 2 ? '#2f6cf0' : '#f26a1b' }));
+    const Q = [
+      { key: 'leads', area: 'Leads', text: 'How predictable is your lead flow?', options: [['Steady and growing', 2], ['Up and down month to month', 1], ['Mostly referrals or luck', 0]] },
+      { key: 'sales', area: 'Sales', text: 'How many qualified leads turn into customers?', options: [['Most of them', 2], ['Some, but deals stall', 1], ["We don't track this", 0]] },
+      { key: 'retention', area: 'Retention', text: 'How many customers come back or renew?', options: [['Most of them', 2], ['Some of them', 1], ['We rarely hear from them again', 0]] }
+    ];
+    const R = {
+      leads: { title: 'Your biggest gap is lead flow.', body: 'Fewer qualified people are finding you than your business can handle. We would start with search visibility and social engagement so demand becomes predictable.', services: ['SEO Services', 'Social Media Marketing'], service: 'SEO Services' },
+      sales: { title: 'Your biggest gap is conversion.', body: 'Leads are coming in but not closing. We would study won and lost customers and your numbers to find where deals stall, then fix the sales motion.', services: ['Consumer Behaviour & Satisfaction Analysis', 'Campaign Analytics'], service: 'Campaign Analytics' },
+      retention: { title: 'Your biggest gap is retention.', body: 'Customers are not coming back often enough. We would decode why they leave, then build retention systems and campaigns that keep them engaged.', services: ['Consumer Behaviour & Satisfaction Analysis', 'Brand Campaigns Strategy'], service: 'Brand Campaigns Strategy' }
+    };
+    const { answers, step } = this.state;
+    const done = step >= Q.length;
+    const cur = Q[Math.min(step, Q.length - 1)];
+    const q = { ...cur, options: cur.options.map(([label, v]) => {
+      const sel = answers[step] === v;
+      return { label, border: sel ? '#2f6cf0' : '#e6e3dc', bg: sel ? '#f1f5fe' : '#fff',
+        pick: () => this.setState(s => { const a = [...s.answers]; a[s.step] = v; return { answers: a, step: s.step + 1 }; }) };
+    }) };
+    const status = ['Leaking', 'Needs work', 'Healthy'], colors = ['#ff8a3d', '#6f9bff', '#4fd1a5'];
+    const meters = Q.map((x, i) => {
+      const v = answers[i];
+      return v == null ? { label: x.area, status: 'Not answered', w: '8%', c: 'rgba(255,255,255,0.3)' } : { label: x.area, status: status[v], w: ['28%', '62%', '100%'][v], c: colors[v] };
+    });
+    const answered = answers.filter(v => v != null);
+    let result = { title: '', body: '', services: [], href: 'Contact.dc.html', cta: '' };
+    if (done) {
+      let wi = 0; answers.forEach((v, i) => { if (v < answers[wi]) wi = i; });
+      const key = Q[wi].key, r = R[key];
+      const all = answers.every(v => v === 2);
+      result = { ...r, title: all ? "You're in good shape. Let's find the next lever." : r.title,
+        href: 'Contact.dc.html?service=' + encodeURIComponent(r.service) + '&note=' + encodeURIComponent('Revenue check result: ' + Q[wi].area + ' needs attention.'),
+        cta: 'Fix my ' + Q[wi].area.toLowerCase() + ' →' };
+    }
+    return { pillars, services, steps, ticker, q, meters, result,
+      showQuiz: !done, showResult: done, canBack: step > 0 && !done,
+      stepLabel: (Math.min(step, 2) + 1) + ' / 3',
+      progress: Q.map((_, i) => ({ bg: i < step ? '#f26a1b' : i === step ? '#2f6cf0' : '#eceae4' })),
+      scoreLabel: answered.length ? answered.reduce((a, b) => a + b, 0) + '/6' : '–',
+      back: () => this.setState(s => ({ step: s.step - 1 })),
+      restart: () => this.setState({ answers: [null, null, null], step: 0 }) };
+  }
+}
+</script>
+</body>
+</html>

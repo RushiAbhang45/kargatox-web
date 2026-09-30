@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+<style>
+:root{--font-display:'Clash Display',sans-serif;--font-body:'Satoshi',system-ui,sans-serif}
+body{margin:0;background:#f7f6f3;color:#141a2b;font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1f5fd6;text-decoration:none}
+a:hover{color:#f26a1b}
+h1,h2,h3,h4,p{margin:0}
+</style>
+</helmet>
+<dc-import name="SiteHeader" active="services" hint-size="100%,72px"></dc-import>
+
+<section data-screen-label="Services hero" style="background:#0b1430;color:#fff;position:relative;overflow:hidden">
+  <div data-float="1" style="position:absolute;right:-180px;top:-200px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(47,108,240,0.4),rgba(47,108,240,0) 70%)"></div>
+  <div style="position:relative;max-width:1240px;margin:0 auto;padding:100px 24px 90px;display:grid;gap:28px">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.12em;color:#ff8a3d">SERVICES</div>
+    <h1 style="font-family:var(--font-display);font-weight:600;font-size:clamp(34px,4.4vw,60px);line-height:1.08;letter-spacing:-0.03em;max-width:1040px;text-wrap:balance">We don't simply deliver research or marketing services. We become an extension of your team, working alongside you to understand your business, solve challenges and create sustainable growth.</h1>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:24px 56px;margin-top:20px;font-size:18px;line-height:1.65;color:#c9d2ea">
+      <p>Our hands-on approach starts with understanding your business, defining the right strategy, mapping your audience and learning how they behave. We then turn those insights into focused execution across consulting, technology and marketing.</p>
+      <p>Every engagement is driven by clear objectives and measurable KPIs, with transparent progress at every stage. You always know what we are doing, why we are doing it and how it contributes to your growth.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+      <a href="#research" style="border:1px solid rgba(255,255,255,0.25);color:#fff;padding:12px 20px;border-radius:999px;font-weight:600;font-size:15px" style-hover="border-color:#ff8a3d;color:#fff">Research Services ↓</a>
+      <a href="#marketing" style="border:1px solid rgba(255,255,255,0.25);color:#fff;padding:12px 20px;border-radius:999px;font-weight:600;font-size:15px" style-hover="border-color:#ff8a3d;color:#fff">Marketing Services ↓</a>
+    </div>
+  </div>
+</section>
+
+<sc-for list="{{ services }}" as="svc" hint-placeholder-count="2">
+  <section id="{{ svc.id }}" data-screen-label="{{ svc.title }}" style="padding:110px 24px 0">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:40px 64px;align-items:start">
+      <div style="position:sticky;top:110px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#1f5fd6;letter-spacing:0.12em">{{ svc.num }}</div>
+        <h2 style="font-family:var(--font-display);font-weight:600;font-size:clamp(34px,4vw,56px);letter-spacing:-0.025em;line-height:1.02;margin-top:14px">{{ svc.title }}</h2>
+        <p style="font-size:18px;line-height:1.65;color:#4a5370;margin-top:18px;text-wrap:pretty">{{ svc.intro }}</p>
+        <sc-if value="{{ svc.tagline }}" hint-placeholder-val="{{ false }}">
+          <p style="font-family:var(--font-display);font-size:24px;font-weight:600;color:#f26a1b;margin-top:24px;letter-spacing:-0.01em">{{ svc.tagline }}</p>
+        </sc-if>
+        <div style="margin-top:32px;background:#0b1430;border-radius:22px;padding:24px;color:#fff;display:grid;gap:22px;box-shadow:0 30px 60px -30px rgba(11,20,48,0.5)">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="width:8px;height:8px;border-radius:50%;background:#4fd1a5"></span>
+              <span style="font-family:var(--font-display);font-size:18px;font-weight:600">{{ svc.panelTitle }}</span>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#aeb9d8;border:1px solid rgba(255,255,255,0.18);padding:5px 10px;border-radius:999px">SAMPLE DATA</span>
+          </div>
+          <sc-if value="{{ svc.isResearch }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;gap:10px">
+              <div style="display:flex;align-items:flex-end;gap:6px;height:140px">
+                <sc-for list="{{ svc.bars }}" as="b" hint-placeholder-count="12">
+                  <div data-grow="y" style="flex:1;height:{{ b.h }};background:{{ b.c }};border-radius:5px 5px 2px 2px;transform-origin:bottom;transition:background .2s" style-hover="background:#ff8a3d"></div>
+                </sc-for>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b7695"><span>JAN</span><span>JUN</span><span>DEC</span></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ svc.isMarketing }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;gap:8px">
+              <sc-for list="{{ svc.keywords }}" as="k" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:11px 14px;border-radius:12px;background:rgba(255,255,255,0.05)">
+                  <span style="font-size:15px;color:#e3e8f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ k.term }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6b7695;text-decoration:line-through">#{{ k.from }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#4fd1a5;background:rgba(79,209,165,0.12);padding:4px 9px;border-radius:999px">↑ #{{ k.to }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid;gap:12px;margin-top:6px">
+              <sc-for list="{{ svc.channels }}" as="c" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:90px minmax(0,1fr) 44px;gap:12px;align-items:center">
+                  <span style="font-size:13px;color:#aeb9d8">{{ c.name }}</span>
+                  <div style="height:8px;border-radius:8px;background:rgba(255,255,255,0.08);overflow:hidden">
+                    <div data-grow="x" style="height:100%;width:{{ c.w }};background:{{ c.c }};border-radius:8px;transform-origin:left"></div>
+                  </div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#fff;text-align:right">{{ c.w }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+            <sc-for list="{{ svc.kpis }}" as="kp" hint-placeholder-count="3">
+              <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:12px 14px;display:grid;gap:4px">
+                <span style="font-size:12px;color:#aeb9d8">{{ kp.label }}</span>
+                <span style="font-family:var(--font-display);font-size:24px;font-weight:600">{{ kp.value }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:{{ kp.c }}">{{ kp.delta }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div data-stagger="1" style="display:grid;gap:16px">
+        <sc-for list="{{ svc.items }}" as="it" hint-placeholder-count="3">
+          <div style="background:#fff;border:1px solid #e6e3dc;border-radius:20px;padding:30px;transition:transform .5s cubic-bezier(.2,.7,.1,1),border-color .3s" style-hover="border-color:#2f6cf0;transform:translateX(6px)">
+            <div style="display:flex;gap:16px;align-items:baseline">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#2f6cf0">{{ it.num }}</span>
+              <div style="flex:1">
+                <h3 style="font-family:var(--font-display);font-size:24px;font-weight:600;letter-spacing:-0.01em">{{ it.title }}</h3>
+                <p style="font-size:16px;line-height:1.65;color:#4a5370;margin-top:10px;text-wrap:pretty">{{ it.body }}</p>
+                <sc-if value="{{ it.link }}" hint-placeholder-val="{{ false }}">
+                  <a href="#" style="display:inline-block;margin-top:14px;font-weight:600;font-size:15px;color:#f26a1b" style-hover="color:#1f5fd6">{{ it.link }} →</a>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+</sc-for>
+<div style="height:120px"></div>
+<dc-import name="SiteFooter" hint-size="100%,600px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const services = [
+      { id: 'research', num: '01', title: 'Research Services', imageHint: 'research / analytics image',
+        intro: 'Consulting & Research for Businesses: We believe quality insights are the bedrock of any successful strategy. Our Research team dives deep into big data and also conducts extensive field research to drive informed business decisions.',
+        items: [
+          { title: 'Market Research', body: 'We harness the power of analytics to identify market trends and formulate practical action plans for business growth.' },
+          { title: 'Consumer Behaviour & Satisfaction Analysis', body: 'Our strategic research process decodes consumer behaviours, enabling you to empathise with your prospects and deliver personalized solutions that speak to their needs.' },
+          { title: 'Campaign Analytics', body: 'If it’s not measured, it didn’t happen! We provide a custom tech stack to help you understand and optimize key campaign performance metrics on digital as well as mainline platforms.' }
+        ] },
+      { id: 'marketing', num: '02', title: 'Marketing Services', imageHint: 'campaign / creative image', tagline: 'We move the only number that matters. Yours.',
+        intro: 'Our strategists, designers, content creators, and digital specialists work together to build a strong digital presence for your business from everyday content and social media to high-impact campaigns designed to drive visibility, engagement, and growth.',
+        items: [
+          { title: 'SEO Services', link: 'Click here for detailed section', body: "That Increase Organic Traffic & Qualified Leads Appear where customers are searching. Your customers are searching for products and services every day. If your business doesn't appear in search results, you're losing valuable opportunities. SEO determines how easily your business is found when customers search on Google. It's often the first digital interaction a potential customer has with your brand. Kargatox offers comprehensive Search Engine Optimization (SEO), Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) services that improve your website's visibility across Google Search, AI-powered search engines, voice assistants, and generative AI platforms." },
+          { title: 'Social Media Marketing', link: 'Click here', body: 'Social media is no longer just about posting content—it is where brands build relationships, earn trust, and influence purchasing decisions. It is often the first place customers check before deciding to trust a business. Consistent engagement here shapes how your brand is perceived across Instagram, LinkedIn, Facebook, YouTube and more. Kargatox helps businesses build engaging social media communities through strategic content, storytelling, creative campaigns, and consistent audience interaction. We create Social Media Engagement Strategies that help businesses grow meaningful communities while increasing brand awareness, customer interaction, and lead generation.' },
+          { title: 'Brand Campaigns Strategy', link: 'Click here', body: 'Every successful campaign tells a compelling story. we develop integrated brand campaigns that connect emotionally with audiences while delivering measurable business outcomes. From festive campaigns and product launches to awareness initiatives and employer branding, we combine creativity with marketing intelligence to maximize impact.' }
+        ] }
+    ].map(s => ({ ...s, items: s.items.map((it, i) => ({ ...it, num: String(i + 1).padStart(2, '0') })) }));
+    const hs = [34, 42, 38, 51, 47, 58, 55, 66, 62, 74, 81, 92];
+    Object.assign(services[0], { isResearch: true, panelTitle: 'Market signals',
+      bars: hs.map((h, i) => ({ h: h + '%', c: i > 8 ? '#f26a1b' : '#2f6cf0' })),
+      kpis: [{ label: 'Market growth', value: '+18%', delta: '↑ vs last year', c: '#4fd1a5' }, { label: 'Satisfaction', value: '4.3', delta: '↑ 0.4 pts', c: '#4fd1a5' }, { label: 'Campaign CTR', value: '3.4%', delta: '↑ 1.1%', c: '#4fd1a5' }] });
+    Object.assign(services[1], { isMarketing: true, panelTitle: 'Search & social',
+      keywords: [{ term: 'market research agency india', from: 24, to: 3 }, { term: 'consumer insights firm', from: 31, to: 5 }, { term: 'growth consulting startups', from: 18, to: 2 }, { term: 'brand campaign strategy', from: 40, to: 7 }],
+      channels: [{ name: 'Instagram', w: '82%', c: '#f26a1b' }, { name: 'LinkedIn', w: '68%', c: '#2f6cf0' }, { name: 'YouTube', w: '54%', c: '#6f9bff' }],
+      kpis: [{ label: 'Organic traffic', value: '3.2x', delta: '↑ in 6 months', c: '#4fd1a5' }, { label: 'Qualified leads', value: '+140%', delta: '↑ from search', c: '#4fd1a5' }, { label: 'Engagement', value: '6.8%', delta: '↑ 2.3%', c: '#4fd1a5' }] });
+    return { services };
+  }
+}
+</script>
+</body>
+</html>
