@@ -9,10 +9,12 @@ scaffolded at the repo root, living alongside the original **design handoff** re
 (`design_handoff_kargatox/`, the root `.dc.html` prototypes, `uploads/`). The handoff files are not code
 to copy from — they're the spec the app is being built against. See "Design reference material" below.
 
-Only the home page has real content so far (a token smoke-test placeholder at `src/app/page.tsx`); the
-rest of step 1 of the handoff's suggested build order (scaffold + tokens + fonts) is done. Steps 2+
-(header/footer/`<Reveal>` primitives, the five public pages, contact API, revenue check, Prisma/auth/admin
-shell, etc.) are not started — see "Suggested build order" below.
+Steps 1–2 of the handoff's suggested build order are done: scaffold + tokens + fonts, plus the shared
+header/footer, the `Reveal`/`RevealGroup`/`RiseWords`/`GrowBar` animation primitives, and all five public
+pages (Home, Services, How we work, FAQ, Contact) with static content and their client-side-only
+interactions (revenue-check quiz, FAQ accordion, Contact form validation + URL prefill). Nothing submits
+to a backend yet — no API routes, no database, no auth, no admin panel. See "Suggested build order" below
+for what's next (step 3: the Contact form's `/api/enquiries` route).
 
 ## Commands
 
@@ -51,6 +53,24 @@ shell, etc.) are not started — see "Suggested build order" below.
   just rename the Google Fonts to make the diff look done.
 - No backend/database/auth exists yet (Prisma, Auth.js, API routes) — see the data model and route list in
   `design_handoff_kargatox/README.md` when building those.
+- **Route structure:** `src/app/page.tsx` (Home), `src/app/services/`, `src/app/how-we-work/`,
+  `src/app/faq/`, `src/app/contact/` — matching the README's suggested routes. `SiteHeader` renders once
+  in the root layout (persists across client-side navigation); `SiteFooter` is rendered explicitly at the
+  bottom of each page (not the layout) because its `showCta` prop varies per page (`false` only on
+  Contact) and Next.js layouts can't take per-page props.
+- **Animation primitives** live in `src/components/motion/reveal.tsx`: `Reveal` (single-element scroll
+  reveal), `RevealGroup` (stagger container, `(index % 6) * 90ms` delay matching the README), `RiseWords`
+  (hero heading words — mount-triggered via `animate`, **not** `whileInView`: these are always in view on
+  load, and gating them on intersection was a real bug caught during review, so don't "fix" it back),
+  `GrowBar` (bar/fill grow-in). `src/components/motion/provider.tsx` wraps the app in
+  `MotionConfig reducedMotion="user"`, which is what satisfies the reduced-motion requirement — don't
+  re-add manual `prefers-reduced-motion` checks in components that already sit under it.
+- Client components that need `useSearchParams()` (e.g. `src/app/contact/contact-form.tsx`) must be
+  wrapped in `<Suspense>` by their parent page — Next.js requires this for static generation to succeed.
+- `eslint-plugin-react-hooks`'s `set-state-in-effect` rule is enabled and treated as a real error here, not
+  noise — see `SiteHeader`'s pathname-reset and `ContactForm`'s URL-prefill for the pattern used instead
+  (derive/reset during render, or a lazy `useState(() => ...)` initializer, rather than `setState` inside
+  `useEffect`).
 
 ## Design reference material
 
@@ -92,17 +112,19 @@ rebuild the behaviour it shows using the target stack's normal patterns.
 - Auth.js (NextAuth), email magic links, role-based access control (OWNER/ADMIN/EDITOR/SALES). **Not set up
   yet.**
 - Resend (or SMTP) for enquiry notifications, auto-replies, and admin replies. **Not set up yet.**
-- Framer Motion for animation (or keep the plain Web Animations API approach from the prototype). **Not set
-  up yet.**
+- Framer Motion for animation — set up (`src/components/motion/`); decorative infinite loops (background
+  orbs, the sub-service marquee) use plain CSS keyframes in `globals.css` instead, not Framer Motion.
 - Page copy, services, FAQ and posts live in the database, edited via the admin panel, read by public
   pages at build time with ISR revalidation on publish.
 
 Suggested routes, the Prisma data-model sketch, and the 9-step build order are in
 `design_handoff_kargatox/README.md` — follow that order (scaffold → public pages → contact API → revenue
 check → Prisma/auth/admin shell → enquiries/revenue-checks/dashboard → pages/content/posts → team/settings
-→ SEO/analytics/a11y) rather than re-deriving a sequence. **Step 1 (scaffold + tokens + fonts) is done;
-step 2 (header, footer, `<Reveal>` animation primitives, then the five public pages with static content)
-is next.**
+→ SEO/analytics/a11y) rather than re-deriving a sequence. **Steps 1–2 are done (scaffold + tokens + fonts;
+header, footer, animation primitives, and the five public pages with static content). Step 3 is next:
+Contact form API route (`/api/enquiries`), zod validation, database write, emails, spam protection —
+`src/app/contact/contact-form.tsx`'s `submit()` currently just sets `sent` state locally with a `TODO`
+comment where the POST call goes.**
 
 ## Key constraints to preserve when rebuilding
 
