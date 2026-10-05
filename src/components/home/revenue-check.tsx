@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Reveal, GrowBar } from "@/components/motion/reveal";
 
 type AreaKey = "leads" | "sales" | "retention";
 
@@ -73,8 +74,8 @@ const RESULTS: Record<AreaKey, { title: string; body: string; services: string[]
 };
 
 const STATUS = ["Leaking", "Needs work", "Healthy"];
-const METER_COLOR = ["bg-orange-400", "bg-blue-300", "bg-success-dark"];
-const METER_TEXT = ["text-orange-400", "text-blue-300", "text-success-dark"];
+const METER_COLOR = ["bg-orange-400", "bg-white/40", "bg-success-dark"];
+const METER_TEXT = ["text-orange-400", "text-mist-2", "text-success-dark"];
 const METER_WIDTH = ["28%", "62%", "100%"];
 
 export function RevenueCheck() {
@@ -163,9 +164,9 @@ export function RevenueCheck() {
 
   return (
     <section className="px-6 pb-[120px]">
-      <div className="mx-auto grid max-w-(--width-site) grid-cols-1 overflow-hidden rounded-[32px] border border-line bg-white min-[880px]:grid-cols-2">
+      <div className="mx-auto grid max-w-(--width-site) grid-cols-1 overflow-hidden rounded-panel border border-line bg-white min-[880px]:grid-cols-2">
         <div className="grid content-start gap-[22px] p-[clamp(28px,5vw,56px)]">
-          <span className="font-mono text-[13px] tracking-[0.12em] text-blue-600">
+          <span className="font-mono text-[13px] tracking-[0.12em] text-orange-500">
             REVENUE CHECK · 30 SECONDS
           </span>
           <h2 className="font-display text-[clamp(34px,4vw,54px)] font-semibold leading-[1.02] tracking-[-0.02em]">
@@ -183,17 +184,17 @@ export function RevenueCheck() {
                     <div
                       key={i}
                       className={`h-1 flex-1 rounded-full transition-colors duration-[400ms] ${
-                        i < step ? "bg-orange-500" : i === step ? "bg-blue-500" : "bg-chip-neutral"
+                        i < step ? "bg-orange-500" : i === step ? "bg-ink" : "bg-chip-neutral"
                       }`}
                     />
                   ))}
                 </div>
-                <span className="whitespace-nowrap font-mono text-xs text-[#6b7695]">
+                <span className="whitespace-nowrap font-mono text-xs text-[#737373]">
                   {Math.min(step, 2) + 1} / 3
                 </span>
               </div>
 
-              <span className="w-fit rounded-pill bg-[#fdebe0] px-3 py-1.5 font-mono text-xs uppercase tracking-[0.08em] text-orange-500">
+              <span className="w-fit rounded-chip bg-[#ffe8da] px-3 py-1.5 font-mono text-xs uppercase tracking-[0.08em] text-orange-500">
                 {current.area}
               </span>
               <h3 className="font-display text-[clamp(24px,2.4vw,30px)] font-semibold tracking-[-0.01em]">
@@ -207,12 +208,12 @@ export function RevenueCheck() {
                       key={label}
                       type="button"
                       onClick={() => pick(value)}
-                      className={`flex items-center justify-between gap-4 rounded-[14px] border-[1.5px] px-5 py-[18px] text-left text-[17px] font-medium text-ink transition-[border-color,transform] duration-300 hover:translate-x-1 hover:border-blue-500 ${
-                        selected ? "border-blue-500 bg-[#f1f5fe]" : "border-line bg-white"
+                      className={`flex items-center justify-between gap-4 rounded-[14px] border-[1.5px] px-5 py-[18px] text-left text-[17px] font-medium text-ink transition-[border-color,transform] duration-300 hover:translate-x-1 hover:border-orange-500 ${
+                        selected ? "border-orange-500 bg-[#ffe8da]" : "border-line bg-white"
                       }`}
                     >
                       <span>{label}</span>
-                      <span className="text-blue-500">→</span>
+                      <span className="text-orange-500">→</span>
                     </button>
                   );
                 })}
@@ -231,21 +232,21 @@ export function RevenueCheck() {
 
           {done && (
             <div className="mt-3 grid gap-[18px]">
-              <span className="w-fit rounded-pill bg-orange-500 px-3 py-1.5 font-mono text-xs tracking-[0.08em] text-white">
+              <span className="w-fit rounded-chip bg-orange-500 px-3 py-1.5 font-mono text-xs tracking-[0.08em] text-white">
                 YOUR RESULT
               </span>
               <h3 className="font-display text-[clamp(26px,2.8vw,36px)] font-semibold tracking-[-0.015em]">
                 {result.title}
               </h3>
-              <p className="text-[17px] leading-[1.65] text-slate">{result.body}</p>
+              <p className="text-[17px] leading-[1.6] text-slate">{result.body}</p>
               <div className="grid gap-2.5">
-                <span className="font-mono text-xs tracking-[0.1em] text-[#6b7695]">WHERE WE&apos;D START</span>
+                <span className="font-mono text-xs tracking-[0.1em] text-[#737373]">WHERE WE&apos;D START</span>
                 <div className="flex flex-wrap gap-2">
                   {result.services.map((s) => (
                     <Link
                       key={s}
                       href="/services"
-                      className="rounded-pill bg-chip-blue px-3.5 py-2 text-sm font-semibold text-blue-700 transition-colors hover:bg-[#d6e1fb]"
+                      className="rounded-chip bg-chip-blue px-3.5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-[#e5e5e5]"
                     >
                       {s}
                     </Link>
@@ -262,7 +263,7 @@ export function RevenueCheck() {
                 <button
                   type="button"
                   onClick={retake}
-                  className="rounded-pill border border-line-2 bg-transparent px-6 py-[15px] text-base font-semibold text-ink"
+                  className="rounded-input border border-line-2 bg-transparent px-6 py-[15px] text-base font-semibold text-ink"
                 >
                   Retake
                 </button>
@@ -271,13 +272,15 @@ export function RevenueCheck() {
           )}
         </div>
 
-        <div className="relative grid content-start gap-7 overflow-hidden bg-navy-900 p-[clamp(28px,5vw,56px)] text-white">
-          <div className="kx-float absolute -right-[120px] -bottom-[140px] h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle,rgba(47,108,240,0.4),rgba(47,108,240,0)_70%)]" />
-          <div className="relative flex items-baseline justify-between gap-4">
-            <span className="font-mono text-xs tracking-[0.12em] text-blue-300">REVENUE HEALTH</span>
-            <span className="font-display text-[44px] font-semibold leading-none">{scoreLabel}</span>
-          </div>
-          <div className="relative grid gap-[26px]">
+        <div className="grid content-start gap-7 bg-navy-900 p-[clamp(28px,5vw,56px)] text-white">
+          <Reveal className="grid gap-2.5">
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="font-mono text-xs tracking-[0.12em] text-mist-2">REVENUE HEALTH</span>
+              <span className="font-display text-[44px] font-semibold leading-none">{scoreLabel}</span>
+            </div>
+            <GrowBar axis="x" className="h-[2px] w-14 origin-left bg-orange-400" />
+          </Reveal>
+          <Reveal delay={0.1} className="grid gap-[26px]">
             {QUESTIONS.map((question, i) => {
               const v = answers[i];
               const label = v == null ? "Not answered" : STATUS[v];
@@ -294,15 +297,15 @@ export function RevenueCheck() {
                   </div>
                   <div className="h-2.5 overflow-hidden rounded-[10px] bg-white/10">
                     <div
-                      className={`h-full rounded-[10px] transition-[width] duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.1,1)] ${colorClass}`}
+                      className={`h-full rounded-[10px] transition-[width] duration-[900ms] ease-[var(--ease-kx)] ${colorClass}`}
                       style={{ width }}
                     />
                   </div>
                 </div>
               );
             })}
-          </div>
-          <p className="relative text-sm text-mist-2">Updates as you answer.</p>
+          </Reveal>
+          <p className="text-sm text-mist-2">Updates as you answer.</p>
         </div>
       </div>
     </section>

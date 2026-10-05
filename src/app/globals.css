@@ -21,26 +21,30 @@
 }
 
 @theme inline {
-  /* Kargatox brand palette — design_handoff_kargatox/README.md#design-tokens */
-  --color-navy-900: #0b1430;
-  --color-navy-800: #0e1a3d;
-  --color-navy-700: #16244f;
-  --color-orange-500: #f26a1b;
-  --color-orange-400: #ff8a3d;
+  /* Kargatox brand palette — v2: high-contrast black/white + one bold accent,
+     a deliberate departure from the original navy/orange handoff palette (see
+     CLAUDE.md). Token NAMES are kept as-is (navy-900, paper, ink, etc.) since
+     every component already consumes them semantically — only the hex values
+     changed, so this one block re-themes the whole public site. */
+  --color-navy-900: #0a0a0a;
+  --color-navy-800: #141414;
+  --color-navy-700: #1f1f1f;
+  --color-orange-500: #ff5a1f;
+  --color-orange-400: #ff7d4d;
   --color-blue-500: #2f6cf0;
   --color-blue-600: #1f5fd6;
   --color-blue-700: #1f4fc4;
-  --color-blue-300: #6f9bff;
-  --color-paper: #f7f6f3;
-  --color-ink: #141a2b;
-  --color-slate: #4a5370;
-  --color-mist: #c9d2ea;
-  --color-mist-2: #aeb9d8;
-  --color-line: #e6e3dc;
-  --color-line-2: #dcd8cf;
-  --color-chip-neutral: #eceae4;
-  --color-chip-cool: #f1f3f9;
-  --color-chip-blue: #e8eefc;
+  --color-blue-300: #93b4ff;
+  --color-paper: #ffffff;
+  --color-ink: #0a0a0a;
+  --color-slate: #525252;
+  --color-mist: #d4d4d4;
+  --color-mist-2: #a3a3a3;
+  --color-line: #e5e5e5;
+  --color-line-2: #d4d4d4;
+  --color-chip-neutral: #f0f0f0;
+  --color-chip-cool: #f0f0f0;
+  --color-chip-blue: #f0f0f0;
   --color-success: #1f9d63;
   --color-success-dark: #4fd1a5;
 
@@ -59,9 +63,11 @@
   --color-admin-muted: var(--admin-muted);
   --color-admin-soft: var(--admin-soft);
 
-  /* Bricolage Grotesque + Figtree stand in for Fontshare's Clash Display + Satoshi
-     until those are self-hosted with next/font/local — see README's Typography section */
-  --font-display: var(--font-bricolage);
+  /* Sora (display) + Figtree (body) — a deliberate departure from the handoff's
+     Clash Display + Satoshi spec, chosen to match the Schbang-inspired visual
+     direction (see CLAUDE.md). Not the same "stand-in until real fonts arrive"
+     situation as before — this is an intentional typeface choice for v2. */
+  --font-display: var(--font-sora);
   --font-body: var(--font-figtree);
   --font-sans: var(--font-figtree);
   --font-mono: var(--font-jetbrains-mono);
@@ -71,10 +77,14 @@
   --breakpoint-nav: 900px;
 
   --radius-chip: 6px;
-  --radius-input: 12px;
-  --radius-card: 20px;
-  --radius-panel: 30px;
+  --radius-input: 10px;
+  --radius-card: 14px;
+  --radius-panel: 24px;
   --radius-pill: 999px;
+
+  /* Shared easing for CSS transitions outside framer-motion — matches EASE in
+     src/components/motion/reveal.tsx (can't share a JS const with CSS). */
+  --ease-kx: cubic-bezier(0.2, 0.7, 0.1, 1);
 }
 
 /* Decorative infinite-loop animations (background orbs, the sub-service marquee) live in

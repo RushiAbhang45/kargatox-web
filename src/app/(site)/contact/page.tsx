@@ -26,13 +26,12 @@ const STEPS = [
 export default function ContactPage() {
   return (
     <main className="flex flex-1 flex-col bg-navy-900 text-white">
-      <section className="relative overflow-hidden px-6 pb-[120px] pt-[90px]">
-        <div className="kx-float absolute -right-[200px] -top-[200px] h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(47,108,240,0.35),rgba(47,108,240,0)_70%)]" />
+      <section className="px-6 pb-[120px] pt-[90px]">
         <div className="relative mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-x-18 gap-y-14">
           <div className="grid gap-6">
             <div className="font-mono text-[13px] tracking-[0.14em] text-orange-400">GET IN TOUCH</div>
             <Reveal>
-              <h1 className="font-display text-[clamp(44px,5.6vw,80px)] font-semibold leading-[0.98] tracking-[-0.02em]">
+              <h1 className="font-display text-[clamp(36px,4.4vw,60px)] font-semibold leading-[1.02] tracking-[-0.02em]">
                 Initiate a <span className="text-orange-400">Project</span>
               </h1>
             </Reveal>
@@ -56,7 +55,7 @@ export default function ContactPage() {
             </RevealGroup>
 
             <div className="mt-5 grid gap-1.5 border-t border-white/10 pt-6">
-              <span className="font-mono text-xs tracking-[0.12em] text-blue-300">PREFER EMAIL?</span>
+              <span className="font-mono text-xs tracking-[0.12em] text-mist-2">PREFER EMAIL?</span>
               <a
                 href="mailto:hello@kargatox.com"
                 className="font-display text-2xl font-semibold text-white transition-colors hover:text-orange-400"
@@ -67,7 +66,7 @@ export default function ContactPage() {
           </div>
 
           <Suspense
-            fallback={<div className="h-[520px] rounded-3xl border border-white/10 bg-navy-800" />}
+            fallback={<div className="h-[520px] rounded-panel border border-white/10 bg-navy-800" />}
           >
             <ContactForm />
           </Suspense>

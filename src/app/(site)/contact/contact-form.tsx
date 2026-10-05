@@ -99,7 +99,7 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="rounded-3xl border border-white/10 bg-navy-800 p-[clamp(24px,4vw,48px)]">
+      <div className="rounded-panel border border-white/10 bg-navy-800 p-[clamp(24px,4vw,48px)]">
         <div className="grid justify-items-center gap-[18px] py-10 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-500 text-[28px] text-white">
             ✓
@@ -117,7 +117,7 @@ export function ContactForm() {
               setSubmitError(null);
               setForm(EMPTY_FORM);
             }}
-            className="mt-2 rounded-pill border border-white/25 bg-transparent px-[22px] py-3 text-[15px] font-semibold text-white"
+            className="mt-2 rounded-input border border-white/25 bg-transparent px-[22px] py-3 text-[15px] font-semibold text-white"
           >
             Send another inquiry
           </button>
@@ -129,7 +129,7 @@ export function ContactForm() {
   const lineColor = (key: keyof FormState) => (errors[key] ? "border-orange-400" : "border-white/20");
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-navy-800 p-[clamp(24px,4vw,48px)]">
+    <div className="rounded-panel border border-white/10 bg-navy-800 p-[clamp(24px,4vw,48px)]">
       <form onSubmit={submit} noValidate className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-x-8 gap-y-8">
         <label className="grid gap-2.5">
           <span className="font-mono text-xs tracking-[0.1em] text-white">FULL NAME *</span>
@@ -156,7 +156,7 @@ export function ContactForm() {
 
         <label className="grid gap-2.5">
           <span className="font-mono text-xs tracking-[0.1em] text-white">
-            PHONE NUMBER <span className="text-[#6b7695]">(optional)</span>
+            PHONE NUMBER <span className="text-[#737373]">(optional)</span>
           </span>
           <input
             type="tel"

@@ -15,9 +15,9 @@ export default function FaqPage() {
       <section className="px-6 pb-[120px] pt-[110px]">
         <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-start gap-x-20 gap-y-12">
           <div className="grid gap-[18px]">
-            <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">BEFORE YOU ASK</div>
+            <div className="font-mono text-[13px] tracking-[0.12em] text-orange-500">BEFORE YOU ASK</div>
             <Reveal>
-              <h1 className="font-display text-[clamp(40px,5vw,68px)] font-semibold leading-[1.02] tracking-[-0.03em]">
+              <h1 className="font-display text-[clamp(32px,4vw,52px)] font-semibold leading-[1.1] tracking-[-0.02em]">
                 You have questions. <span className="text-orange-500">We have straight answers.</span>
               </h1>
             </Reveal>

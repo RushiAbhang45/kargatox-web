@@ -13,18 +13,17 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <main className="flex flex-1 flex-col">
-      <section className="relative overflow-hidden bg-navy-900 text-white">
-        <div className="kx-float absolute -right-[180px] -top-[200px] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(47,108,240,0.4),rgba(47,108,240,0)_70%)]" />
+      <section className="bg-navy-900 text-white">
         <div className="relative mx-auto grid max-w-(--width-site) gap-7 px-6 pb-[90px] pt-[100px]">
           <div className="font-mono text-[13px] tracking-[0.12em] text-orange-400">SERVICES</div>
           <Reveal>
-            <h1 className="max-w-[1040px] font-display text-[clamp(34px,4.4vw,60px)] font-semibold leading-[1.08] tracking-[-0.03em]">
+            <h1 className="max-w-[920px] font-display text-[clamp(30px,3.6vw,48px)] font-semibold leading-[1.15] tracking-[-0.02em]">
               We don&apos;t simply deliver research or marketing services. We become an extension of your
               team, working alongside you to understand your business, solve challenges and create
               sustainable growth.
             </h1>
           </Reveal>
-          <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] gap-x-14 gap-y-6 text-[18px] leading-[1.65] text-mist">
+          <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] gap-x-14 gap-y-6 text-[18px] leading-[1.6] text-mist">
             <p>
               Our hands-on approach starts with understanding your business, defining the right strategy,
               mapping your audience and learning how they behave. We then turn those insights into focused
@@ -39,13 +38,13 @@ export default function ServicesPage() {
           <div className="mt-4 flex flex-wrap gap-2.5">
             <Link
               href="#research"
-              className="rounded-pill border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-orange-400"
+              className="rounded-input border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-orange-400"
             >
               Research Services ↓
             </Link>
             <Link
               href="#marketing"
-              className="rounded-pill border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-orange-400"
+              className="rounded-input border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-orange-400"
             >
               Marketing Services ↓
             </Link>
@@ -57,24 +56,24 @@ export default function ServicesPage() {
         <section key={svc.id} id={svc.id} className="px-6 pt-[110px]">
           <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-x-16 gap-y-10">
             <div className="sticky top-[110px]">
-              <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">{svc.num}</div>
+              <div className="font-mono text-[13px] tracking-[0.12em] text-orange-500">{svc.num}</div>
               <h2 className="mt-3.5 font-display text-[clamp(34px,4vw,56px)] font-semibold leading-[1.02] tracking-[-0.025em]">
                 {svc.title}
               </h2>
-              <p className="mt-[18px] text-[18px] leading-[1.65] text-slate">{svc.intro}</p>
+              <p className="mt-[18px] text-[18px] leading-[1.6] text-slate">{svc.intro}</p>
               {svc.tagline && (
                 <p className="mt-6 font-display text-2xl font-semibold tracking-[-0.01em] text-orange-500">
                   {svc.tagline}
                 </p>
               )}
 
-              <div className="mt-8 grid gap-[22px] rounded-[22px] bg-navy-900 p-6 text-white shadow-[0_30px_60px_-30px_rgba(11,20,48,0.5)]">
+              <div className="mt-8 grid gap-[22px] rounded-panel bg-navy-900 p-6 text-white shadow-[0_30px_60px_-30px_rgba(11,20,48,0.5)]">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <span className="h-2 w-2 rounded-full bg-success-dark" />
                     <span className="font-display text-lg font-semibold">{svc.panelTitle}</span>
                   </div>
-                  <span className="rounded-pill border border-white/18 px-2.5 py-[5px] font-mono text-[11px] tracking-[0.08em] text-mist-2">
+                  <span className="rounded-chip border border-white/18 px-2.5 py-[5px] font-mono text-[11px] tracking-[0.08em] text-mist-2">
                     SAMPLE DATA
                   </span>
                 </div>
@@ -87,12 +86,12 @@ export default function ServicesPage() {
                           key={i}
                           axis="y"
                           index={i}
-                          className={`flex-1 rounded-t-[5px] rounded-b-[2px] ${b.orange ? "bg-orange-500" : "bg-blue-500"}`}
+                          className={`flex-1 rounded-t-[5px] rounded-b-[2px] ${b.orange ? "bg-orange-500" : "bg-white/25"}`}
                           style={{ height: `${b.h}%` }}
                         />
                       ))}
                     </div>
-                    <div className="flex justify-between font-mono text-[11px] text-[#6b7695]">
+                    <div className="flex justify-between font-mono text-[11px] text-[#737373]">
                       <span>JAN</span>
                       <span>JUN</span>
                       <span>DEC</span>
@@ -108,11 +107,11 @@ export default function ServicesPage() {
                           key={k.term}
                           className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3.5 rounded-xl bg-white/5 px-3.5 py-[11px]"
                         >
-                          <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[15px] text-[#e3e8f5]">
+                          <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[15px] text-[#e5e5e5]">
                             {k.term}
                           </span>
-                          <span className="font-mono text-xs text-[#6b7695] line-through">#{k.from}</span>
-                          <span className="rounded-pill bg-success-dark/12 px-2.5 py-1 font-mono text-[13px] text-success-dark">
+                          <span className="font-mono text-xs text-[#737373] line-through">#{k.from}</span>
+                          <span className="rounded-chip bg-success-dark/12 px-2.5 py-1 font-mono text-[13px] text-success-dark">
                             ↑ #{k.to}
                           </span>
                         </div>
@@ -126,7 +125,7 @@ export default function ServicesPage() {
                             <GrowBar
                               axis="x"
                               index={i}
-                              className={`h-full rounded-lg ${c.orange ? "bg-orange-500" : "bg-blue-300"}`}
+                              className={`h-full rounded-lg ${c.orange ? "bg-orange-500" : "bg-white/35"}`}
                               style={{ width: `${c.w}%` }}
                             />
                           </div>
@@ -153,17 +152,17 @@ export default function ServicesPage() {
               {svc.items.map((it) => (
                 <div
                   key={it.num}
-                  className="rounded-[20px] border border-line bg-white p-[30px] transition-[transform,border-color] duration-500 ease-[cubic-bezier(0.2,0.7,0.1,1)] hover:translate-x-1.5 hover:border-blue-500"
+                  className="rounded-card border border-line bg-white p-[30px] transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:translate-x-1.5 hover:border-orange-500"
                 >
                   <div className="flex gap-4">
-                    <span className="font-mono text-[13px] text-blue-500">{it.num}</span>
+                    <span className="font-mono text-[13px] text-orange-500">{it.num}</span>
                     <div className="flex-1">
                       <h3 className="font-display text-2xl font-semibold tracking-[-0.01em]">{it.title}</h3>
-                      <p className="mt-2.5 text-base leading-[1.65] text-slate">{it.body}</p>
+                      <p className="mt-2.5 text-base leading-[1.6] text-slate">{it.body}</p>
                       {it.link && (
                         <Link
                           href="#"
-                          className="mt-3.5 inline-block text-[15px] font-semibold text-orange-500 hover:text-blue-600"
+                          className="mt-3.5 inline-block text-[15px] font-semibold text-orange-500 hover:text-ink"
                         >
                           {it.link} →
                         </Link>

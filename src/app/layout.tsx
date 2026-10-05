@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Figtree, JetBrains_Mono } from "next/font/google";
+import { Sora, Figtree, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/motion/provider";
 import "./globals.css";
 
-const fontDisplay = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+const fontDisplay = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["500", "600", "700", "800"],
 });
 
 const fontBody = Figtree({
