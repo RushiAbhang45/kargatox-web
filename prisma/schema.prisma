@@ -77,6 +77,15 @@ model User {
   emailVerified DateTime?
   image         String?
   role          String    @default("SALES") // OWNER | ADMIN | EDITOR | SALES — see src/lib/roles.ts
+  // Bcrypt hash, optional — most accounts sign in via magic link only (see
+  // src/auth.ts). Set via src/lib/password-auth.ts for developer/owner
+  // accounts that want a password instead of relying on log-scraped links.
+  // Deliberately NOT wired into Auth.js's own Credentials provider: that
+  // requires JWT sessions, which conflicts with the "database" strategy the
+  // magic-link flow depends on. Password sign-in instead creates a real
+  // `Session` row directly (src/app/admin/login/actions.ts), so it's
+  // indistinguishable from a magic-link session to the rest of the app.
+  password      String?
   createdAt     DateTime  @default(now())
 
   accounts        Account[]

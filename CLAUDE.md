@@ -165,8 +165,9 @@ API" below). When `checkId` is present, the created `Enquiry` is linked to that 
 
 ## Auth and the admin panel
 
-Auth.js v5 (`next-auth@5.0.0-beta.32`) with the Prisma adapter and **email magic links only** — no
-OAuth providers, no password login.
+Auth.js v5 (`next-auth@5.0.0-beta.32`) with the Prisma adapter — email magic links are the primary path,
+plus a secondary password login for developer/owner convenience (see "Password login" below). No OAuth
+providers.
 
 - **`src/auth.ts`** — `NextAuth({ ... })` exports `handlers`/`auth`/`signIn`/`signOut`. Session strategy is
   `"database"` (sessions live in the `Session` table, not JWT). The `Nodemailer` provider's
@@ -181,6 +182,21 @@ OAuth providers, no password login.
 - **`src/types/next-auth.d.ts`** — module augmentation so `session.user` is typed with `id`/`role` (a
   `Role` from `src/lib/roles.ts`) and non-nullable `email` (safe because the `signIn` callback above
   guarantees an existing, email-bearing `User`).
+- **Password login (`src/lib/password-auth.ts`, `signInWithPassword` in `src/app/admin/login/actions.ts`)**
+  — added so the developer/owner isn't blocked on log-scraping a magic link during early deployment, before
+  real email delivery existed. Deliberately **not** implemented as an Auth.js `Credentials` provider: that
+  requires `session.strategy: "jwt"`, which conflicts with the `"database"` strategy the magic-link flow
+  needs. Instead, `createPasswordSession()` creates a `Session` row and sets the `authjs.session-token` /
+  `__Secure-authjs.session-token` cookie directly — the exact same shape Auth.js's own adapter flow
+  produces (same `crypto.randomUUID()` token, same cookie name/attributes; see
+  `node_modules/@auth/core/lib/utils/cookie.js` and `.../callback/handle-login.js` for the reference
+  behaviour this mirrors) — so `auth()` and the `(protected)` layout's session check don't need to know or
+  care which path a user signed in through. `User.password` is an optional bcrypt hash (`bcryptjs`, pure JS
+  — avoids native-binary cross-compile issues between a Windows dev machine and Vercel's Linux runtime);
+  most accounts have it `null` and can only use magic links. Login attempts are rate-limited
+  (`src/lib/rate-limit.ts`, keyed by IP) since, unlike a magic link, a password is guessable. There's no UI
+  to set a password yet — it's set directly via a Prisma script (`bcrypt.hash` + `prisma.user.update`), not
+  through the admin panel.
 - **`src/lib/roles.ts`** — `ROLES = ["OWNER", "ADMIN", "EDITOR", "SALES"]` and permission helpers like
   `canAccessEnquiries()` (Owner/Admin/Sales, per the README's Team section — Editor gets pages/services/
   FAQ/blog instead). Add new permission checks here, not inline in routes/components.
