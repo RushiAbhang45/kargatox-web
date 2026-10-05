@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
+    "vercel-build": "prisma migrate deploy && next build",
     "db:seed": "node prisma/seed.js"
   },
   "prisma": {

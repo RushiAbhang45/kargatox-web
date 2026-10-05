@@ -14,7 +14,7 @@ fonts; the shared
 header/footer, the `Reveal`/`RevealGroup`/`RiseWords`/`GrowBar` animation primitives, and all five public
 pages (Home, Services, How we work, FAQ, Contact) with static content and their client-side-only
 interactions (revenue-check quiz, FAQ accordion); the Contact form submits for real to `POST /api/enquiries`,
-which validates with zod, rate-limits, checks a honeypot, and writes to a SQLite database via Prisma (see
+which validates with zod, rate-limits, checks a honeypot, and writes to a Postgres database via Prisma (see
 "Backend: the enquiries API" below); the revenue-check quiz now posts each completed check to
 `POST /api/revenue-checks` and links it to the resulting `Enquiry` when the visitor submits one (see
 "Backend: the revenue-check API" below); and Auth.js (magic-link) + a role-gated admin panel exist, with a
@@ -37,11 +37,13 @@ show it (step 6's remaining piece) hasn't been built. Pages, Services & FAQ, Blo
   for the first time** — there's no self-serve signup (see "Auth and the admin panel" below), so without a
   seeded row the magic-link flow has no account to sign in to.
 - `npx prisma migrate dev` — create/apply a migration from `prisma/schema.prisma` and generate the client.
-  Two migrations exist already (`prisma/migrations/`: `..._init`, `..._auth_and_admin`); run this again
-  after any further `schema.prisma` edits.
-- `npx prisma studio` — browse the local SQLite tables (`Enquiry`, `EnquiryMessage`, `User`, etc).
-- Needs a `.env` with `DATABASE_URL="file:./dev.db"` and `AUTH_SECRET` (copy `.env.example`, which documents
-  how to generate a secret) — gitignored, not committed.
+  Run this after any further `schema.prisma` edits (it creates a new timestamped folder under
+  `prisma/migrations/`).
+- `npx prisma studio` — browse the Postgres tables (`Enquiry`, `EnquiryMessage`, `User`, etc).
+- Needs a `.env` with `DATABASE_URL`, `DATABASE_URL_UNPOOLED` and `AUTH_SECRET` (copy `.env.example`, which
+  documents the shape of each and how to generate a secret) — gitignored, not committed. Local dev and
+  production currently point at the **same** Neon database (there's no separate dev/prod split yet — fine
+  pre-launch with no real customer data, but worth splitting via a Neon branch before that changes).
 - No test suite exists yet.
 
 ## Architecture
@@ -109,13 +111,15 @@ API" below). When `checkId` is present, the created `Enquiry` is linked to that 
 - **`src/lib/prisma.ts`** — the standard Next.js dev-mode Prisma singleton (caches the client on
   `globalThis` so hot reload doesn't open a new connection per edit). Import `prisma` from here, never
   `new PrismaClient()` directly.
-- **`prisma/schema.prisma`** — SQLite for local dev (zero setup, no external DB needed). Models:
-  `Enquiry` (with `ownerId`/`owner` for assignment, a `messages` relation to `EnquiryMessage` — the admin
-  reply log, incoming replies aren't handled, every row is outbound — and `revenueCheckId`/`revenueCheck`,
-  a relation to `RevenueCheck`), `RevenueCheck` itself (see "Backend: the revenue-check API" below), plus
-  `User`/`Account`/`Session`/`VerificationToken` for the Auth.js Prisma adapter. `status`/`source`/`role`
-  are plain strings validated at the API/action boundary, not native Prisma enums, because **SQLite doesn't
-  support enums** — switch them to real `enum`s when migrating the `provider` to `"postgresql"`.
+- **`prisma/schema.prisma`** — Postgres (Neon), with `url` set to the pooled (pgbouncer) connection and
+  `directUrl` to the unpooled one Prisma needs for migrations (`DATABASE_URL` / `DATABASE_URL_UNPOOLED` —
+  Neon's own naming, used as-is rather than renamed). Models: `Enquiry` (with `ownerId`/`owner` for
+  assignment, a `messages` relation to `EnquiryMessage` — the admin reply log, incoming replies aren't
+  handled, every row is outbound — and `revenueCheckId`/`revenueCheck`, a relation to `RevenueCheck`),
+  `RevenueCheck` itself (see "Backend: the revenue-check API" below), plus `User`/`Account`/`Session`/
+  `VerificationToken` for the Auth.js Prisma adapter. `status`/`source`/`role` are plain strings validated
+  at the API/action boundary rather than native Prisma `enum`s — that was originally a SQLite limitation
+  (no enum support), kept as-is after the Postgres move since nothing requires changing it.
 - **`src/lib/rate-limit.ts`** — in-memory, per-process token bucket keyed by IP (`x-forwarded-for` /
   `x-real-ip`). Fine for local dev or a single instance; a multi-instance deploy needs a shared store
   (e.g. Upstash Redis) or every instance tracks its own counts independently.
@@ -239,10 +243,14 @@ rebuild the behaviour it shows using the target stack's normal patterns.
 
 - Next.js 14+ (App Router) + TypeScript + Tailwind CSS, deployed on Vercel — scaffolded here with Next.js
   16 / React 19 / Tailwind v4 (`npx create-next-app@latest` ran with `--typescript --tailwind --eslint --app
-  --src-dir`, no version pinned, so re-scaffolding today would land on whatever's current).
-- PostgreSQL (Supabase or Neon) with Prisma. **Prisma is set up against local SQLite for now** (see
-  "Backend: the enquiries API" above) — swap `prisma/schema.prisma`'s `provider` to `"postgresql"` and
-  point `DATABASE_URL` at a real instance before shipping.
+  --src-dir`, no version pinned, so re-scaffolding today would land on whatever's current). **Deployed**:
+  GitHub repo `RushiAbhang45/kargatox-web` (`main` branch), imported into Vercel as project `kargatox-web`,
+  auto-deploying on push.
+- PostgreSQL (Supabase or Neon) with Prisma. **Set up** — a Neon database was provisioned through Vercel's
+  Storage tab and connected to the Production + Preview environments (not Development; local dev points at
+  the same database directly via `.env`, not via Vercel env). `package.json`'s `vercel-build` script
+  (`prisma migrate deploy && next build`) applies any pending migrations on every deploy — Vercel detects
+  and runs this script instead of the default `build` automatically because of its name.
 - Auth.js (NextAuth), email magic links, role-based access control (OWNER/ADMIN/EDITOR/SALES). **Set up**
   (see "Auth and the admin panel" above) — magic links currently log to the console instead of sending real
   mail, and there's no team-invite flow yet (step 8), so new users can only be added via `npm run db:seed`

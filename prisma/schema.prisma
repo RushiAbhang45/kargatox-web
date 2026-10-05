@@ -1,17 +1,20 @@
-// SQLite for now (local dev, zero setup). The README recommends Postgres
-// (Supabase/Neon) for production — when moving over, change `provider` to
-// "postgresql", point DATABASE_URL at the real connection string, and turn
-// `status`/`source`/`role` below into native Prisma `enum`s (SQLite doesn't
-// support enums, so they're plain strings validated at the API boundary with
-// zod instead — see src/app/api/enquiries/route.ts and src/lib/roles.ts).
+// Postgres (Neon), per the README's recommended stack. `directUrl` is Neon's
+// unpooled connection — Prisma needs a non-pgbouncer connection to run
+// migrations, while `url` (pooled, via pgbouncer) is what the app uses at
+// request time. `status`/`source`/`role` below stayed plain strings rather
+// than native Prisma `enum`s even after the SQLite->Postgres move — no
+// functional need to change them, so left as-is (validated at the API
+// boundary with zod instead — see src/app/api/enquiries/route.ts and
+// src/lib/roles.ts).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model Enquiry {
