@@ -1,9 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type AreaKey = "leads" | "sales" | "retention";
+
+// Not cryptographic — just a per-browser-session id to group RevenueCheck
+// rows (README's `sessionId` field). `crypto.randomUUID` isn't guaranteed
+// across every Node version this renders under on the server, so fall back.
+function createSessionId() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
 
 const QUESTIONS: {
   key: AreaKey;
@@ -72,11 +80,49 @@ const METER_WIDTH = ["28%", "62%", "100%"];
 export function RevenueCheck() {
   const [answers, setAnswers] = useState<(0 | 1 | 2 | null)[]>([null, null, null]);
   const [step, setStep] = useState(0);
+  const [sessionId] = useState(createSessionId);
+  const [checkId, setCheckId] = useState<string | null>(null);
+  const submittedForRef = useRef<string | null>(null);
 
   const done = step >= QUESTIONS.length;
   const current = QUESTIONS[Math.min(step, QUESTIONS.length - 1)];
   const answered = answers.filter((v): v is 0 | 1 | 2 => v != null);
   const scoreLabel = answered.length ? String(answered.reduce<number>((a, b) => a + b, 0)) + "/6" : "–";
+
+  let weakestIndex = 0;
+  if (done) {
+    answers.forEach((v, i) => {
+      if ((v as number) < (answers[weakestIndex] as number)) weakestIndex = i;
+    });
+  }
+  const weakest = QUESTIONS[weakestIndex];
+
+  // README: "POST each completed check to /api/revenue-checks ... and link
+  // it to the enquiry if the visitor submits one." The ref guards against
+  // re-posting the same completed answer set (re-renders, Strict Mode's
+  // double-invoke in dev); a Retake clears it so the next completion posts
+  // again as a new row.
+  useEffect(() => {
+    if (!done) return;
+    const signature = answers.join(",");
+    if (submittedForRef.current === signature) return;
+    submittedForRef.current = signature;
+
+    fetch("/api/revenue-checks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        leads: answers[0],
+        sales: answers[1],
+        retention: answers[2],
+        weakest: weakest.key,
+        sessionId,
+      }),
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setCheckId(data?.id ?? null))
+      .catch(() => {});
+  }, [done, answers, weakest.key, sessionId]);
 
   let result: (typeof RESULTS)[AreaKey] & { href: string; cta: string; title: string } = {
     ...RESULTS.leads,
@@ -84,11 +130,6 @@ export function RevenueCheck() {
     cta: "",
   };
   if (done) {
-    let wi = 0;
-    answers.forEach((v, i) => {
-      if ((v as number) < (answers[wi] as number)) wi = i;
-    });
-    const weakest = QUESTIONS[wi];
     const r = RESULTS[weakest.key];
     const allPerfect = answers.every((v) => v === 2);
     result = {
@@ -98,7 +139,8 @@ export function RevenueCheck() {
         "/contact?service=" +
         encodeURIComponent(r.service) +
         "&note=" +
-        encodeURIComponent("Revenue check result: " + weakest.area + " needs attention."),
+        encodeURIComponent("Revenue check result: " + weakest.area + " needs attention.") +
+        (checkId ? "&checkId=" + encodeURIComponent(checkId) : ""),
       cta: `Fix my ${weakest.area.toLowerCase()} →`,
     };
   }
@@ -110,6 +152,13 @@ export function RevenueCheck() {
       return next;
     });
     setStep((s) => s + 1);
+  }
+
+  function retake() {
+    setAnswers([null, null, null]);
+    setStep(0);
+    setCheckId(null);
+    submittedForRef.current = null;
   }
 
   return (
@@ -212,10 +261,7 @@ export function RevenueCheck() {
                 </Link>
                 <button
                   type="button"
-                  onClick={() => {
-                    setAnswers([null, null, null]);
-                    setStep(0);
-                  }}
+                  onClick={retake}
                   className="rounded-pill border border-line-2 bg-transparent px-6 py-[15px] text-base font-semibold text-ink"
                 >
                   Retake

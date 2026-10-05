@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# prisma (SQLite local dev database; migrations/schema stay tracked)
+/prisma/*.db
+/prisma/*.db-journal
 
 # vercel
 .vercel
@@ -40,5 +45,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# claude code local settings
-.claude/settings.local.json
+# claude code local settings/runtime state
+.claude/

@@ -1,0 +1,119 @@
+// SQLite for now (local dev, zero setup). The README recommends Postgres
+// (Supabase/Neon) for production — when moving over, change `provider` to
+// "postgresql", point DATABASE_URL at the real connection string, and turn
+// `status`/`source`/`role` below into native Prisma `enum`s (SQLite doesn't
+// support enums, so they're plain strings validated at the API boundary with
+// zod instead — see src/app/api/enquiries/route.ts and src/lib/roles.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Enquiry {
+  id             String   @id @default(cuid())
+  name           String
+  email          String
+  phone          String?
+  company        String?
+  service        String
+  details        String
+  status         String   @default("NEW") // NEW | CONTACTED | PROPOSAL | WON | LOST
+  ownerId        String?
+  owner          User?    @relation(fields: [ownerId], references: [id])
+  source         String // "Contact form" | "Revenue check"
+  revenueCheckId String?
+  revenueCheck   RevenueCheck? @relation(fields: [revenueCheckId], references: [id])
+  createdAt      DateTime @default(now())
+  messages       EnquiryMessage[]
+}
+
+// One row per completed Home-page quiz (src/components/home/revenue-check.tsx).
+// `weakest` is "leads" | "sales" | "retention" — ties go to leads, then sales,
+// then retention (see the component). `email`/`city` are unused for now: the
+// quiz is anonymous and doesn't collect either.
+model RevenueCheck {
+  id        String   @id @default(cuid())
+  leads     Int
+  sales     Int
+  retention Int
+  weakest   String
+  sessionId String
+  email     String?
+  city      String?
+  createdAt DateTime @default(now())
+  enquiries Enquiry[]
+}
+
+// A reply sent from the admin Enquiries detail panel. Incoming replies
+// (Resend inbound / Gmail API webhook) aren't handled yet — see the README's
+// Enquiries section — so every row here is outbound, from `sender`.
+model EnquiryMessage {
+  id        String   @id @default(cuid())
+  enquiryId String
+  enquiry   Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  senderId  String?
+  sender    User?    @relation(fields: [senderId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+}
+
+// --- Auth.js (next-auth v5) + Prisma adapter — shape required by
+// @auth/prisma-adapter (see node_modules/@auth/prisma-adapter/index.js):
+// user/account/session/verificationToken delegates. No OAuth providers are
+// configured (email magic link only), so Account only exists for adapter
+// type-compatibility / future OAuth — see src/auth.ts.
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("SALES") // OWNER | ADMIN | EDITOR | SALES — see src/lib/roles.ts
+  createdAt     DateTime  @default(now())
+
+  accounts        Account[]
+  sessions        Session[]
+  enquiries       Enquiry[]
+  enquiryMessages EnquiryMessage[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

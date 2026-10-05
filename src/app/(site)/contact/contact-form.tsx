@@ -2,16 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-
-const SERVICE_OPTIONS = [
-  "General Inquiry",
-  "Market Research",
-  "Consumer Behaviour & Satisfaction Analysis",
-  "Campaign Analytics",
-  "SEO Services",
-  "Social Media Marketing",
-  "Brand Campaigns Strategy",
-];
+import { SERVICE_OPTIONS } from "@/lib/enquiry-schema";
 
 type FormState = {
   name: string;
@@ -19,6 +10,7 @@ type FormState = {
   phone: string;
   service: string;
   details: string;
+  company: string; // honeypot — real users never see or fill this
 };
 
 const EMPTY_FORM: FormState = {
@@ -27,9 +19,12 @@ const EMPTY_FORM: FormState = {
   phone: "",
   service: "General Inquiry",
   details: "",
+  company: "",
 };
 
 type Errors = Partial<Record<keyof FormState, string>>;
+
+const REVENUE_CHECK_NOTE_PREFIX = "Revenue check result:";
 
 export function ContactForm() {
   const searchParams = useSearchParams();
@@ -43,6 +38,8 @@ export function ContactForm() {
     };
   });
   const [errors, setErrors] = useState<Errors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
 
   function set(key: keyof FormState) {
@@ -53,7 +50,7 @@ export function ContactForm() {
     };
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     const errs: Errors = {};
     if (!form.name.trim()) errs.name = "Please enter your name";
@@ -63,8 +60,39 @@ export function ContactForm() {
       setErrors(errs);
       return;
     }
-    // Submits nowhere yet — POST /api/enquiries lands in the next build step.
-    setSent(true);
+
+    setSubmitError(null);
+    setSubmitting(true);
+    const note = searchParams.get("note");
+    const checkId = searchParams.get("checkId");
+    const source = checkId || note?.startsWith(REVENUE_CHECK_NOTE_PREFIX) ? "Revenue check" : "Contact form";
+
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone || undefined,
+          service: form.service,
+          details: form.details,
+          source,
+          revenueCheckId: checkId || undefined,
+          company: form.company,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setSubmitError(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+      setSent(true);
+    } catch {
+      setSubmitError("Network error. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const firstName = form.name.trim().split(" ")[0];
@@ -86,6 +114,7 @@ export function ContactForm() {
             onClick={() => {
               setSent(false);
               setErrors({});
+              setSubmitError(null);
               setForm(EMPTY_FORM);
             }}
             className="mt-2 rounded-pill border border-white/25 bg-transparent px-[22px] py-3 text-[15px] font-semibold text-white"
@@ -165,11 +194,37 @@ export function ContactForm() {
           <span className="min-h-4 text-[13px] text-orange-400">{errors.details}</span>
         </label>
 
+        {/* Honeypot — visually hidden and out of tab order/screen-reader flow so
+            real users never encounter it; bots that fill every field they find
+            trip it, and the API silently no-ops instead of saving. Label/name
+            deliberately avoid recognizable autofill keywords ("Company",
+            "Organization", etc.) — a label literally reading "Company" got this
+            silently autofilled by a real browser during testing, which dropped a
+            genuine submission (no DB row, no email) while still showing success. */}
+        <div className="absolute h-px w-px overflow-hidden" style={{ clip: "rect(0,0,0,0)" }} aria-hidden="true">
+          <label>
+            Leave this field blank
+            <input
+              type="text"
+              name="hp-field"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.company}
+              onChange={set("company")}
+            />
+          </label>
+        </div>
+
+        {submitError && (
+          <p className="col-span-full text-[13px] text-orange-400">{submitError}</p>
+        )}
+
         <button
           type="submit"
-          className="rounded-xl bg-orange-500 py-[18px] font-body text-[17px] font-semibold text-white transition-colors hover:bg-orange-400 col-span-full"
+          disabled={submitting}
+          className="rounded-xl bg-orange-500 py-[18px] font-body text-[17px] font-semibold text-white transition-colors hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-60 col-span-full"
         >
-          Submit Inquiry
+          {submitting ? "Submitting…" : "Submit Inquiry"}
         </button>
       </form>
     </div>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Figtree, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/motion/provider";
-import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
 const fontDisplay = Bricolage_Grotesque({
@@ -35,10 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${fontDisplay.variable} ${fontBody.variable} ${fontMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink font-body">
-        <MotionProvider>
-          <SiteHeader />
-          {children}
-        </MotionProvider>
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );
