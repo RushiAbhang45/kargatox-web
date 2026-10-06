@@ -8,18 +8,18 @@ import { PROCESS_STEPS } from "@/lib/process-steps";
 const PILLARS = [
   {
     num: "01",
-    title: "Founder Led",
-    body: "Built by entrepreneurs & experts who understand what it takes to build and scale businesses.",
+    title: "Founder-Led",
+    body: "Started and run by people who've built businesses themselves — not advisors reciting a framework.",
   },
   {
     num: "02",
-    title: "Hands-On",
-    body: "Work alongside your team to turn strategy into decisions, actions and outcomes.",
+    title: "In The Weeds",
+    body: "We sit inside your CRM, your campaigns and your calls. The work happens with your team, not around it.",
   },
   {
     num: "03",
-    title: "Outcome Driven",
-    body: "Practical strategies designed to create tangible business impact-not just presentations.",
+    title: "Numbers First",
+    body: "Every engagement is scoped against a number that needs to move: pipeline, retention, revenue. Not a deck.",
   },
 ];
 
@@ -39,12 +39,12 @@ const CAPABILITY_SERVICES = [
 const TICKER = [...CAPABILITY_SERVICES.flatMap((s) => s.subs), ...CAPABILITY_SERVICES.flatMap((s) => s.subs)];
 
 const HERO_WORDS = [
-  { text: "Turning" },
-  { text: "Ideas" },
-  { text: "Into" },
-  { text: "Products" },
-  { text: "That", className: "text-orange-400" },
-  { text: "Grow.", className: "text-orange-400" },
+  { text: "Built" },
+  { text: "On" },
+  { text: "Research." },
+  { text: "Measured" },
+  { text: "In" },
+  { text: "Growth.", className: "text-blue-300" },
 ];
 
 export default function Home() {
@@ -55,7 +55,7 @@ export default function Home() {
         <div className="relative mx-auto grid max-w-(--width-site) grid-cols-1 gap-y-14 px-6 pb-[90px] pt-[110px] lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start lg:gap-x-16">
           <div>
             <div className="inline-flex items-center gap-2.5 rounded-chip border border-white/16 px-3.5 py-[7px] font-mono text-xs uppercase tracking-[0.08em] text-mist">
-              <span className="h-[7px] w-[7px] rounded-full bg-orange-400" />
+              <span className="h-[7px] w-[7px] rounded-full bg-blue-300" />
               Strategy · Research · Growth
             </div>
             <h1 className="mt-7 max-w-[720px] font-display text-[clamp(38px,6vw,84px)] font-semibold leading-[1.02] tracking-[-0.03em]">
@@ -63,21 +63,21 @@ export default function Home() {
             </h1>
             <Reveal delay={0.3}>
               <p className="mt-7 max-w-[560px] text-[clamp(17px,1.6vw,21px)] leading-[1.6] text-mist">
-                We partner with founders and leadership teams to shape strategy, validate opportunities, build
-                products and execute go-to-market across India
+                We help founders and leadership teams understand their market, decode their customers, and turn
+                that insight into campaigns that move revenue — across India
               </p>
             </Reveal>
             <Reveal delay={0.4}>
               <div className="mt-10 flex flex-wrap gap-3.5">
                 <Link
                   href="/contact"
-                  className="rounded-pill bg-orange-500 px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-orange-400"
+                  className="rounded-pill bg-blue-500 px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-blue-600"
                 >
                   Start an Inquiry →
                 </Link>
                 <Link
                   href="/services"
-                  className="rounded-input border border-white/25 px-7 py-4 text-base font-semibold text-white transition-colors hover:border-orange-400"
+                  className="rounded-input border border-white/25 px-7 py-4 text-base font-semibold text-white transition-colors hover:border-blue-300"
                 >
                   Explore services
                 </Link>
@@ -97,7 +97,7 @@ export default function Home() {
               key={i}
               className="flex items-center gap-7 whitespace-nowrap pr-7 font-display text-[clamp(24px,3vw,40px)] font-semibold tracking-[-0.01em] text-white"
             >
-              <span className={`h-3 w-3 rounded-[3px] ${i % 2 ? "bg-white" : "bg-orange-500"}`} />
+              <span className={`h-3 w-3 rounded-[3px] ${i % 2 ? "bg-white" : "bg-blue-500"}`} />
               {label}
             </span>
           ))}
@@ -107,16 +107,16 @@ export default function Home() {
       <section className="px-6 py-[120px]">
         <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-end gap-x-20 gap-y-12">
           <div>
-            <div className="font-mono text-[13px] tracking-[0.12em] text-orange-500">OUR CAPABILITIES</div>
+            <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">OUR CAPABILITIES</div>
             <h2 className="mt-[18px] font-display text-[clamp(36px,4.6vw,64px)] font-semibold leading-[1.02] tracking-[-0.032em]">
-              Capabilities That Keep Your Business{" "}
-              <span className="text-orange-500">Moving Forward.</span>
+              Two Disciplines.{" "}
+              <span className="text-blue-600">One Growth Engine.</span>
             </h2>
           </div>
           <p className="text-[19px] leading-[1.6] text-slate">
-            At Kargatox, we bring strategy, customer understanding and marketing together to help businesses
-            move in the right direction. We understand your audience, identify opportunities, design the
-            right solutions and create the pathways to reach, engage and grow your market.
+            Kargatox runs on two disciplines working together: research that tells you who your market
+            actually is, and marketing built to reach them. We find the gap, design the fix, and stay close
+            enough to the data to know it&apos;s working.
           </p>
         </div>
         <RevealGroup className="mx-auto mt-16 grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] gap-5">
@@ -124,9 +124,9 @@ export default function Home() {
             <Link
               key={s.num}
               href="/services"
-              className="group flex flex-col gap-[18px] rounded-card border border-line bg-white p-9 text-ink transition-colors duration-500 ease-[var(--ease-kx)] hover:border-orange-500 hover:bg-paper"
+              className="group flex flex-col gap-[18px] rounded-card border border-line bg-white p-9 text-ink transition-colors duration-500 ease-[var(--ease-kx)] hover:border-blue-500 hover:bg-paper"
             >
-              <div className="font-mono text-[13px] text-orange-500">{s.num}</div>
+              <div className="font-mono text-[13px] text-blue-600">{s.num}</div>
               <h3 className="font-display text-[34px] font-semibold tracking-[-0.02em]">{s.title}</h3>
               <div className="flex flex-wrap gap-2">
                 {s.subs.map((sub) => (
@@ -135,7 +135,7 @@ export default function Home() {
                   </span>
                 ))}
               </div>
-              <span className="mt-2 inline-flex items-center gap-1 text-[15px] font-semibold text-orange-500 transition-transform duration-300 group-hover:translate-x-1">
+              <span className="mt-2 inline-flex items-center gap-1 text-[15px] font-semibold text-blue-600 transition-transform duration-300 group-hover:translate-x-1">
                 View details →
               </span>
             </Link>
@@ -149,7 +149,7 @@ export default function Home() {
         <div className="mx-auto max-w-(--width-site)">
           <div className="flex flex-wrap items-end justify-between gap-8">
             <div>
-              <div className="font-mono text-[13px] tracking-[0.12em] text-orange-400">HOW WE WORK</div>
+              <div className="font-mono text-[13px] tracking-[0.12em] text-blue-300">HOW WE WORK</div>
               <h2 className="mt-[18px] font-display text-[clamp(38px,4.6vw,64px)] font-semibold leading-none tracking-[-0.032em]">
                 We do the work.
                 <br />
@@ -158,7 +158,7 @@ export default function Home() {
             </div>
             <Link
               href="/how-we-work"
-              className="whitespace-nowrap rounded-input border border-white/25 px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:border-orange-400"
+              className="whitespace-nowrap rounded-input border border-white/25 px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:border-blue-300"
             >
               See the full process →
             </Link>
@@ -175,9 +175,9 @@ export default function Home() {
       <section className="px-6 py-[110px]">
         <Reveal className="mx-auto flex max-w-(--width-site) flex-wrap items-center justify-between gap-8">
           <div>
-            <div className="font-mono text-[13px] tracking-[0.12em] text-orange-500">BEFORE YOU ASK</div>
+            <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">BEFORE YOU ASK</div>
             <h2 className="mt-3.5 font-display text-[clamp(32px,3.6vw,48px)] font-semibold leading-[1.05] tracking-[-0.032em]">
-              You have questions. <span className="text-orange-500">We have straight answers.</span>
+              You have questions. <span className="text-blue-600">We have straight answers.</span>
             </h2>
           </div>
           <Link

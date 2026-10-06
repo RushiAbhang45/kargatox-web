@@ -15,7 +15,7 @@ export default function HowWeWorkPage() {
       <section className="bg-navy-900 text-white">
         <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-end gap-x-20 gap-y-10 px-6 pb-[100px] pt-[100px]">
           <div>
-            <div className="font-mono text-[13px] tracking-[0.12em] text-orange-400">HOW WE WORK</div>
+            <div className="font-mono text-[13px] tracking-[0.12em] text-blue-300">HOW WE WORK</div>
             <Reveal delay={0.1}>
               <h1 className="mt-5 font-display text-[clamp(36px,4.6vw,68px)] font-semibold leading-[1.02] tracking-[-0.02em]">
                 We do the work.

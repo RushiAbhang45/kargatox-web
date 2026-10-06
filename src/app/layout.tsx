@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Sora, Figtree, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Figtree, JetBrains_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/motion/provider";
 import "./globals.css";
 
-const fontDisplay = Sora({
-  variable: "--font-sora",
+const fontDisplay = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
 });
 
 const fontBody = Figtree({
@@ -24,7 +24,7 @@ const fontMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Kargatox — Strategy, Research & Growth Marketing",
   description:
-    "Kargatox partners with founders and leadership teams to shape strategy, validate opportunities, build products and execute go-to-market across India.",
+    "Kargatox helps founders and leadership teams understand their market, decode their customers, and turn that insight into campaigns that move revenue — across India.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

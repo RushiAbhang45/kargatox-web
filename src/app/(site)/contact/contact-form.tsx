@@ -101,7 +101,7 @@ export function ContactForm() {
     return (
       <div className="rounded-panel border border-white/10 bg-navy-800 p-[clamp(24px,4vw,48px)]">
         <div className="grid justify-items-center gap-[18px] py-10 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-500 text-[28px] text-white">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-500 text-[28px] text-white">
             ✓
           </div>
           <h2 className="font-display text-[32px] font-semibold tracking-[-0.02em]">Thanks, {firstName}.</h2>
@@ -222,7 +222,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-xl bg-orange-500 py-[18px] font-body text-[17px] font-semibold text-white transition-colors hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-60 col-span-full"
+          className="rounded-xl bg-blue-500 py-[18px] font-body text-[17px] font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60 col-span-full"
         >
           {submitting ? "Submitting…" : "Submit Inquiry"}
         </button>

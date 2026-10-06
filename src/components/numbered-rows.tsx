@@ -51,7 +51,7 @@ export function NumberedRows({
   className?: string;
 }) {
   const dividerClass = theme === "light" ? "border-line-2" : "border-white/12";
-  const numeralClass = theme === "light" ? "text-orange-500" : "text-orange-400";
+  const numeralClass = theme === "light" ? "text-blue-500" : "text-blue-300";
   const titleClass = theme === "light" ? "text-ink" : "text-white";
   const bodyClass = theme === "light" ? "text-slate" : "text-mist-2";
   const metaClass =
@@ -64,7 +64,7 @@ export function NumberedRows({
       {items.map((item, i) => (
         <div
           key={item.num}
-          className={`grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-400/50 ${dividerClass} ${ROW_GAP[variant]}`}
+          className={`grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-blue-500/50 ${dividerClass} ${ROW_GAP[variant]}`}
         >
           <div className="grid content-start">
             <div className={`min-w-[1.2em] font-display font-semibold leading-[0.9] ${NUMERAL_SIZE[variant]} ${numeralClass}`}>
@@ -73,7 +73,7 @@ export function NumberedRows({
             <GrowBar
               axis="x"
               index={i}
-              className={`mt-2.5 h-[2px] origin-left ${UNDERLINE_WIDTH[variant]} ${theme === "light" ? "bg-orange-500" : "bg-orange-400"}`}
+              className={`mt-2.5 h-[2px] origin-left ${UNDERLINE_WIDTH[variant]} ${theme === "light" ? "bg-blue-500" : "bg-blue-300"}`}
             />
           </div>
           <div className="grid gap-2.5 self-start">

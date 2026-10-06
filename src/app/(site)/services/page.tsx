@@ -15,36 +15,33 @@ export default function ServicesPage() {
     <main className="flex flex-1 flex-col">
       <section className="bg-navy-900 text-white">
         <div className="relative mx-auto grid max-w-(--width-site) gap-7 px-6 pb-[90px] pt-[100px]">
-          <div className="font-mono text-[13px] tracking-[0.12em] text-orange-400">SERVICES</div>
+          <div className="font-mono text-[13px] tracking-[0.12em] text-blue-300">SERVICES</div>
           <Reveal>
             <h1 className="max-w-[920px] font-display text-[clamp(30px,3.6vw,48px)] font-semibold leading-[1.15] tracking-[-0.02em]">
-              We don&apos;t simply deliver research or marketing services. We become an extension of your
-              team, working alongside you to understand your business, solve challenges and create
-              sustainable growth.
+              Research tells you what&apos;s true. We build the marketing that acts on it.
             </h1>
           </Reveal>
           <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] gap-x-14 gap-y-6 text-[18px] leading-[1.6] text-mist">
             <p>
-              Our hands-on approach starts with understanding your business, defining the right strategy,
-              mapping your audience and learning how they behave. We then turn those insights into focused
-              execution across consulting, technology and marketing.
+              We start by figuring out what&apos;s actually happening — in your market, with your customers,
+              inside your funnel. Guesswork is expensive, and most engagements here begin by replacing it
+              with evidence.
             </p>
             <p>
-              Every engagement is driven by clear objectives and measurable KPIs, with transparent progress
-              at every stage. You always know what we are doing, why we are doing it and how it contributes
-              to your growth.
+              From there, every recommendation ships with a number attached. You&apos;ll always know what
+              we&apos;re doing, why we&apos;re doing it, and what it&apos;s meant to move for your business.
             </p>
           </div>
           <div className="mt-4 flex flex-wrap gap-2.5">
             <Link
               href="#research"
-              className="rounded-input border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-orange-400"
+              className="rounded-input border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-blue-300"
             >
               Research Services ↓
             </Link>
             <Link
               href="#marketing"
-              className="rounded-input border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-orange-400"
+              className="rounded-input border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-blue-300"
             >
               Marketing Services ↓
             </Link>
@@ -56,13 +53,13 @@ export default function ServicesPage() {
         <section key={svc.id} id={svc.id} className="px-6 pt-[110px]">
           <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-x-16 gap-y-10">
             <div className="sticky top-[110px]">
-              <div className="font-mono text-[13px] tracking-[0.12em] text-orange-500">{svc.num}</div>
+              <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">{svc.num}</div>
               <h2 className="mt-3.5 font-display text-[clamp(34px,4vw,56px)] font-semibold leading-[1.02] tracking-[-0.025em]">
                 {svc.title}
               </h2>
               <p className="mt-[18px] text-[18px] leading-[1.6] text-slate">{svc.intro}</p>
               {svc.tagline && (
-                <p className="mt-6 font-display text-2xl font-semibold tracking-[-0.01em] text-orange-500">
+                <p className="mt-6 font-display text-2xl font-semibold tracking-[-0.01em] text-blue-600">
                   {svc.tagline}
                 </p>
               )}
@@ -86,7 +83,7 @@ export default function ServicesPage() {
                           key={i}
                           axis="y"
                           index={i}
-                          className={`flex-1 rounded-t-[5px] rounded-b-[2px] ${b.orange ? "bg-orange-500" : "bg-white/25"}`}
+                          className={`flex-1 rounded-t-[5px] rounded-b-[2px] ${b.orange ? "bg-blue-500" : "bg-white/25"}`}
                           style={{ height: `${b.h}%` }}
                         />
                       ))}
@@ -125,7 +122,7 @@ export default function ServicesPage() {
                             <GrowBar
                               axis="x"
                               index={i}
-                              className={`h-full rounded-lg ${c.orange ? "bg-orange-500" : "bg-white/35"}`}
+                              className={`h-full rounded-lg ${c.orange ? "bg-blue-500" : "bg-white/35"}`}
                               style={{ width: `${c.w}%` }}
                             />
                           </div>
@@ -152,17 +149,17 @@ export default function ServicesPage() {
               {svc.items.map((it) => (
                 <div
                   key={it.num}
-                  className="rounded-card border border-line bg-white p-[30px] transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:translate-x-1.5 hover:border-orange-500"
+                  className="rounded-card border border-line bg-white p-[30px] transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:translate-x-1.5 hover:border-blue-500"
                 >
                   <div className="flex gap-4">
-                    <span className="font-mono text-[13px] text-orange-500">{it.num}</span>
+                    <span className="font-mono text-[13px] text-blue-600">{it.num}</span>
                     <div className="flex-1">
                       <h3 className="font-display text-2xl font-semibold tracking-[-0.01em]">{it.title}</h3>
                       <p className="mt-2.5 text-base leading-[1.6] text-slate">{it.body}</p>
                       {it.link && (
                         <Link
                           href="#"
-                          className="mt-3.5 inline-block text-[15px] font-semibold text-orange-500 hover:text-ink"
+                          className="mt-3.5 inline-block text-[15px] font-semibold text-blue-600 hover:text-ink"
                         >
                           {it.link} →
                         </Link>

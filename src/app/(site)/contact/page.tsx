@@ -29,10 +29,10 @@ export default function ContactPage() {
       <section className="px-6 pb-[120px] pt-[90px]">
         <div className="relative mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-x-18 gap-y-14">
           <div className="grid gap-6">
-            <div className="font-mono text-[13px] tracking-[0.14em] text-orange-400">GET IN TOUCH</div>
+            <div className="font-mono text-[13px] tracking-[0.14em] text-blue-300">GET IN TOUCH</div>
             <Reveal>
               <h1 className="font-display text-[clamp(36px,4.4vw,60px)] font-semibold leading-[1.02] tracking-[-0.02em]">
-                Initiate a <span className="text-orange-400">Project</span>
+                Initiate a <span className="text-blue-300">Project</span>
               </h1>
             </Reveal>
             <Reveal delay={0.1}>
@@ -45,7 +45,7 @@ export default function ContactPage() {
             <RevealGroup className="mt-6 grid gap-7" itemClassName="grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 gap-y-2">
               {STEPS.map((s) => (
                 <div key={s.num} className="contents">
-                  <span className="pt-[3px] font-mono text-sm text-orange-400">{s.num}</span>
+                  <span className="pt-[3px] font-mono text-sm text-blue-300">{s.num}</span>
                   <div>
                     <h3 className="text-lg font-semibold">{s.title}</h3>
                     <p className="mt-1.5 text-base leading-[1.6] text-mist-2">{s.body}</p>
@@ -58,7 +58,7 @@ export default function ContactPage() {
               <span className="font-mono text-xs tracking-[0.12em] text-mist-2">PREFER EMAIL?</span>
               <a
                 href="mailto:hello@kargatox.com"
-                className="font-display text-2xl font-semibold text-white transition-colors hover:text-orange-400"
+                className="font-display text-2xl font-semibold text-white transition-colors hover:text-blue-300"
               >
                 hello@kargatox.com
               </a>

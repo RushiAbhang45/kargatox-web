@@ -39,7 +39,7 @@ export function FaqAccordion() {
               <span>{f.q}</span>
               <span
                 className={`flex h-9 w-9 flex-none items-center justify-center rounded-full font-body text-xl ${
-                  open ? "bg-orange-500 text-white" : "bg-chip-neutral text-ink"
+                  open ? "bg-blue-500 text-white" : "bg-chip-neutral text-ink"
                 }`}
               >
                 {open ? "−" : "+"}

@@ -166,11 +166,11 @@ export function RevenueCheck() {
     <section className="px-6 pb-[120px]">
       <div className="mx-auto grid max-w-(--width-site) grid-cols-1 overflow-hidden rounded-panel border border-line bg-white min-[880px]:grid-cols-2">
         <div className="grid content-start gap-[22px] p-[clamp(28px,5vw,56px)]">
-          <span className="font-mono text-[13px] tracking-[0.12em] text-orange-500">
+          <span className="font-mono text-[13px] tracking-[0.12em] text-blue-600">
             REVENUE CHECK · 30 SECONDS
           </span>
           <h2 className="font-display text-[clamp(34px,4vw,54px)] font-semibold leading-[1.02] tracking-[-0.02em]">
-            Where is your revenue <span className="text-orange-500">leaking?</span>
+            Where is your revenue <span className="text-blue-600">leaking?</span>
           </h2>
           <p className="text-[18px] leading-[1.6] text-slate">
             Answer three questions. We&apos;ll show you which area to fix first.
@@ -184,7 +184,7 @@ export function RevenueCheck() {
                     <div
                       key={i}
                       className={`h-1 flex-1 rounded-full transition-colors duration-[400ms] ${
-                        i < step ? "bg-orange-500" : i === step ? "bg-ink" : "bg-chip-neutral"
+                        i < step ? "bg-blue-500" : i === step ? "bg-ink" : "bg-chip-neutral"
                       }`}
                     />
                   ))}
@@ -194,7 +194,7 @@ export function RevenueCheck() {
                 </span>
               </div>
 
-              <span className="w-fit rounded-chip bg-[#ffe8da] px-3 py-1.5 font-mono text-xs uppercase tracking-[0.08em] text-orange-500">
+              <span className="w-fit rounded-chip bg-[#e8f0ff] px-3 py-1.5 font-mono text-xs uppercase tracking-[0.08em] text-blue-600">
                 {current.area}
               </span>
               <h3 className="font-display text-[clamp(24px,2.4vw,30px)] font-semibold tracking-[-0.01em]">
@@ -208,12 +208,12 @@ export function RevenueCheck() {
                       key={label}
                       type="button"
                       onClick={() => pick(value)}
-                      className={`flex items-center justify-between gap-4 rounded-[14px] border-[1.5px] px-5 py-[18px] text-left text-[17px] font-medium text-ink transition-[border-color,transform] duration-300 hover:translate-x-1 hover:border-orange-500 ${
-                        selected ? "border-orange-500 bg-[#ffe8da]" : "border-line bg-white"
+                      className={`flex items-center justify-between gap-4 rounded-[14px] border-[1.5px] px-5 py-[18px] text-left text-[17px] font-medium text-ink transition-[border-color,transform] duration-300 hover:translate-x-1 hover:border-blue-500 ${
+                        selected ? "border-blue-500 bg-[#e8f0ff]" : "border-line bg-white"
                       }`}
                     >
                       <span>{label}</span>
-                      <span className="text-orange-500">→</span>
+                      <span className="text-blue-500">→</span>
                     </button>
                   );
                 })}
@@ -232,7 +232,7 @@ export function RevenueCheck() {
 
           {done && (
             <div className="mt-3 grid gap-[18px]">
-              <span className="w-fit rounded-chip bg-orange-500 px-3 py-1.5 font-mono text-xs tracking-[0.08em] text-white">
+              <span className="w-fit rounded-chip bg-blue-500 px-3 py-1.5 font-mono text-xs tracking-[0.08em] text-white">
                 YOUR RESULT
               </span>
               <h3 className="font-display text-[clamp(26px,2.8vw,36px)] font-semibold tracking-[-0.015em]">
@@ -256,7 +256,7 @@ export function RevenueCheck() {
               <div className="mt-2 flex flex-wrap gap-3">
                 <Link
                   href={result.href}
-                  className="rounded-pill bg-orange-500 px-6 py-[15px] text-base font-semibold text-white transition-colors hover:bg-orange-400"
+                  className="rounded-pill bg-blue-500 px-6 py-[15px] text-base font-semibold text-white transition-colors hover:bg-blue-600"
                 >
                   {result.cta}
                 </Link>
@@ -278,7 +278,7 @@ export function RevenueCheck() {
               <span className="font-mono text-xs tracking-[0.12em] text-mist-2">REVENUE HEALTH</span>
               <span className="font-display text-[44px] font-semibold leading-none">{scoreLabel}</span>
             </div>
-            <GrowBar axis="x" className="h-[2px] w-14 origin-left bg-orange-400" />
+            <GrowBar axis="x" className="h-[2px] w-14 origin-left bg-blue-300" />
           </Reveal>
           <Reveal delay={0.1} className="grid gap-[26px]">
             {QUESTIONS.map((question, i) => {

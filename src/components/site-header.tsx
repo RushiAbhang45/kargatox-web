@@ -29,7 +29,7 @@ export function SiteHeader() {
                   key={l.href}
                   href={l.href}
                   className={`whitespace-nowrap border-b-2 pb-0.5 text-[15px] font-medium leading-6 transition-colors hover:text-white ${
-                    active ? "border-orange-500 text-white" : "border-transparent text-mist"
+                    active ? "border-blue-500 text-white" : "border-transparent text-mist"
                   }`}
                 >
                   {l.label}
@@ -39,7 +39,7 @@ export function SiteHeader() {
           </div>
           <Link
             href="/contact"
-            className="hidden flex-none whitespace-nowrap rounded-pill bg-orange-500 px-4.5 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-orange-400 nav:block"
+            className="hidden flex-none whitespace-nowrap rounded-pill bg-blue-500 px-4.5 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-blue-600 nav:block"
           >
             Start an Inquiry
           </Link>
@@ -62,7 +62,7 @@ export function SiteHeader() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={`border-b border-white/8 py-3.5 font-display text-2xl font-semibold transition-colors hover:text-orange-400 ${
+                  className={`border-b border-white/8 py-3.5 font-display text-2xl font-semibold transition-colors hover:text-blue-300 ${
                     active ? "text-white" : "text-mist"
                   }`}
                 >

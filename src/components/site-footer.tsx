@@ -6,7 +6,7 @@ export function SiteFooter({ showCta = true }: { showCta?: boolean }) {
     <>
       {showCta && (
         <section className="bg-paper px-6 pb-[120px]">
-          <div className="mx-auto max-w-(--width-site) rounded-panel bg-orange-500 p-[clamp(40px,7vw,96px)] text-white">
+          <div className="mx-auto max-w-(--width-site) rounded-panel bg-blue-500 p-[clamp(40px,7vw,96px)] text-white">
             <div className="max-w-[760px]">
               <h2 className="font-display text-[clamp(38px,5vw,72px)] font-semibold leading-none tracking-[-0.032em]">
                 We move the only number that matters. Yours.
@@ -20,7 +20,7 @@ export function SiteFooter({ showCta = true }: { showCta?: boolean }) {
                 </Link>
                 <Link
                   href="/services"
-                  className="rounded-pill bg-white px-7 py-4 text-base font-semibold text-navy-900 transition-colors hover:text-orange-500"
+                  className="rounded-pill bg-white px-7 py-4 text-base font-semibold text-navy-900 transition-colors hover:text-blue-600"
                 >
                   See our services
                 </Link>
@@ -41,7 +41,7 @@ export function SiteFooter({ showCta = true }: { showCta?: boolean }) {
           </div>
           <div className="flex flex-wrap gap-7 text-[15px]">
             {NAV_LINKS.map((l) => (
-              <Link key={l.href} href={l.href} className="text-mist transition-colors hover:text-orange-400">
+              <Link key={l.href} href={l.href} className="text-mist transition-colors hover:text-blue-300">
                 {l.label}
               </Link>
             ))}
