@@ -49,8 +49,8 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {SERVICES.map((svc) => (
-        <section key={svc.id} id={svc.id} className="px-6 pt-[110px]">
+      {SERVICES.map((svc, i) => (
+        <section key={svc.id} id={svc.id} className={`px-6 ${i === 0 ? "pt-[64px]" : "pt-[110px]"}`}>
           <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-x-16 gap-y-10">
             <div className="sticky top-[110px]">
               <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">{svc.num}</div>

@@ -7,8 +7,8 @@ export function SiteFooter({ showCta = true }: { showCta?: boolean }) {
       {showCta && (
         <section className="bg-paper px-6 pb-[120px]">
           <div className="mx-auto max-w-(--width-site) rounded-panel bg-blue-500 p-[clamp(40px,7vw,96px)] text-white">
-            <div className="max-w-[760px]">
-              <h2 className="font-display text-[clamp(38px,5vw,72px)] font-semibold leading-none tracking-[-0.032em]">
+            <div className="max-w-[640px]">
+              <h2 className="font-display text-[clamp(30px,3.6vw,52px)] font-semibold leading-[1.08] tracking-[-0.028em]">
                 We move the only number that matters. Yours.
               </h2>
               <div className="mt-9 flex flex-wrap gap-3.5">

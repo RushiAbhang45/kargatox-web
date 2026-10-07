@@ -58,7 +58,7 @@ export default function Home() {
               <span className="h-[7px] w-[7px] rounded-full bg-blue-300" />
               Strategy · Research · Growth
             </div>
-            <h1 className="mt-7 max-w-[720px] font-display text-[clamp(38px,6vw,84px)] font-semibold leading-[1.02] tracking-[-0.03em]">
+            <h1 className="mt-7 max-w-[640px] font-display text-[clamp(32px,4.4vw,60px)] font-semibold leading-[1.08] tracking-[-0.025em]">
               <RiseWords words={HERO_WORDS} />
             </h1>
             <Reveal delay={0.3}>
@@ -84,27 +84,27 @@ export default function Home() {
               </div>
             </Reveal>
           </div>
-          <div className="lg:pt-[18px]">
+          <div>
             <NumberedRows items={PILLARS} variant="tight" theme="dark" />
           </div>
         </div>
       </section>
 
-      <div className="overflow-hidden border-t border-white/8 bg-navy-900 py-[26px]">
+      <div className="overflow-hidden border-t border-white/8 bg-navy-900 py-[18px]">
         <div className="kx-marquee-track flex w-max">
           {[...TICKER, ...TICKER].map((label, i) => (
             <span
               key={i}
-              className="flex items-center gap-7 whitespace-nowrap pr-7 font-display text-[clamp(24px,3vw,40px)] font-semibold tracking-[-0.01em] text-white"
+              className="flex items-center gap-5 whitespace-nowrap pr-5 font-display text-[clamp(15px,1.6vw,20px)] font-semibold tracking-[-0.01em] text-white"
             >
-              <span className={`h-3 w-3 rounded-[3px] ${i % 2 ? "bg-white" : "bg-blue-500"}`} />
+              <span className={`h-2 w-2 rounded-[2px] ${i % 2 ? "bg-white" : "bg-blue-500"}`} />
               {label}
             </span>
           ))}
         </div>
       </div>
 
-      <section className="px-6 py-[120px]">
+      <section className="px-6 pt-[64px] pb-[120px]">
         <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-end gap-x-20 gap-y-12">
           <div>
             <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">OUR CAPABILITIES</div>
@@ -172,7 +172,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-6 py-[110px]">
+      <section className="px-6 pt-[64px] pb-[110px]">
         <Reveal className="mx-auto flex max-w-(--width-site) flex-wrap items-center justify-between gap-8">
           <div>
             <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">BEFORE YOU ASK</div>

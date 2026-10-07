@@ -40,7 +40,7 @@ export default function HowWeWorkPage() {
         </div>
       </section>
 
-      <section className="px-6 pb-[120px] pt-[100px]">
+      <section className="px-6 pb-[120px] pt-[64px]">
         <NumberedRows
           className="mx-auto grid max-w-[1000px]"
           variant="full"
