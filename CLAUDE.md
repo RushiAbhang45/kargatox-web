@@ -9,8 +9,7 @@ scaffolded at the repo root, living alongside the original **design handoff** re
 (`design_handoff_kargatox/`, the root `.dc.html` prototypes, `uploads/`). The handoff files are not code
 to copy from — they're the spec the app is being built against. See "Design reference material" below.
 
-Steps 1–5 of the handoff's suggested build order are done, and step 6 is mostly done: scaffold + tokens +
-fonts; the shared
+Steps 1–6 of the handoff's suggested build order are done: scaffold + tokens + fonts; the shared
 header/footer, the `Reveal`/`RevealGroup`/`RiseWords`/`GrowBar` animation primitives, and all five public
 pages (Home, Services, How we work, FAQ, Contact) with static content and their client-side-only
 interactions (revenue-check quiz, FAQ accordion); the Contact form submits for real to `POST /api/enquiries`,
@@ -19,11 +18,13 @@ which validates with zod, rate-limits, checks a honeypot, and writes to a Postgr
 `POST /api/revenue-checks` and links it to the resulting `Enquiry` when the visitor submits one (see
 "Backend: the revenue-check API" below); and Auth.js (magic-link) + a role-gated admin panel exist, with a
 working Enquiries pipeline (status changes, assignment, replies, CSV export) and a real-data Dashboard (see
-"Auth and the admin panel" below). Email notifications (both the enquiry auto-reply and admin replies sent
-from the Enquiries panel) are still `console.log` stubs, not real Resend/SMTP delivery. The admin
-Revenue-checks page is still a placeholder — the data is now being collected, but the stats/table view to
-show it (step 6's remaining piece) hasn't been built. Pages, Services & FAQ, Blog, Team and Settings (steps
-7–8) are also placeholders in the admin nav — see "Suggested build order" below for what's next.
+"Auth and the admin panel" below). Step 6 is now complete: the admin **Revenue-checks** page has a real
+stats/table view over the collected data, and email delivery (the enquiry auto-reply/notification, admin
+replies sent from the Enquiries panel, and the Auth.js magic link) goes out over real SMTP via
+`src/lib/mailer.ts` when `SMTP_*` env vars are set, falling back to a `console.log` stub otherwise (see
+"Backend: the enquiries API" and "Auth and the admin panel" below). Pages, Services & FAQ, Blog, Team and
+Settings (steps 7–8) are still placeholders in the admin nav — see "Suggested build order" below for
+what's next.
 
 ## Commands
 
@@ -44,6 +45,9 @@ show it (step 6's remaining piece) hasn't been built. Pages, Services & FAQ, Blo
   documents the shape of each and how to generate a secret) — gitignored, not committed. Local dev and
   production currently point at the **same** Neon database (there's no separate dev/prod split yet — fine
   pre-launch with no real customer data, but worth splitting via a Neon branch before that changes).
+  `.env.example` also documents optional `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD`/`SMTP_FROM`/
+  `ADMIN_NOTIFY_EMAIL` — omit all of them and email sending falls back to a `console.log` stub (see
+  `src/lib/mailer.ts` below).
 - No test suite exists yet.
 
 ## Architecture
@@ -126,11 +130,20 @@ API" below). When `checkId` is present, the created `Enquiry` is linked to that 
 - **Spam protection:** a visually-hidden, `tabIndex={-1}` honeypot `company` field — the API silently
   returns `201 { ok: true }` without saving or emailing if it's filled, rather than erroring (don't tip off
   bots).
-- **`src/lib/email.ts`** — `sendEnquiryEmails()` is currently a `console.log` stub, not Resend/SMTP (the
-  admin reply action and the Auth.js magic-link sender use the same stub pattern — see below). The README
-  calls for an admin notification plus an optional customer auto-reply; wire that up when an email
-  provider/API key is available. Enquiries save to the DB either way, so the stub doesn't block the rest of
-  the flow.
+- **`src/lib/mailer.ts`** — the single `sendMail({ to, subject, text })` helper all email paths go through
+  (enquiry notifications/auto-replies, admin replies, the Auth.js magic link). It lazily builds a
+  nodemailer transport from `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD`; if any are missing it
+  caches `null` and `sendMail` just `console.log`s what it would have sent instead of throwing, so the rest
+  of the flow (enquiry save, admin reply, sign-in) still works end to end without an SMTP account
+  configured. `SMTP_FROM` (falling back to `SMTP_USER`) sets the From header.
+- **`src/lib/email.ts`** — `sendEnquiryEmails()` builds the two messages the README calls for (an admin
+  notification to `ADMIN_NOTIFY_EMAIL`, skipped if unset, plus a customer auto-reply) and sends both via
+  `sendMail()` above. Enquiries save to the DB regardless of whether either send succeeds/is configured:
+  every call site (`POST /api/enquiries`, `sendReply` in the Enquiries admin actions) does the DB
+  write/status update first, then wraps the `sendMail`/`sendEnquiryEmails` call in its own `try`/`catch`
+  that just `console.error`s — so a real SMTP failure (not just "unconfigured", which `mailer.ts` already
+  no-ops on) can't turn a saved enquiry or a sent reply into a 500 for the caller. Follow this same
+  save-first-then-best-effort-email pattern for any new mutation that sends mail.
 - `prisma`/`@prisma/client` are pinned to `6.19.3` (devDependency/dependency respectively), not `^latest`.
   **Prisma 7 removed `datasource { url = env(...) }` from `schema.prisma`** (it now requires a
   `prisma.config.ts` + driver adapter passed into `new PrismaClient({ adapter })`) — `npm view prisma
@@ -159,9 +172,11 @@ API" below). When `checkId` is present, the created `Enquiry` is linked to that 
 - **Linking is server-verified, not trusted from the client:** `/api/enquiries` looks up the incoming
   `revenueCheckId` with `prisma.revenueCheck.findUnique` before using it — an invalid or stale id is
   silently dropped (sets `null`) rather than failing the whole enquiry submission.
-- The admin **Revenue checks** page (`/admin/revenue-checks`) is still a `<ComingSoon>` placeholder — the
-  README's stats/table view for this data is part of step 6 and hasn't been built yet, even though the data
-  is now being collected.
+- The admin **Revenue checks** page (`/admin/revenue-checks`, `src/app/admin/(protected)/revenue-checks/
+  page.tsx`) is a real server component now: summary tiles (total checks, % with each weakest area) plus a
+  table of every `RevenueCheck` row with a per-area `ScoreBar` (0/1/2 → 25%/60%/100% width, colour per the
+  README's score-colour spec) and an "Outcome" column showing whether the check's linked `enquiries` is
+  non-empty.
 
 ## Auth and the admin panel
 
@@ -171,9 +186,11 @@ providers.
 
 - **`src/auth.ts`** — `NextAuth({ ... })` exports `handlers`/`auth`/`signIn`/`signOut`. Session strategy is
   `"database"` (sessions live in the `Session` table, not JWT). The `Nodemailer` provider's
-  `sendVerificationRequest` is overridden to `console.log` the magic link instead of sending real mail — the
+  `sendVerificationRequest` is overridden to send the magic link through `src/lib/mailer.ts`'s `sendMail()`
+  (falls back to a console log if `SMTP_*` isn't configured — see "Backend: the enquiries API" above) — the
   `server: "smtp://localhost:1025"` value is a required-but-unused dummy (the provider factory throws at
-  startup without *some* value, but the override never reads it).
+  startup without *some* value, but the override fully replaces the default nodemailer-transport one that
+  would otherwise read `server`, so it's never used).
 - **No self-serve signup.** The `signIn` callback rejects any email that doesn't already have a `User` row
   — without it, Auth.js's adapter would silently create a new `SALES`-role account for anyone who completes
   the magic-link flow. The only way to create a `User` right now is `npm run db:seed` (or inserting a row
@@ -211,9 +228,10 @@ providers.
   `sendReply`). This is the pattern to copy for any new mutation — see "Key constraints" below.
 - **Admin nav (`src/lib/admin-nav.ts`)** lists the full README-spec sidebar (Dashboard, Enquiries, Revenue
   checks, Pages, Services & FAQ, Blog & case studies, Team, Settings), but only Dashboard
-  (`src/app/admin/(protected)/page.tsx`) and Enquiries are real — the rest render the shared
-  `<ComingSoon>` component (`src/components/admin/coming-soon.tsx`) rather than 404ing, so the nav can show
-  the full intended layout before every section is built.
+  (`src/app/admin/(protected)/page.tsx`), Enquiries, and Revenue checks are real — Pages, Services & FAQ,
+  Blog & case studies, Team, and Settings still render the shared `<ComingSoon>` component
+  (`src/components/admin/coming-soon.tsx`) rather than 404ing, so the nav can show the full intended layout
+  before every section is built.
 - **Enquiries** (`src/app/admin/(protected)/enquiries/`): `page.tsx` is a server component that loads
   enquiries + team members and hands them to the client `EnquiriesView` (`src/components/admin/
   enquiries-view.tsx`) for filtering, a detail panel, reply templates, and status/assignment controls, all
@@ -268,11 +286,13 @@ rebuild the behaviour it shows using the target stack's normal patterns.
   (`prisma migrate deploy && next build`) applies any pending migrations on every deploy — Vercel detects
   and runs this script instead of the default `build` automatically because of its name.
 - Auth.js (NextAuth), email magic links, role-based access control (OWNER/ADMIN/EDITOR/SALES). **Set up**
-  (see "Auth and the admin panel" above) — magic links currently log to the console instead of sending real
-  mail, and there's no team-invite flow yet (step 8), so new users can only be added via `npm run db:seed`
-  or a direct DB insert.
-- Resend (or SMTP) for enquiry notifications, auto-replies, and admin replies. **Not set up yet** — stubbed
-  as `console.log`s in `src/lib/email.ts`, the Enquiries reply action, and the Auth.js magic-link sender.
+  (see "Auth and the admin panel" above) — magic links send over real SMTP when configured (falling back to
+  a console log otherwise), but there's no team-invite flow yet (step 8), so new users can only be added via
+  `npm run db:seed` or a direct DB insert.
+- Resend (or SMTP) for enquiry notifications, auto-replies, and admin replies. **Set up** — SMTP via
+  `nodemailer`, routed through the shared `src/lib/mailer.ts` helper (see "Backend: the enquiries API"
+  above); without `SMTP_*` env vars configured it falls back to the same `console.log` stub pattern as
+  before.
 - Framer Motion for animation — set up (`src/components/motion/`); decorative infinite loops (background
   orbs, the sub-service marquee) use plain CSS keyframes in `globals.css` instead, not Framer Motion.
 - Page copy, services, FAQ and posts live in the database, edited via the admin panel, read by public
@@ -283,11 +303,11 @@ rebuild the behaviour it shows using the target stack's normal patterns.
 Suggested routes, the Prisma data-model sketch, and the 9-step build order are in
 `design_handoff_kargatox/README.md` — follow that order (scaffold → public pages → contact API → revenue
 check → Prisma/auth/admin shell → enquiries/revenue-checks/dashboard → pages/content/posts → team/settings
-→ SEO/analytics/a11y) rather than re-deriving a sequence. **Steps 1–5 are done; step 6 is partly done**
-(Enquiries and Dashboard are real, but the Revenue-checks admin stats/table view hasn't been built — see
-"Backend: the revenue-check API" above). **Next up:** that Revenue-checks admin page, then step 7
-(Pages/Services & FAQ/Blog content moving into the DB and the admin panel) and step 8 (Team management —
-the invite flow that would replace `db:seed`, Settings), followed by step 9 (SEO/analytics/a11y).
+→ SEO/analytics/a11y) rather than re-deriving a sequence. **Steps 1–6 are done** (Enquiries, Dashboard, and
+the Revenue-checks admin stats/table view are all real; see "Backend: the revenue-check API" above).
+**Next up:** step 7 (Pages/Services & FAQ/Blog content moving into the DB and the admin panel) and step 8
+(Team management — the invite flow that would replace `db:seed`, Settings), followed by step 9
+(SEO/analytics/a11y).
 
 ## Key constraints to preserve when rebuilding
 
