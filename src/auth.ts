@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Nodemailer from "next-auth/providers/nodemailer";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
+import { sendMail } from "@/lib/mailer";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -13,14 +14,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   providers: [
     Nodemailer({
-      // No Resend/SMTP key yet (src/lib/email.ts is the same stub pattern) —
-      // logging the link lets sign-in work end to end without one. `server`
-      // is a dummy value: the provider factory throws at startup if it's
-      // missing, but our sendVerificationRequest override below fully
-      // replaces the default nodemailer-transport one and never reads it.
+      // `server` is a dummy value: the provider factory throws at startup if
+      // it's missing, but our sendVerificationRequest override below fully
+      // replaces the default nodemailer-transport one (which would otherwise
+      // read `server`) with src/lib/mailer.ts's SMTP_* config.
       server: "smtp://localhost:1025",
-      sendVerificationRequest({ identifier, url }) {
-        console.log(`[auth] Magic link for ${identifier}: ${url}`);
+      async sendVerificationRequest({ identifier, url }) {
+        await sendMail({
+          to: identifier,
+          subject: "Sign in to Kargatox Admin",
+          text: `Click to sign in: ${url}\n\nIf you didn't request this, you can ignore this email.`,
+        });
       },
     }),
   ],

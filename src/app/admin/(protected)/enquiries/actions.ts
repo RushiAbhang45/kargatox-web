@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { canAccessEnquiries } from "@/lib/roles";
 import { ENQUIRY_STATUSES, type EnquiryStatus } from "@/lib/enquiry-status";
+import { sendMail } from "@/lib/mailer";
 
 // README: "Enforce these permissions on the server, not just in the
 // interface." Every mutation below re-checks the session itself rather than
@@ -46,8 +47,17 @@ export async function sendReply(enquiryId: string, body: string) {
     await prisma.enquiry.update({ where: { id: enquiryId }, data: { status: "CONTACTED" } });
   }
 
-  // Same stub pattern as src/lib/email.ts — no Resend/SMTP key yet.
-  console.log(`[email] would send reply to ${enquiry.email}:\n${trimmed}`);
+  // The reply is already saved and the status already updated — don't let a
+  // flaky SMTP connection surface as a failed reply (and risk a duplicate on retry).
+  try {
+    await sendMail({
+      to: enquiry.email,
+      subject: `Re: your enquiry — Kargatox`,
+      text: trimmed,
+    });
+  } catch (err) {
+    console.error("[enquiries] sendReply sendMail failed:", err);
+  }
 
   revalidatePath("/admin/enquiries");
   revalidatePath("/admin");

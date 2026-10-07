@@ -59,7 +59,13 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  await sendEnquiryEmails({ name, email, service, details, source });
+  // The enquiry is already saved — don't let a flaky SMTP connection turn a
+  // successful submission into a 500 for the visitor.
+  try {
+    await sendEnquiryEmails({ name, email, service, details, source });
+  } catch (err) {
+    console.error("[enquiries] sendEnquiryEmails failed:", err);
+  }
 
   return NextResponse.json({ ok: true, id: enquiry.id }, { status: 201 });
 }
