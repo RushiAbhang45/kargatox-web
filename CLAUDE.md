@@ -22,9 +22,15 @@ link was removed) + a role-gated, mobile-responsive admin panel exist, with a wo
 below). Step 6 is now complete: the admin **Revenue-checks** page has a real stats/table view over the
 collected data, and email delivery (the enquiry auto-reply/notification, admin replies sent from the
 Enquiries panel) goes out over real SMTP via `src/lib/mailer.ts` when `SMTP_*` env vars are set, falling
-back to a `console.log` stub otherwise (see "Backend: the enquiries API" below). Pages, Services & FAQ,
-Blog, Team and Settings (steps 7–8) are still placeholders in the admin nav — see "Suggested build order"
-below for what's next.
+back to a `console.log` stub otherwise (see "Backend: the enquiries API" below). Step 8's **Team** section
+(invite-by-email, replacing `db:seed`/`admin:set-password` as the way to add teammates) is also done now —
+see "Auth and the admin panel" below. **Steps 7 and 8 are now both complete**: Pages (draft/publish text
+editing for the five public pages), Services & FAQ (editable sub-service and FAQ rows), Blog & case studies
+(a `Post` model, Tiptap-based editor, and public `/blog`/`/blog/[slug]` routes), and Settings (general
+enquiry-email settings plus a Google Analytics toggle) are all real now — see "Backend: content admin
+(Pages, Services & FAQ, Blog, Settings)" below. Nothing in the admin nav renders `<ComingSoon>` anymore (that
+component was deleted as dead code). **Only step 9 (SEO/analytics/a11y) remains** — GA is wired in as part
+of Settings, but sitemap/robots/structured-data/Lighthouse work is still open.
 
 ## Commands
 
@@ -39,8 +45,9 @@ below for what's next.
   all; the script warns if you forget it.
 - `npm run admin:set-password -- <email> <password> [role]` — runs `prisma/set-password.js` to create or
   reset any admin account's password (bcrypt-hashes it, upserts the `User` row; `role` defaults to `OWNER`
-  for a brand-new user and is left unchanged for an existing one unless passed). The only way to create an
-  admin account other than the one seeded row `db:seed` manages — there's no team-invite UI yet (step 8).
+  for a brand-new user and is left unchanged for an existing one unless passed). Mainly useful for the
+  first Owner account or resetting a lost password — every other user should go through the `/admin/team`
+  invite flow instead (see "Auth and the admin panel" below).
 - `npx prisma migrate dev` — create/apply a migration from `prisma/schema.prisma` and generate the client.
   Run this after any further `schema.prisma` edits (it creates a new timestamped folder under
   `prisma/migrations/`).
@@ -94,11 +101,16 @@ below for what's next.
   alternative pairs (it's what the root `Kargatox Website.dc.html` prototype actually uses), not an
   improvisation. Swap in real Clash Display/Satoshi files via `next/font/local` before this ships; don't
   just rename the Google Fonts to make the diff look done.
-- **Logo:** `src/components/logo.tsx` still renders a CSS-only placeholder mark (two overlapping squares +
-  "Kargatox" wordmark) — real brand assets now exist at `src/Images/Kargatox KnowledgePartners Full
-  logo.webp` and `.ico`, but nothing references them yet (`src/app/favicon.ico` is also still the default
-  Next.js one). Wire the real files in rather than leaving both the placeholder and the real assets in the
-  tree.
+- **Logo:** the client-supplied `src/Images/Kargatox KnowledgePartners Full logo.ico` is wired in as
+  `src/app/favicon.ico` (copied over, not referenced in place — same "drop location vs. build artifact"
+  split as `design_handoff_kargatox`'s `uploads/`). The sibling `.webp` is **not** used anywhere yet:
+  `src/components/logo.tsx` still renders the CSS-only placeholder mark (two overlapping squares +
+  "Kargatox" wordmark), because every current call site (`SiteHeader`, admin login, admin sidebar, the
+  Team accept-invite page) sits on a navy background, and the `.webp` is 3300×2550 with an **opaque white
+  background and no alpha channel** — dropped in as-is on navy it renders as a white rectangle. Don't wire
+  it into any of those spots without either cropping/keying it to transparency first or getting a
+  transparent-background export from the client; it's fine to use once a white/light-background spot
+  exists for it.
 - **Animation primitives** live in `src/components/motion/reveal.tsx`: `Reveal` (single-element scroll
   reveal), `RevealGroup` (stagger container, `(index % 6) * 90ms` delay matching the README), `RiseWords`
   (hero heading words — mount-triggered via `animate`, **not** `whileInView`: these are always in view on
@@ -234,11 +246,8 @@ self-serve signup and no OAuth providers, so password is the sole way in.
   `canAccessEnquiries()` at the top of every mutation (`updateEnquiryStatus`, `assignEnquiry`,
   `sendReply`). This is the pattern to copy for any new mutation — see "Key constraints" below.
 - **Admin nav (`src/lib/admin-nav.ts`)** lists the full README-spec sidebar (Dashboard, Enquiries, Revenue
-  checks, Pages, Services & FAQ, Blog & case studies, Team, Settings), but only Dashboard
-  (`src/app/admin/(protected)/page.tsx`), Enquiries, and Revenue checks are real — Pages, Services & FAQ,
-  Blog & case studies, Team, and Settings still render the shared `<ComingSoon>` component
-  (`src/components/admin/coming-soon.tsx`) rather than 404ing, so the nav can show the full intended layout
-  before every section is built.
+  checks, Pages, Services & FAQ, Blog & case studies, Team, Settings) — every item is a real page now, no
+  `<ComingSoon>` placeholders left (that component was deleted once the last section was built).
 - **Enquiries** (`src/app/admin/(protected)/enquiries/`): `page.tsx` is a server component that loads
   enquiries + team members and hands them to the client `EnquiriesView` (`src/components/admin/
   enquiries-view.tsx`) for filtering, a detail panel, reply templates, and status/assignment controls, all
@@ -260,6 +269,105 @@ self-serve signup and no OAuth providers, so password is the sole way in.
   duplicate the sidebar's own close button in the accessibility tree. `AdminShell` resets `open` to `false`
   on route change using the same render-time pathname-reset pattern as `SiteHeader` (see "Architecture"
   above), not `setState` inside `useEffect`.
+- **Team** (`src/app/admin/(protected)/team/`) replaces `npm run db:seed`/`admin:set-password` as the way
+  to add teammates — Owner/Admin only (`canAccessTeam()` in `src/lib/roles.ts`), enforced the same way as
+  `requireEnquiryAccess()`. `+ Invite member` (`inviteMember` in `actions.ts`) creates a `User` row with no
+  password (`invitedAt` set, `role` restricted to `ADMIN`/`EDITOR`/`SALES` — see
+  `src/lib/team-schema.ts`'s `INVITE_ROLE_OPTIONS`; Owner isn't invitable, it's the single seeded/billing
+  role), blocked past `MAX_TEAM_SEATS` (5, per the README), reusing the Auth.js-adapter `VerificationToken`
+  table for the invite token (`identifier` = email, 7-day expiry) and emailing a link via `sendMail()` to
+  `/admin/accept-invite?token=...` — a page outside `(protected)` (same reason `/admin/login` is) where the
+  invitee sets a password (`acceptInvite` in `src/app/admin/accept-invite/actions.ts`) and is signed in via
+  the same `createPasswordSession()` the password-login flow uses. Role changes/removal
+  (`updateMemberRole`/`removeMember`) block touching the Owner role in either direction (can't reassign away
+  from it, can't promote into it) — README: "The Owner cannot be removed." `lastActiveAt` is stamped on
+  every `createPasswordSession()` call (both normal sign-in and invite acceptance), which is what the
+  Team page's "last active" column reads; `invitedAt`/`acceptedAt` (null for users created via
+  `db:seed`/`admin:set-password` directly, not through an invite) distinguish a pending invite from an
+  accepted one when `lastActiveAt` is still null.
+
+## Backend: content admin (Pages, Services & FAQ, Blog, Settings)
+
+Steps 7–8's remaining four sections all share one access pattern: `canAccessContent()` (Pages/Services &
+FAQ/Blog — Owner/Admin/Editor, per the README's "Editor: pages, services, FAQ and blog") and
+`canAccessSettings()` (Settings — Owner/Admin only, same role set as Team but kept as its own helper since
+the two concerns are unrelated), both in `src/lib/roles.ts`, checked the same `requireXAccess()`-at-the-top
+way as `requireEnquiryAccess()`.
+
+- **Pages** (`src/app/admin/(protected)/pages/`) is a draft/publish editor over the exact fields the
+  README's Pages section lists (Home: hero headline/subheading, capabilities heading/body; Services: intro
+  headline/paragraph 1/paragraph 2; How we work: headline/subline/straight-up note; FAQ: heading; Contact:
+  heading/intro) — not a general page builder. `PageContent` (`prisma/schema.prisma`) is one row per page
+  (`page` is `"home" | "services" | "how-we-work" | "faq" | "contact"`), with a `published` JSON blob
+  (always populated post-first-publish) and a `draft` JSON blob (`null` until someone edits a field — that's
+  the list's green/orange dot). There's **no seed step**: `src/lib/page-content-defaults.ts`'s
+  `PAGE_DEFAULTS` holds the exact original hardcoded copy, and `getPublishedPageContent()`
+  (`src/lib/page-content.ts`) merges `{ ...defaults, ...published }`, so a page with no row yet (or a
+  published blob missing a newer field) still renders correctly — same "default until edited" shape as
+  everything else in this section. `savePageDraft`/`publishPage` (`actions.ts`) write the draft/published
+  JSON directly from whatever the editor's textareas currently hold (no separate "are you sure the draft
+  matches" step); `publishPage` also `revalidatePath`s the live route. The five public page components
+  (`src/app/(site)/{page,services,how-we-work,faq,contact}/page.tsx`) are now `async` Server Components that
+  call `getPublishedPageContent()`. **"Preview ↗" just links to the live public page** (showing published
+  content, not the draft) — there's no Next.js Draft Mode integration; building real draft previews is a
+  deliberate deferral, not an oversight.
+  - Three fields reproduce a two-tone heading style from plain text so the original visual design survives
+    an admin edit: `src/lib/text-split.ts`'s `splitFirstSentence()` (first sentence plain, the rest accented
+    — Home's capabilities heading and FAQ's heading, both `text-blue-600`) and `splitLastWord()` (every word
+    but the last plain, last word accented — Contact's heading, `text-blue-300`). Home's hero headline uses
+    its own word-level version of the same idea: it's fed through `RiseWords` (see "Architecture" above) as
+    one word per array entry, with only the **last** word getting `text-blue-300` — this is what reproduces
+    the original "Growth." accent for any edited headline, not just the default. How-we-work's headline is
+    plain `"line one\nline two"` — split on the literal newline, second line rendered dimmed
+    (`text-white/70`) after a `<br/>`. None of this is configurable from the editor beyond typing the text;
+    it's baked into each page's rendering, not a generic rich-text feature.
+- **Services & FAQ** (`src/app/admin/(protected)/services-faq/`) has **no draft/publish** — a single "Save
+  changes" button bulk-replaces the live content, matching the README exactly (unlike Pages). `SubService`
+  (`serviceKey: "research" | "marketing"`, ordered) and `FaqItem` (ordered) are the editable rows; the
+  Services page's non-editable per-service content (the "SAMPLE DATA" dashboard panel — bars/KPIs/keywords/
+  channels/tagline/intro) stays hardcoded in `src/app/(site)/services/data.ts`, only `SERVICES[].items`
+  (title/body/link) comes from the DB. Same "default until edited" fallback as Pages: `getSubServiceItems()`
+  / `getFaqItemsOrDefault()` (`src/lib/services-content.ts`) return `data.ts`'s hardcoded items /
+  `src/lib/faq-defaults.ts`'s `FAQ_DEFAULTS` when the respective DB table has zero rows for that key, so
+  nothing needs seeding and the public Services/FAQ pages never render empty. `saveServicesAndFaq()`
+  (`actions.ts`) takes the *entire* current state of every service's sub-service array plus the entire FAQ
+  array in one call (not a diff) and replaces each set inside a transaction (`deleteMany` + `createMany`,
+  `order` reassigned from array index) — reorder/add/remove in the UI are all local array state until Save.
+- **Blog & case studies** (`src/app/admin/(protected)/blog/`, public `src/app/(site)/blog/`) is a `Post`
+  model (`type: "BLOG" | "CASE_STUDY"`, `status: "DRAFT" | "PUBLISHED"`, `authorId` → `User`, `body` is
+  Tiptap's own JSON serialized to a string) with a Tiptap editor (`@tiptap/react` + `@tiptap/starter-kit`,
+  `immediatelyRender: false` to avoid an SSR hydration mismatch) in `src/components/admin/post-editor.tsx`.
+  **No cover image field** — the README calls for one (S3/Supabase/Vercel Blob), but none of those are
+  configured, so it was deliberately left out rather than built against a storage provider that doesn't
+  exist yet; add it once one is provisioned. `src/lib/post-schema.ts`'s `slugify()` auto-fills the URL slug
+  from the title as you type, until the slug field itself is manually edited (then it stops auto-updating).
+  `saveDraft`/`publishPost` (`actions.ts`) upsert by `id` (`null` = create) and re-check the slug is unique
+  across other posts; `publishPost` preserves the original `publishedAt` across re-publishes of an
+  already-live post rather than resetting it. Public rendering goes through
+  `src/lib/render-post-body.ts`'s `renderPostBody()` (`@tiptap/html`'s `generateHTML`, server-side, no DOM
+  needed) into `dangerouslySetInnerHTML` on `/blog/[slug]` — safe specifically because the HTML only ever
+  contains node/mark types StarterKit defines (Tiptap's own JSON schema, not arbitrary user HTML) and only
+  `canAccessContent()` roles can write a `Post` at all. **No nav link was added** for `/blog` — the README's
+  five-page prototype design doesn't show one, so the public blog routes are live but only reachable by
+  direct URL for now; add a nav entry if/when that's wanted.
+- **Settings** (`src/app/admin/(protected)/settings/`) covers only **General** (site name, notification
+  email, also-notify, auto-reply message with a `{firstName}` placeholder, a send-auto-reply switch) and
+  **Google Analytics** (measurement ID + enabled switch) from the README's spec — deliberately scoped down.
+  The **SEO section is out of scope entirely** (meta title/description/social image/sitemap/indexing
+  switches — that's step 9). The **CRM/WhatsApp/Slack/Meta Pixel integration cards are out of scope** (no
+  provider chosen/credentials available). **SMTP is read-only status, not an editable field** — on
+  purpose: the README's spec has SMTP as an editable Settings card, but that would mean storing the SMTP
+  password in Postgres instead of only in Vercel's encrypted env vars, so `src/app/admin/(protected)/
+  settings/page.tsx` just computes `smtpConfigured` the same way `src/lib/mailer.ts`'s `getTransporter()`
+  does and shows a CONNECTED/NOT CONFIGURED badge — host/port/user/password stay `SMTP_*` env-only. Writes
+  go through a singleton `Settings` row (fixed `id: "singleton"`, see `src/lib/settings.ts`'s
+  `getSettings()`) — same "no row yet = defaults" fallback pattern as Pages/Services & FAQ, so nothing needs
+  seeding. `src/lib/email.ts`'s `sendEnquiryEmails()` now reads `Settings.notificationEmail`/`alsoNotify`
+  (falling back to the `ADMIN_NOTIFY_EMAIL` env var if `notificationEmail` is unset) and
+  `Settings.sendAutoReply`/`autoReplyMessage` instead of the old hardcoded text. The GA snippet
+  (`gtag.js`) is injected in **`src/app/(site)/layout.tsx` only, never the root layout** — the admin panel
+  must never pick up site analytics tracking, same reasoning as why `SiteHeader` lives in the `(site)`
+  layout and not the root one (see "Architecture" above).
 
 ## Design reference material
 
@@ -305,9 +413,9 @@ rebuild the behaviour it shows using the target stack's normal patterns.
   (`prisma migrate deploy && next build`) applies any pending migrations on every deploy — Vercel detects
   and runs this script instead of the default `build` automatically because of its name.
 - Auth.js (NextAuth), role-based access control (OWNER/ADMIN/EDITOR/SALES). **Set up** (see "Auth and the
-  admin panel" above) — sign-in is password-only (magic link was removed), and there's no team-invite flow
-  yet (step 8), so new users can only be added via `npm run db:seed` or a direct DB insert, followed by
-  setting a password via a one-off Prisma script.
+  admin panel" above) — sign-in is password-only (magic link was removed). The Team invite flow (see "Auth
+  and the admin panel" above) is now built, so `npm run db:seed`/`admin:set-password` are only needed for
+  the first Owner account — every other user is added via `/admin/team`.
 - Resend (or SMTP) for enquiry notifications, auto-replies, and admin replies. **Set up** — SMTP via
   `nodemailer`, routed through the shared `src/lib/mailer.ts` helper (see "Backend: the enquiries API"
   above); without `SMTP_*` env vars configured it falls back to the same `console.log` stub pattern as
@@ -315,18 +423,18 @@ rebuild the behaviour it shows using the target stack's normal patterns.
 - Framer Motion for animation — set up (`src/components/motion/`); decorative infinite loops (background
   orbs, the sub-service marquee) use plain CSS keyframes in `globals.css` instead, not Framer Motion.
 - Page copy, services, FAQ and posts live in the database, edited via the admin panel, read by public
-  pages at build time with ISR revalidation on publish. **Not done yet** — Services/FAQ/Blog/Pages content
-  is still hardcoded in the public pages/`src/app/(site)/services/data.ts`; their admin pages are
-  `<ComingSoon>` placeholders (step 7).
+  pages at build time with ISR revalidation on publish. **Set up** — see "Backend: content admin (Pages,
+  Services & FAQ, Blog, Settings)" above. Each piece of content still has a hardcoded fallback (the
+  original copy/data) for when no DB row exists yet, rather than requiring a seed step.
 
 Suggested routes, the Prisma data-model sketch, and the 9-step build order are in
 `design_handoff_kargatox/README.md` — follow that order (scaffold → public pages → contact API → revenue
 check → Prisma/auth/admin shell → enquiries/revenue-checks/dashboard → pages/content/posts → team/settings
-→ SEO/analytics/a11y) rather than re-deriving a sequence. **Steps 1–6 are done** (Enquiries, Dashboard, and
-the Revenue-checks admin stats/table view are all real; see "Backend: the revenue-check API" above).
-**Next up:** step 7 (Pages/Services & FAQ/Blog content moving into the DB and the admin panel) and step 8
-(Team management — the invite flow that would replace `db:seed`, Settings), followed by step 9
-(SEO/analytics/a11y).
+→ SEO/analytics/a11y) rather than re-deriving a sequence. **Steps 1–8 are all done** — see "Backend: content
+admin (Pages, Services & FAQ, Blog, Settings)" above for 7–8's content sections, and "Auth and the admin
+panel" above for Team. **Next up: step 9 (SEO/analytics/a11y)** — GA is already wired in via Settings, but
+sitemap.xml/robots.txt, structured data, Open Graph defaults, and an accessibility/Lighthouse pass are all
+still open.
 
 ## Key constraints to preserve when rebuilding
 

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Reveal, RevealGroup, GrowBar } from "@/components/motion/reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SERVICES } from "./data";
+import { getPublishedPageContent } from "@/lib/page-content";
+import { getSubServiceItems } from "@/lib/services-content";
 
 export const metadata: Metadata = {
   title: "Services — Kargatox",
@@ -10,7 +12,17 @@ export const metadata: Metadata = {
     "Research and marketing services from Kargatox: market research, consumer behaviour analysis, campaign analytics, SEO, social media marketing and brand campaign strategy.",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const content = await getPublishedPageContent("services");
+  const servicesWithItems = await Promise.all(
+    SERVICES.map(async (svc) => {
+      const items = await getSubServiceItems(
+        svc.id,
+        svc.items.map((it) => ({ title: it.title, body: it.body, link: it.link }))
+      );
+      return { ...svc, items: items.map((it, i) => ({ ...it, num: String(i + 1).padStart(2, "0") })) };
+    })
+  );
   return (
     <main className="flex flex-1 flex-col">
       <section className="bg-navy-900 text-white">
@@ -18,19 +30,12 @@ export default function ServicesPage() {
           <div className="font-mono text-[13px] tracking-[0.12em] text-blue-300">SERVICES</div>
           <Reveal>
             <h1 className="max-w-[920px] font-display text-[clamp(30px,3.6vw,48px)] font-semibold leading-[1.15] tracking-[-0.02em]">
-              Research tells you what&apos;s true. We build the marketing that acts on it.
+              {content.introHeadline}
             </h1>
           </Reveal>
           <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] gap-x-14 gap-y-6 text-[18px] leading-[1.6] text-mist">
-            <p>
-              We start by figuring out what&apos;s actually happening — in your market, with your customers,
-              inside your funnel. Guesswork is expensive, and most engagements here begin by replacing it
-              with evidence.
-            </p>
-            <p>
-              From there, every recommendation ships with a number attached. You&apos;ll always know what
-              we&apos;re doing, why we&apos;re doing it, and what it&apos;s meant to move for your business.
-            </p>
+            <p>{content.introParagraph1}</p>
+            <p>{content.introParagraph2}</p>
           </div>
           <div className="mt-4 flex flex-wrap gap-2.5">
             <Link
@@ -49,7 +54,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {SERVICES.map((svc, i) => (
+      {servicesWithItems.map((svc, i) => (
         <section key={svc.id} id={svc.id} className={`px-6 ${i === 0 ? "pt-[64px]" : "pt-[110px]"}`}>
           <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-x-16 gap-y-10">
             <div className="sticky top-[110px]">

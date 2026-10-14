@@ -90,11 +90,22 @@ model User {
   // flow would — see src/lib/password-auth.ts.
   password      String?
   createdAt     DateTime  @default(now())
+  // Team invite flow (src/app/admin/(protected)/team/). invitedAt is set when
+  // an OWNER/ADMIN sends an invite (the row is created with no password yet);
+  // acceptedAt is set once the invitee sets a password via
+  // src/app/admin/accept-invite/. Both null for users created by
+  // `npm run db:seed` / `admin:set-password` directly, not through an invite.
+  invitedAt     DateTime?
+  acceptedAt    DateTime?
+  // Updated on every successful password sign-in (src/lib/password-auth.ts's
+  // createPasswordSession) — drives the Team page's "last active" column.
+  lastActiveAt  DateTime?
 
   accounts        Account[]
   sessions        Session[]
   enquiries       Enquiry[]
   enquiryMessages EnquiryMessage[]
+  posts           Post[]
 }
 
 model Account {
@@ -131,4 +142,84 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Step 7 (Pages): one row per public page ("home" | "services" | "how-we-work"
+// | "faq" | "contact" — see src/lib/page-content-defaults.ts for the field
+// keys per page). `published` is never null post-seed — it's what the public
+// pages render. `draft` is null until someone edits a field in the admin
+// Pages editor; Publish copies draft -> published (+ revalidatePath) and
+// clears draft. The list dot is green when draft is null/equal to published,
+// orange otherwise.
+model PageContent {
+  id        String   @id @default(cuid())
+  page      String   @unique
+  draft     Json?
+  published Json
+  updatedAt DateTime @updatedAt
+}
+
+// Step 7 (Services & FAQ): the editable sub-service rows under each top-level
+// service card (src/app/(site)/services/data.ts's SERVICES — the dashboard
+// panel data there, e.g. bars/KPIs, is NOT part of this admin section per the
+// README spec, only item title/body/link). serviceKey is "research" |
+// "marketing". No draft/publish here — a single "Save changes" button per the
+// spec, so rows are the live content.
+model SubService {
+  id         String   @id @default(cuid())
+  serviceKey String
+  order      Int
+  title      String
+  body       String
+  link       String?
+  updatedAt  DateTime @updatedAt
+}
+
+// Step 7 (Services & FAQ): the FAQ tab's question/answer rows.
+model FaqItem {
+  id        String   @id @default(cuid())
+  order     Int
+  question  String
+  answer    String
+  updatedAt DateTime @updatedAt
+}
+
+// Step 7 (Blog & case studies). No cover image field — skipped for now (no
+// object storage configured; see CLAUDE.md). type/status stay plain strings,
+// same convention as Enquiry.status/source (src/lib/roles.ts).
+model Post {
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  type            String // "BLOG" | "CASE_STUDY"
+  status          String    @default("DRAFT") // "DRAFT" | "PUBLISHED"
+  excerpt         String?
+  body            String // Tiptap JSON, stored serialized
+  authorId        String?
+  author          User?     @relation(fields: [authorId], references: [id])
+  seoTitle        String?
+  seoDescription  String?
+  publishedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Step 8 (Settings). Singleton row (fixed id) — see src/lib/settings.ts's
+// getSettings(). General fields back src/lib/email.ts (notificationEmail/
+// alsoNotify replace the ADMIN_NOTIFY_EMAIL env var when set; autoReplyMessage/
+// sendAutoReply replace the hardcoded auto-reply text). gaMeasurementId/
+// gaEnabled drive the GA snippet in src/app/(site)/layout.tsx only — never the
+// admin panel. SMTP intentionally has no fields here: it stays env-only
+// (SMTP_* in .env/Vercel) so credentials never sit in the database; Settings
+// only reads env to show connection status.
+model Settings {
+  id                String   @id @default("singleton")
+  siteName          String   @default("Kargatox")
+  notificationEmail String?
+  alsoNotify        String?
+  autoReplyMessage  String   @default("Hi {firstName},\n\nThank you for your requirement. Our team will contact you shortly.\n\n— Kargatox")
+  sendAutoReply     Boolean  @default(true)
+  gaMeasurementId   String?
+  gaEnabled         Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
 }

@@ -30,7 +30,10 @@ export async function createPasswordSession(userId: string) {
   const sessionToken = crypto.randomUUID();
   const expires = new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000);
 
-  await prisma.session.create({ data: { sessionToken, userId, expires } });
+  await prisma.$transaction([
+    prisma.session.create({ data: { sessionToken, userId, expires } }),
+    prisma.user.update({ where: { id: userId }, data: { lastActiveAt: new Date() } }),
+  ]);
 
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {

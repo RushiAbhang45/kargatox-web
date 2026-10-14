@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { Reveal, RevealGroup } from "@/components/motion/reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { ContactForm } from "./contact-form";
+import { getPublishedPageContent } from "@/lib/page-content";
+import { splitLastWord } from "@/lib/text-split";
 
 export const metadata: Metadata = {
   title: "Contact — Kargatox",
@@ -23,7 +25,9 @@ const STEPS = [
   },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const content = await getPublishedPageContent("contact");
+  const [headingPlain, headingAccent] = splitLastWord(content.heading);
   return (
     <main className="flex flex-1 flex-col bg-navy-900 text-white">
       <section className="px-6 pb-[120px] pt-[90px]">
@@ -32,14 +36,11 @@ export default function ContactPage() {
             <div className="font-mono text-[13px] tracking-[0.14em] text-blue-300">GET IN TOUCH</div>
             <Reveal>
               <h1 className="font-display text-[clamp(36px,4.4vw,60px)] font-semibold leading-[1.02] tracking-[-0.02em]">
-                Initiate a <span className="text-blue-300">Project</span>
+                {headingPlain} <span className="text-blue-300">{headingAccent}</span>
               </h1>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="max-w-[520px] text-[19px] leading-[1.6] text-mist">
-                Connect with our team to discuss your specific research, data structuring, or lead
-                generation requirements. We will review your scope and provide a structured proposal.
-              </p>
+              <p className="max-w-[520px] text-[19px] leading-[1.6] text-mist">{content.intro}</p>
             </Reveal>
 
             <RevealGroup className="mt-6 grid gap-7" itemClassName="grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 gap-y-2">

@@ -4,6 +4,8 @@ import { NumberedRows } from "@/components/numbered-rows";
 import { RevenueCheck } from "@/components/home/revenue-check";
 import { SiteFooter } from "@/components/site-footer";
 import { PROCESS_STEPS } from "@/lib/process-steps";
+import { getPublishedPageContent } from "@/lib/page-content";
+import { splitFirstSentence } from "@/lib/text-split";
 
 const PILLARS = [
   {
@@ -38,16 +40,16 @@ const CAPABILITY_SERVICES = [
 
 const TICKER = [...CAPABILITY_SERVICES.flatMap((s) => s.subs), ...CAPABILITY_SERVICES.flatMap((s) => s.subs)];
 
-const HERO_WORDS = [
-  { text: "Built" },
-  { text: "On" },
-  { text: "Research." },
-  { text: "Measured" },
-  { text: "In" },
-  { text: "Growth.", className: "text-blue-300" },
-];
+export default async function Home() {
+  const content = await getPublishedPageContent("home");
+  // RiseWords needs a word array; only the final word gets the accent class,
+  // matching the original hardcoded "Growth." styling (see src/lib/text-split.ts).
+  const heroWords = content.heroHeadline.split(" ").map((text, i, arr) => ({
+    text,
+    ...(i === arr.length - 1 ? { className: "text-blue-300" } : {}),
+  }));
+  const [capabilitiesPlain, capabilitiesAccent] = splitFirstSentence(content.capabilitiesHeading);
 
-export default function Home() {
   return (
     <main className="flex flex-1 flex-col">
       <section className="relative overflow-hidden bg-navy-900 text-white">
@@ -59,12 +61,11 @@ export default function Home() {
               Strategy · Research · Growth
             </div>
             <h1 className="mt-7 max-w-[640px] font-display text-[clamp(32px,4.4vw,60px)] font-semibold leading-[1.08] tracking-[-0.025em]">
-              <RiseWords words={HERO_WORDS} />
+              <RiseWords words={heroWords} />
             </h1>
             <Reveal delay={0.3}>
               <p className="mt-7 max-w-[560px] text-[clamp(17px,1.6vw,21px)] leading-[1.6] text-mist">
-                We help founders and leadership teams understand their market, decode their customers, and turn
-                that insight into campaigns that move revenue — across India
+                {content.heroSubheading}
               </p>
             </Reveal>
             <Reveal delay={0.4}>
@@ -109,15 +110,11 @@ export default function Home() {
           <div>
             <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">OUR CAPABILITIES</div>
             <h2 className="mt-[18px] font-display text-[clamp(36px,4.6vw,64px)] font-semibold leading-[1.02] tracking-[-0.032em]">
-              Two Disciplines.{" "}
-              <span className="text-blue-600">One Growth Engine.</span>
+              {capabilitiesPlain}
+              {capabilitiesAccent && <span className="text-blue-600"> {capabilitiesAccent}</span>}
             </h2>
           </div>
-          <p className="text-[19px] leading-[1.6] text-slate">
-            Kargatox runs on two disciplines working together: research that tells you who your market
-            actually is, and marketing built to reach them. We find the gap, design the fix, and stay close
-            enough to the data to know it&apos;s working.
-          </p>
+          <p className="text-[19px] leading-[1.6] text-slate">{content.capabilitiesBody}</p>
         </div>
         <RevealGroup className="mx-auto mt-16 grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] gap-5">
           {CAPABILITY_SERVICES.map((s) => (

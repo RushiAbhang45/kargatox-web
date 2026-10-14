@@ -3,13 +3,19 @@ import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { FaqAccordion } from "./faq-accordion";
+import { getPublishedPageContent } from "@/lib/page-content";
+import { splitFirstSentence } from "@/lib/text-split";
+import { getFaqItemsOrDefault } from "@/lib/services-content";
 
 export const metadata: Metadata = {
   title: "FAQ — Kargatox",
   description: "You have questions. We have straight answers — what we do, how fast we start, and what it costs.",
 };
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const content = await getPublishedPageContent("faq");
+  const [headingPlain, headingAccent] = splitFirstSentence(content.heading);
+  const faqItems = await getFaqItemsOrDefault();
   return (
     <main className="flex flex-1 flex-col">
       <section className="px-6 pb-[120px] pt-[110px]">
@@ -18,7 +24,8 @@ export default function FaqPage() {
             <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">BEFORE YOU ASK</div>
             <Reveal>
               <h1 className="font-display text-[clamp(32px,4vw,52px)] font-semibold leading-[1.1] tracking-[-0.02em]">
-                You have questions. <span className="text-blue-600">We have straight answers.</span>
+                {headingPlain}
+                {headingAccent && <span className="text-blue-600"> {headingAccent}</span>}
               </h1>
             </Reveal>
             <Link
@@ -28,7 +35,7 @@ export default function FaqPage() {
               Ask us directly →
             </Link>
           </div>
-          <FaqAccordion />
+          <FaqAccordion items={faqItems} />
         </div>
       </section>
       <SiteFooter />
