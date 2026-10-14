@@ -25,7 +25,7 @@ export function AdminToastProvider({ children }: { children: React.ReactNode }) 
       {message && (
         <div
           role="status"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl bg-navy-800 px-4 py-3 text-sm font-medium text-white shadow-[0_12px_32px_rgba(11,20,48,0.35)]"
+          className="fixed bottom-4 right-4 z-50 flex max-w-[calc(100vw-2rem)] items-center gap-2.5 rounded-xl bg-navy-800 px-4 py-3 text-sm font-medium text-white shadow-[0_12px_32px_rgba(11,20,48,0.35)] sm:bottom-6 sm:right-6"
         >
           <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-success text-[11px] text-white">
             ✓

@@ -67,9 +67,10 @@ model EnquiryMessage {
 
 // --- Auth.js (next-auth v5) + Prisma adapter — shape required by
 // @auth/prisma-adapter (see node_modules/@auth/prisma-adapter/index.js):
-// user/account/session/verificationToken delegates. No OAuth providers are
-// configured (email magic link only), so Account only exists for adapter
-// type-compatibility / future OAuth — see src/auth.ts.
+// user/account/session/verificationToken delegates. src/auth.ts configures no
+// providers at all (sign-in is password-only, handled outside Auth.js's own
+// flow — see User.password below), so Account/VerificationToken exist only
+// for adapter type-compatibility / future provider support.
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -77,14 +78,16 @@ model User {
   emailVerified DateTime?
   image         String?
   role          String    @default("SALES") // OWNER | ADMIN | EDITOR | SALES — see src/lib/roles.ts
-  // Bcrypt hash, optional — most accounts sign in via magic link only (see
-  // src/auth.ts). Set via src/lib/password-auth.ts for developer/owner
-  // accounts that want a password instead of relying on log-scraped links.
+  // Bcrypt hash. Nullable at the schema level, but required in practice —
+  // password is the only sign-in path (src/app/admin/login/actions.ts), so a
+  // User row with no password can't sign in at all. Set via
+  // src/lib/password-auth.ts's hashPassword() + a one-off Prisma script, or
+  // via SEED_OWNER_PASSWORD for the row `npm run db:seed` creates.
   // Deliberately NOT wired into Auth.js's own Credentials provider: that
-  // requires JWT sessions, which conflicts with the "database" strategy the
-  // magic-link flow depends on. Password sign-in instead creates a real
-  // `Session` row directly (src/app/admin/login/actions.ts), so it's
-  // indistinguishable from a magic-link session to the rest of the app.
+  // requires JWT sessions, which conflicts with the "database" session
+  // strategy configured in src/auth.ts. Password sign-in instead creates a
+  // real `Session` row directly, in the exact shape Auth.js's own adapter
+  // flow would — see src/lib/password-auth.ts.
   password      String?
   createdAt     DateTime  @default(now())
 

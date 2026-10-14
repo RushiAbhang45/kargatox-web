@@ -2,32 +2,12 @@
 
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { AuthError } from "next-auth";
-import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, createPasswordSession } from "@/lib/password-auth";
 import { rateLimit } from "@/lib/rate-limit";
 
 const LOGIN_ATTEMPT_LIMIT = 10;
 const LOGIN_ATTEMPT_WINDOW_MS = 10 * 60 * 1000;
-
-export async function requestMagicLink(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim();
-  if (!email) {
-    redirect("/admin/login?error=MissingEmail");
-  }
-
-  try {
-    await signIn("nodemailer", { email, redirect: false });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      redirect(`/admin/login?error=${error.type}`);
-    }
-    throw error;
-  }
-
-  redirect("/admin/login/verify");
-}
 
 export async function signInWithPassword(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();

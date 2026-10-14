@@ -16,15 +16,15 @@ interactions (revenue-check quiz, FAQ accordion); the Contact form submits for r
 which validates with zod, rate-limits, checks a honeypot, and writes to a Postgres database via Prisma (see
 "Backend: the enquiries API" below); the revenue-check quiz now posts each completed check to
 `POST /api/revenue-checks` and links it to the resulting `Enquiry` when the visitor submits one (see
-"Backend: the revenue-check API" below); and Auth.js (magic-link) + a role-gated admin panel exist, with a
-working Enquiries pipeline (status changes, assignment, replies, CSV export) and a real-data Dashboard (see
-"Auth and the admin panel" below). Step 6 is now complete: the admin **Revenue-checks** page has a real
-stats/table view over the collected data, and email delivery (the enquiry auto-reply/notification, admin
-replies sent from the Enquiries panel, and the Auth.js magic link) goes out over real SMTP via
-`src/lib/mailer.ts` when `SMTP_*` env vars are set, falling back to a `console.log` stub otherwise (see
-"Backend: the enquiries API" and "Auth and the admin panel" below). Pages, Services & FAQ, Blog, Team and
-Settings (steps 7–8) are still placeholders in the admin nav — see "Suggested build order" below for
-what's next.
+"Backend: the revenue-check API" below); and Auth.js (database sessions, password-only sign-in — magic
+link was removed) + a role-gated, mobile-responsive admin panel exist, with a working Enquiries pipeline
+(status changes, assignment, replies, CSV export) and a real-data Dashboard (see "Auth and the admin panel"
+below). Step 6 is now complete: the admin **Revenue-checks** page has a real stats/table view over the
+collected data, and email delivery (the enquiry auto-reply/notification, admin replies sent from the
+Enquiries panel) goes out over real SMTP via `src/lib/mailer.ts` when `SMTP_*` env vars are set, falling
+back to a `console.log` stub otherwise (see "Backend: the enquiries API" below). Pages, Services & FAQ,
+Blog, Team and Settings (steps 7–8) are still placeholders in the admin nav — see "Suggested build order"
+below for what's next.
 
 ## Commands
 
@@ -34,9 +34,13 @@ what's next.
 - `npm start` — serve the production build (`build` must run first).
 - `npm run lint` — ESLint (`eslint-config-next`).
 - `npm run db:seed` — runs `prisma/seed.js`, which upserts a single `User` as `OWNER` (email from
-  `SEED_OWNER_EMAIL`, defaulting to `punedeveloper@mipl.co.in`). **Run this before logging into `/admin`
-  for the first time** — there's no self-serve signup (see "Auth and the admin panel" below), so without a
-  seeded row the magic-link flow has no account to sign in to.
+  `SEED_OWNER_EMAIL`, defaulting to `punedeveloper@mipl.co.in`). **Pass `SEED_OWNER_PASSWORD` too** — sign-in
+  is password-only (see "Auth and the admin panel" below), so a seeded row with no password can't sign in at
+  all; the script warns if you forget it.
+- `npm run admin:set-password -- <email> <password> [role]` — runs `prisma/set-password.js` to create or
+  reset any admin account's password (bcrypt-hashes it, upserts the `User` row; `role` defaults to `OWNER`
+  for a brand-new user and is left unchanged for an existing one unless passed). The only way to create an
+  admin account other than the one seeded row `db:seed` manages — there's no team-invite UI yet (step 8).
 - `npx prisma migrate dev` — create/apply a migration from `prisma/schema.prisma` and generate the client.
   Run this after any further `schema.prisma` edits (it creates a new timestamped folder under
   `prisma/migrations/`).
@@ -52,6 +56,11 @@ what's next.
 
 ## Architecture
 
+- **Next.js 16 / React 19 may differ from older training data.** `AGENTS.md` at the repo root is
+  auto-written by `next dev` itself (it gets silently re-added if deleted — committing it is expected, not
+  a stray diff) and says to check `node_modules/next/dist/docs/` (`01-app/`, `02-pages/`, `03-architecture/`,
+  `04-community/`) before writing App Router code, since APIs/conventions may have changed. Consult those
+  docs for anything beyond the patterns already established elsewhere in this repo.
 - App Router only, under `src/app/`. `src/app/layout.tsx` is the root layout: it loads fonts, sets global
   `<html>`/`<body>` classes, and wraps everything in `MotionProvider` — nothing else (no header/nav), since
   the admin panel must not inherit the public site chrome. `src/app/globals.css` holds the Tailwind v4
@@ -85,6 +94,11 @@ what's next.
   alternative pairs (it's what the root `Kargatox Website.dc.html` prototype actually uses), not an
   improvisation. Swap in real Clash Display/Satoshi files via `next/font/local` before this ships; don't
   just rename the Google Fonts to make the diff look done.
+- **Logo:** `src/components/logo.tsx` still renders a CSS-only placeholder mark (two overlapping squares +
+  "Kargatox" wordmark) — real brand assets now exist at `src/Images/Kargatox KnowledgePartners Full
+  logo.webp` and `.ico`, but nothing references them yet (`src/app/favicon.ico` is also still the default
+  Next.js one). Wire the real files in rather than leaving both the placeholder and the real assets in the
+  tree.
 - **Animation primitives** live in `src/components/motion/reveal.tsx`: `Reveal` (single-element scroll
   reveal), `RevealGroup` (stagger container, `(index % 6) * 90ms` delay matching the README), `RiseWords`
   (hero heading words — mount-triggered via `animate`, **not** `whileInView`: these are always in view on
@@ -131,7 +145,7 @@ API" below). When `checkId` is present, the created `Enquiry` is linked to that 
   returns `201 { ok: true }` without saving or emailing if it's filled, rather than erroring (don't tip off
   bots).
 - **`src/lib/mailer.ts`** — the single `sendMail({ to, subject, text })` helper all email paths go through
-  (enquiry notifications/auto-replies, admin replies, the Auth.js magic link). It lazily builds a
+  (enquiry notifications/auto-replies, admin replies). It lazily builds a
   nodemailer transport from `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD`; if any are missing it
   caches `null` and `sendMail` just `console.log`s what it would have sent instead of throwing, so the rest
   of the flow (enquiry save, admin reply, sign-in) still works end to end without an SMTP account
@@ -180,48 +194,41 @@ API" below). When `checkId` is present, the created `Enquiry` is linked to that 
 
 ## Auth and the admin panel
 
-Auth.js v5 (`next-auth@5.0.0-beta.32`) with the Prisma adapter — email magic links are the primary path,
-plus a secondary password login for developer/owner convenience (see "Password login" below). No OAuth
-providers.
+Auth.js v5 (`next-auth@5.0.0-beta.32`) with the Prisma adapter, used only for session storage/reading —
+**sign-in is password-only.** Magic-link email sign-in (the original primary path) was removed; there's no
+self-serve signup and no OAuth providers, so password is the sole way in.
 
-- **`src/auth.ts`** — `NextAuth({ ... })` exports `handlers`/`auth`/`signIn`/`signOut`. Session strategy is
-  `"database"` (sessions live in the `Session` table, not JWT). The `Nodemailer` provider's
-  `sendVerificationRequest` is overridden to send the magic link through `src/lib/mailer.ts`'s `sendMail()`
-  (falls back to a console log if `SMTP_*` isn't configured — see "Backend: the enquiries API" above) — the
-  `server: "smtp://localhost:1025"` value is a required-but-unused dummy (the provider factory throws at
-  startup without *some* value, but the override fully replaces the default nodemailer-transport one that
-  would otherwise read `server`, so it's never used).
-- **No self-serve signup.** The `signIn` callback rejects any email that doesn't already have a `User` row
-  — without it, Auth.js's adapter would silently create a new `SALES`-role account for anyone who completes
-  the magic-link flow. The only way to create a `User` right now is `npm run db:seed` (or inserting a row
-  directly) — there's no team-invite UI yet (that's step 8). The `session` callback then copies `id`/`role`
-  from the `User` row onto `session.user`.
+- **`src/auth.ts`** — `NextAuth({ ... })` exports `handlers`/`auth`/`signIn`/`signOut`, configured with
+  `providers: []`. Session strategy is `"database"` (sessions live in the `Session` table, not JWT) —
+  that's still needed so `auth()` can read back the `Session` rows `createPasswordSession()` writes (see
+  below); the adapter is required for the same reason. With no providers, Auth.js's own sign-in flow never
+  runs, so there's no `signIn` callback either — the "don't let an unknown email become a `User`" guarantee
+  now lives entirely in `signInWithPassword()`'s `prisma.user.findUnique` + password check. The `session`
+  callback still copies `id`/`role` from the `User` row onto `session.user`.
 - **`src/types/next-auth.d.ts`** — module augmentation so `session.user` is typed with `id`/`role` (a
-  `Role` from `src/lib/roles.ts`) and non-nullable `email` (safe because the `signIn` callback above
-  guarantees an existing, email-bearing `User`).
+  `Role` from `src/lib/roles.ts`) and non-nullable `email`.
 - **Password login (`src/lib/password-auth.ts`, `signInWithPassword` in `src/app/admin/login/actions.ts`)**
-  — added so the developer/owner isn't blocked on log-scraping a magic link during early deployment, before
-  real email delivery existed. Deliberately **not** implemented as an Auth.js `Credentials` provider: that
-  requires `session.strategy: "jwt"`, which conflicts with the `"database"` strategy the magic-link flow
-  needs. Instead, `createPasswordSession()` creates a `Session` row and sets the `authjs.session-token` /
-  `__Secure-authjs.session-token` cookie directly — the exact same shape Auth.js's own adapter flow
-  produces (same `crypto.randomUUID()` token, same cookie name/attributes; see
+  is the only sign-in path. Deliberately **not** implemented as an Auth.js `Credentials` provider: that
+  requires `session.strategy: "jwt"`, which conflicts with the `"database"` strategy configured above.
+  Instead, `createPasswordSession()` creates a `Session` row and sets the `authjs.session-token` /
+  `__Secure-authjs.session-token` cookie directly — the exact same shape Auth.js's own adapter flow would
+  produce (same `crypto.randomUUID()` token, same cookie name/attributes; see
   `node_modules/@auth/core/lib/utils/cookie.js` and `.../callback/handle-login.js` for the reference
-  behaviour this mirrors) — so `auth()` and the `(protected)` layout's session check don't need to know or
-  care which path a user signed in through. `User.password` is an optional bcrypt hash (`bcryptjs`, pure JS
-  — avoids native-binary cross-compile issues between a Windows dev machine and Vercel's Linux runtime);
-  most accounts have it `null` and can only use magic links. Login attempts are rate-limited
-  (`src/lib/rate-limit.ts`, keyed by IP) since, unlike a magic link, a password is guessable. There's no UI
-  to set a password yet — it's set directly via a Prisma script (`bcrypt.hash` + `prisma.user.update`), not
-  through the admin panel.
+  behaviour this mirrors) — so `auth()` and the `(protected)` layout's session check need no special-casing.
+  `User.password` is an optional bcrypt hash (`bcryptjs`, pure JS — avoids native-binary cross-compile
+  issues between a Windows dev machine and Vercel's Linux runtime) but **required in practice**: a `User`
+  row with no password can't sign in at all now. Login attempts are rate-limited (`src/lib/rate-limit.ts`,
+  keyed by IP) since, unlike a magic link, a password is guessable. There's still no UI to set a password —
+  it's set via `npm run db:seed` (pass `SEED_OWNER_PASSWORD`) for the seeded owner, or directly via a
+  one-off Prisma script (`hashPassword()` + `prisma.user.update`) for anyone else.
 - **`src/lib/roles.ts`** — `ROLES = ["OWNER", "ADMIN", "EDITOR", "SALES"]` and permission helpers like
   `canAccessEnquiries()` (Owner/Admin/Sales, per the README's Team section — Editor gets pages/services/
   FAQ/blog instead). Add new permission checks here, not inline in routes/components.
 - **Route protection has no `middleware.ts`** — it's done at the layout level.
   `src/app/admin/(protected)/layout.tsx` calls `auth()` server-side and `redirect("/admin/login")` if
   there's no session; everything under that route group (dashboard, enquiries, etc.) inherits the check.
-  `src/app/admin/login/` (the login page, the `verify` "check your email" page, and the
-  `requestMagicLink` server action) lives *outside* `(protected)` so it's reachable when signed out.
+  `src/app/admin/login/` (the login page and its `signInWithPassword` server action) lives *outside*
+  `(protected)` so it's reachable when signed out.
 - **Server actions re-check permissions themselves**, not just the UI — e.g.
   `src/app/admin/(protected)/enquiries/actions.ts`'s `requireEnquiryAccess()` calls `auth()` and
   `canAccessEnquiries()` at the top of every mutation (`updateEnquiryStatus`, `assignEnquiry`,
@@ -241,6 +248,18 @@ providers.
   count, a 12-week bucketed chart, latest 4 enquiries) — no fake numbers. The README's GA-backed widgets
   (traffic sources, visitors, top pages) are deferred to step 9 (analytics), not stubbed with placeholder
   data.
+- **The admin shell is responsive** (`src/components/admin/admin-shell.tsx`, a client component wrapping
+  `AdminSidebar` + `AdminTopbar`, swapped in from the server `(protected)/layout.tsx`). Below the `lg`
+  breakpoint the 240px sidebar becomes a `fixed`, `z-40` off-canvas drawer (`-translate-x-full` ↔
+  `translate-x-0`, `motion-reduce:transition-none`) opened by a hamburger button in `AdminTopbar`; at `lg`+
+  it reverts to the original `sticky`/always-visible layout via `lg:` overrides on the same classes. Closing
+  happens three ways: tapping a nav link (`onClose` passed into `AdminSidebar`), tapping the dedicated ✕
+  button inside the sidebar's own header, or tapping the backdrop — **not** by tapping the topbar's
+  hamburger again, because the open sidebar sits above the topbar in z-index and physically covers it; the
+  topbar button only opens. The backdrop is a plain `aria-hidden` `<div>`, not a `<button>`, so it doesn't
+  duplicate the sidebar's own close button in the accessibility tree. `AdminShell` resets `open` to `false`
+  on route change using the same render-time pathname-reset pattern as `SiteHeader` (see "Architecture"
+  above), not `setState` inside `useEffect`.
 
 ## Design reference material
 
@@ -285,10 +304,10 @@ rebuild the behaviour it shows using the target stack's normal patterns.
   the same database directly via `.env`, not via Vercel env). `package.json`'s `vercel-build` script
   (`prisma migrate deploy && next build`) applies any pending migrations on every deploy — Vercel detects
   and runs this script instead of the default `build` automatically because of its name.
-- Auth.js (NextAuth), email magic links, role-based access control (OWNER/ADMIN/EDITOR/SALES). **Set up**
-  (see "Auth and the admin panel" above) — magic links send over real SMTP when configured (falling back to
-  a console log otherwise), but there's no team-invite flow yet (step 8), so new users can only be added via
-  `npm run db:seed` or a direct DB insert.
+- Auth.js (NextAuth), role-based access control (OWNER/ADMIN/EDITOR/SALES). **Set up** (see "Auth and the
+  admin panel" above) — sign-in is password-only (magic link was removed), and there's no team-invite flow
+  yet (step 8), so new users can only be added via `npm run db:seed` or a direct DB insert, followed by
+  setting a password via a one-off Prisma script.
 - Resend (or SMTP) for enquiry notifications, auto-replies, and admin replies. **Set up** — SMTP via
   `nodemailer`, routed through the shared `src/lib/mailer.ts` helper (see "Backend: the enquiries API"
   above); without `SMTP_*` env vars configured it falls back to the same `console.log` stub pattern as
