@@ -99,13 +99,13 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="rounded-panel border border-white/10 bg-navy-800 p-[clamp(24px,4vw,48px)]">
-        <div className="grid justify-items-center gap-[18px] py-10 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-500 text-[28px] text-white">
+      <div className="rounded-panel border border-white/10 bg-navy-800 p-[clamp(20px,3vw,32px)]">
+        <div className="grid justify-items-center gap-3 py-7 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500 text-[20px] text-white">
             ✓
           </div>
-          <h2 className="font-display text-[32px] font-semibold tracking-[-0.02em]">Thanks, {firstName}.</h2>
-          <p className="max-w-[380px] text-[17px] leading-[1.6] text-mist">
+          <h2 className="font-display text-[22px] font-bold tracking-[-0.02em]">Thanks, {firstName}.</h2>
+          <p className="max-w-[340px] text-[14px] leading-[1.6] text-mist">
             Your inquiry is in. Our team will review your scope and reply to {form.email} within one
             business day.
           </p>
@@ -117,7 +117,7 @@ export function ContactForm() {
               setSubmitError(null);
               setForm(EMPTY_FORM);
             }}
-            className="mt-2 rounded-input border border-white/25 bg-transparent px-[22px] py-3 text-[15px] font-semibold text-white"
+            className="mt-1 rounded-input border border-white/25 bg-transparent px-5 py-2.5 text-[14px] font-semibold text-white"
           >
             Send another inquiry
           </button>
@@ -129,33 +129,33 @@ export function ContactForm() {
   const lineColor = (key: keyof FormState) => (errors[key] ? "border-orange-400" : "border-white/20");
 
   return (
-    <div className="rounded-panel border border-white/10 bg-navy-800 p-[clamp(24px,4vw,48px)]">
-      <form onSubmit={submit} noValidate className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-x-8 gap-y-8">
-        <label className="grid gap-2.5">
-          <span className="font-mono text-xs tracking-[0.1em] text-white">FULL NAME *</span>
+    <div className="rounded-panel border border-white/10 bg-navy-800 p-[clamp(20px,3vw,32px)]">
+      <form onSubmit={submit} noValidate className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-x-6 gap-y-6">
+        <label className="grid gap-2">
+          <span className="font-mono text-[11px] tracking-[0.1em] text-white">FULL NAME *</span>
           <input
             value={form.name}
             onChange={set("name")}
             placeholder="Jane Doe"
-            className={`border-0 border-b bg-transparent py-2.5 font-body text-[17px] text-white outline-none focus:border-orange-400 ${lineColor("name")}`}
+            className={`border-0 border-b bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400 ${lineColor("name")}`}
           />
-          <span className="min-h-4 text-[13px] text-orange-400">{errors.name}</span>
+          <span className="min-h-4 text-[12px] text-orange-400">{errors.name}</span>
         </label>
 
-        <label className="grid gap-2.5">
-          <span className="font-mono text-xs tracking-[0.1em] text-white">WORK EMAIL *</span>
+        <label className="grid gap-2">
+          <span className="font-mono text-[11px] tracking-[0.1em] text-white">WORK EMAIL *</span>
           <input
             type="email"
             value={form.email}
             onChange={set("email")}
             placeholder="jane@company.com"
-            className={`border-0 border-b bg-transparent py-2.5 font-body text-[17px] text-white outline-none focus:border-orange-400 ${lineColor("email")}`}
+            className={`border-0 border-b bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400 ${lineColor("email")}`}
           />
-          <span className="min-h-4 text-[13px] text-orange-400">{errors.email}</span>
+          <span className="min-h-4 text-[12px] text-orange-400">{errors.email}</span>
         </label>
 
-        <label className="grid gap-2.5">
-          <span className="font-mono text-xs tracking-[0.1em] text-white">
+        <label className="grid gap-2">
+          <span className="font-mono text-[11px] tracking-[0.1em] text-white">
             PHONE NUMBER <span className="text-[#737373]">(optional)</span>
           </span>
           <input
@@ -163,16 +163,16 @@ export function ContactForm() {
             value={form.phone}
             onChange={set("phone")}
             placeholder="+91 98765 43210"
-            className="border-0 border-b border-white/20 bg-transparent py-2.5 font-body text-[17px] text-white outline-none focus:border-orange-400"
+            className="border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400"
           />
         </label>
 
-        <label className="grid gap-2.5">
-          <span className="font-mono text-xs tracking-[0.1em] text-white">SERVICE REQUIRED</span>
+        <label className="grid gap-2">
+          <span className="font-mono text-[11px] tracking-[0.1em] text-white">SERVICE REQUIRED</span>
           <select
             value={form.service}
             onChange={set("service")}
-            className="cursor-pointer border-0 border-b border-white/20 bg-transparent py-2.5 font-body text-[17px] text-white outline-none focus:border-orange-400"
+            className="cursor-pointer border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400"
           >
             {SERVICE_OPTIONS.map((o) => (
               <option key={o} value={o} className="text-ink">
@@ -182,16 +182,16 @@ export function ContactForm() {
           </select>
         </label>
 
-        <label className="grid gap-2.5 col-span-full">
-          <span className="font-mono text-xs tracking-[0.1em] text-white">PROJECT DETAILS *</span>
+        <label className="grid gap-2 col-span-full">
+          <span className="font-mono text-[11px] tracking-[0.1em] text-white">PROJECT DETAILS *</span>
           <textarea
             rows={4}
             value={form.details}
             onChange={set("details")}
             placeholder="Tell us about your requirements..."
-            className={`resize-y border-0 border-b bg-transparent py-2.5 font-body text-[17px] text-white outline-none focus:border-orange-400 ${lineColor("details")}`}
+            className={`resize-y border-0 border-b bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400 ${lineColor("details")}`}
           />
-          <span className="min-h-4 text-[13px] text-orange-400">{errors.details}</span>
+          <span className="min-h-4 text-[12px] text-orange-400">{errors.details}</span>
         </label>
 
         {/* Honeypot — visually hidden and out of tab order/screen-reader flow so
@@ -222,7 +222,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-xl bg-blue-500 py-[18px] font-body text-[17px] font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60 col-span-full"
+          className="rounded-xl bg-orange-500 py-3.5 font-body text-[15px] font-semibold text-white transition-colors hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-60 col-span-full"
         >
           {submitting ? "Submitting…" : "Submit Inquiry"}
         </button>

@@ -19,17 +19,17 @@ export const SERVICES = [
     items: [
       {
         title: "Market Research",
-        link: null as string | null,
+        link: "Learn more" as string | null,
         body: "We harness the power of analytics to identify market trends and formulate practical action plans for business growth.",
       },
       {
         title: "Consumer Behaviour & Satisfaction Analysis",
-        link: null as string | null,
+        link: "Learn more" as string | null,
         body: "Our strategic research process decodes consumer behaviours, enabling you to empathise with your prospects and deliver personalized solutions that speak to their needs.",
       },
       {
         title: "Campaign Analytics",
-        link: null as string | null,
+        link: "Learn more" as string | null,
         body: "If it's not measured, it didn't happen! We provide a custom tech stack to help you understand and optimize key campaign performance metrics on digital as well as mainline platforms.",
       },
     ],
@@ -62,17 +62,17 @@ export const SERVICES = [
     items: [
       {
         title: "SEO Services",
-        link: "Click here for detailed section",
+        link: "Learn more",
         body: "That Increase Organic Traffic & Qualified Leads Appear where customers are searching. Your customers are searching for products and services every day. If your business doesn't appear in search results, you're losing valuable opportunities. SEO determines how easily your business is found when customers search on Google. It's often the first digital interaction a potential customer has with your brand. Kargatox offers comprehensive Search Engine Optimization (SEO), Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) services that improve your website's visibility across Google Search, AI-powered search engines, voice assistants, and generative AI platforms.",
       },
       {
         title: "Social Media Marketing",
-        link: "Click here",
+        link: "Learn more",
         body: "Social media is no longer just about posting content—it is where brands build relationships, earn trust, and influence purchasing decisions. It is often the first place customers check before deciding to trust a business. Consistent engagement here shapes how your brand is perceived across Instagram, LinkedIn, Facebook, YouTube and more. Kargatox helps businesses build engaging social media communities through strategic content, storytelling, creative campaigns, and consistent audience interaction. We create Social Media Engagement Strategies that help businesses grow meaningful communities while increasing brand awareness, customer interaction, and lead generation.",
       },
       {
         title: "Brand Campaigns Strategy",
-        link: "Click here",
+        link: "Learn more",
         body: "Every successful campaign tells a compelling story. we develop integrated brand campaigns that connect emotionally with audiences while delivering measurable business outcomes. From festive campaigns and product launches to awareness initiatives and employer branding, we combine creativity with marketing intelligence to maximize impact.",
       },
     ],

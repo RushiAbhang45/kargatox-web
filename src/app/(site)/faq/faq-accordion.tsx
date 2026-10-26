@@ -17,19 +17,19 @@ export function FaqAccordion({ items }: { items: FaqEntry[] }) {
             <button
               type="button"
               onClick={() => setOpenIndex(open ? -1 : i)}
-              className="flex w-full items-center justify-between gap-5 border-0 bg-none py-[26px] text-left font-display text-[22px] font-semibold tracking-[-0.01em] text-ink"
+              className="flex w-full items-center justify-between gap-5 border-0 bg-none py-[18px] text-left font-display text-[17px] font-bold tracking-[-0.01em] text-ink"
             >
               <span>{f.question}</span>
               <span
-                className={`flex h-9 w-9 flex-none items-center justify-center rounded-full font-body text-xl ${
-                  open ? "bg-blue-500 text-white" : "bg-chip-neutral text-ink"
+                className={`flex h-7 w-7 flex-none items-center justify-center rounded-full font-body text-base ${
+                  open ? "bg-orange-500 text-white" : "bg-chip-neutral text-ink"
                 }`}
               >
                 {open ? "−" : "+"}
               </span>
             </button>
             {open && (
-              <p className="pb-7 pr-14 text-[17px] leading-[1.65] text-slate">{f.answer}</p>
+              <p className="pb-5 pr-10 text-[14px] leading-[1.65] text-slate">{f.answer}</p>
             )}
           </div>
         );
