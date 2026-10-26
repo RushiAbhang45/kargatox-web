@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { NAV_LINKS } from "@/lib/nav-links";
+import { SERVICE_PAGES } from "@/lib/service-pages-data";
 
 export function SiteFooter({ showCta = true }: { showCta?: boolean }) {
   return (
@@ -41,8 +42,20 @@ export function SiteFooter({ showCta = true }: { showCta?: boolean }) {
           </div>
           <div className="flex flex-wrap gap-7 text-[15px]">
             {NAV_LINKS.map((l) => (
-              <Link key={l.href} href={l.href} className="text-mist transition-colors hover:text-blue-300">
+              <Link key={l.href} href={l.href} className="text-mist transition-colors hover:text-orange-400">
                 {l.label}
+              </Link>
+            ))}
+          </div>
+          <div className="grid max-w-[260px] gap-2.5">
+            <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Services</span>
+            {SERVICE_PAGES.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/${p.slug}`}
+                className="text-[14px] text-mist transition-colors hover:text-orange-400"
+              >
+                {p.navTitle}
               </Link>
             ))}
           </div>

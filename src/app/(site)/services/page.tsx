@@ -6,6 +6,7 @@ import { SERVICES } from "./data";
 import { getPublishedPageContent } from "@/lib/page-content";
 import { getSubServiceItems } from "@/lib/services-content";
 import { ScrambleReveal } from "@/components/gsap/scramble-reveal";
+import { SUB_SERVICE_HREFS } from "@/lib/service-pages-data";
 
 export const metadata: Metadata = {
   title: "Services — Kargatox",
@@ -154,28 +155,35 @@ export default async function ServicesPage() {
             </div>
 
             <RevealGroup className="grid gap-3">
-              {svc.items.map((it) => (
-                <div
-                  key={it.num}
-                  className="rounded-card border border-line bg-white p-5 transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:translate-x-1 hover:border-orange-500"
-                >
-                  <div className="flex gap-3">
-                    <span className="font-mono text-[12px] text-orange-500">{it.num}</span>
-                    <div className="flex-1">
-                      <h3 className="font-display text-[17px] font-bold tracking-[-0.01em]">{it.title}</h3>
-                      <p className="mt-2 text-[14px] leading-[1.6] text-slate">{it.body}</p>
-                      {it.link && (
-                        <Link
-                          href="#"
-                          className="mt-2.5 inline-block text-[14px] font-semibold text-orange-500 hover:text-ink"
-                        >
-                          {it.link} →
-                        </Link>
-                      )}
+              {svc.items.map((it) => {
+                // The DB/admin `link` field (src/lib/services-content.ts) is display text
+                // only — the real destination comes from this title lookup, so renamed or
+                // admin-added rows that aren't one of the six known service pages just show
+                // no link rather than a dead "#" href.
+                const href = SUB_SERVICE_HREFS[it.title];
+                return (
+                  <div
+                    key={it.num}
+                    className="rounded-card border border-line bg-white p-5 transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:translate-x-1 hover:border-orange-500"
+                  >
+                    <div className="flex gap-3">
+                      <span className="font-mono text-[12px] text-orange-500">{it.num}</span>
+                      <div className="flex-1">
+                        <h3 className="font-display text-[17px] font-bold tracking-[-0.01em]">{it.title}</h3>
+                        <p className="mt-2 text-[14px] leading-[1.6] text-slate">{it.body}</p>
+                        {href && (
+                          <Link
+                            href={href}
+                            className="mt-2.5 inline-block text-[14px] font-semibold text-orange-500 hover:text-ink"
+                          >
+                            {it.link ?? "Learn more"} →
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </RevealGroup>
           </div>
         </section>

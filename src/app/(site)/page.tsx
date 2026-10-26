@@ -6,7 +6,6 @@ import { PROCESS_STEPS } from "@/lib/process-steps";
 import { getPublishedPageContent } from "@/lib/page-content";
 import { splitFirstSentence } from "@/lib/text-split";
 import { ScrambleReveal } from "@/components/gsap/scramble-reveal";
-import { HorizontalScrollSection } from "@/components/gsap/horizontal-scroll-section";
 import { SectionIntro } from "@/components/schbang/section-intro";
 
 const PILLARS = [
@@ -168,45 +167,49 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Horizontal scroll-jacking panels (GSAP ScrollTrigger pin + scrub) —
-          Schbang's "Brand/Tech/Media Solution" pattern, applied to Kargatox's
-          two real service lines, including the giant pale "ghost" wordmark
-          sitting behind each panel's real content. Falls back to a plain
-          scrollable row under prefers-reduced-motion
-          (src/components/gsap/horizontal-scroll-section.tsx). */}
-      <HorizontalScrollSection className="bg-paper">
-        {CAPABILITY_SERVICES.map((s) => (
-          <Link
-            key={s.num}
-            href="/services"
-            className="group relative flex h-full w-full flex-none flex-col justify-center gap-4 overflow-hidden border-r border-line bg-white p-6 text-ink transition-colors hover:bg-paper sm:p-10"
-          >
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -right-[2%] top-1/2 -translate-y-1/2 select-none whitespace-nowrap font-display text-[clamp(56px,10vw,110px)] font-bold leading-none text-ink/[0.04]"
+      {/* Static two-up panels for the two service lines — previously a GSAP
+          ScrollTrigger pin+scrub horizontal slider (see git history), pulled
+          out after repeated reports that it rendered incorrectly (blank gaps,
+          overlapping content) across real-world testing. Keeps the same
+          visual design (ghost wordmark, chips, "View details" link), just as
+          a plain responsive grid with no scroll-jacking. */}
+      <section className="px-6 py-[56px]">
+        <div className="mx-auto grid max-w-(--width-site) grid-cols-1 overflow-hidden rounded-card border border-line bg-paper sm:grid-cols-2">
+          {CAPABILITY_SERVICES.map((s, i) => (
+            <Link
+              key={s.num}
+              href="/services"
+              className={`group relative flex flex-col justify-center gap-4 overflow-hidden bg-white p-6 text-ink transition-colors hover:bg-paper sm:p-10 ${
+                i === 0 ? "border-b border-line sm:border-b-0 sm:border-r" : ""
+              }`}
             >
-              {s.title.split(" ")[0]}
-            </span>
-            <div className="relative font-mono text-[13px] text-orange-500">{s.num}</div>
-            <h3 className="relative max-w-[460px] font-display text-[clamp(24px,3.2vw,38px)] font-bold leading-[1.05] tracking-[-0.02em]">
-              {s.title}
-            </h3>
-            <div className="relative flex flex-wrap gap-2">
-              {s.subs.map((sub) => (
-                <span
-                  key={sub}
-                  className="rounded-chip bg-chip-cool px-3.5 py-2 text-[13px] font-medium text-[#262626]"
-                >
-                  {sub}
-                </span>
-              ))}
-            </div>
-            <span className="relative mt-1 inline-flex items-center gap-1 text-[15px] font-semibold text-orange-500 transition-transform duration-300 group-hover:translate-x-1">
-              View details →
-            </span>
-          </Link>
-        ))}
-      </HorizontalScrollSection>
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-[2%] top-1/2 -translate-y-1/2 select-none whitespace-nowrap font-display text-[clamp(56px,10vw,110px)] font-bold leading-none text-ink/[0.04]"
+              >
+                {s.title.split(" ")[0]}
+              </span>
+              <div className="relative font-mono text-[13px] text-orange-500">{s.num}</div>
+              <h3 className="relative max-w-[460px] font-display text-[clamp(24px,3.2vw,38px)] font-bold leading-[1.05] tracking-[-0.02em]">
+                {s.title}
+              </h3>
+              <div className="relative flex flex-wrap gap-2">
+                {s.subs.map((sub) => (
+                  <span
+                    key={sub}
+                    className="rounded-chip bg-chip-cool px-3.5 py-2 text-[13px] font-medium text-[#262626]"
+                  >
+                    {sub}
+                  </span>
+                ))}
+              </div>
+              <span className="relative mt-1 inline-flex items-center gap-1 text-[15px] font-semibold text-orange-500 transition-transform duration-300 group-hover:translate-x-1">
+                View details →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <RevenueCheck />
 
