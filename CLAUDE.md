@@ -32,6 +32,12 @@ enquiry-email settings plus a Google Analytics toggle) are all real now — see 
 component was deleted as dead code). **Only step 9 (SEO/analytics/a11y) remains** — GA is wired in as part
 of Settings, but sitemap/robots/structured-data/Lighthouse work is still open.
 
+Separately, the current branch (`redesign/schbang-direction`) carries an **experimental visual reskin** of
+the five public pages on top of all of the above — black/white/orange instead of navy/blue, GSAP-driven
+scroll effects alongside the existing Framer Motion primitives. It has not been merged to `main`. See
+"Public-site visual redesign (`redesign/schbang-direction` branch)" below for what it touches and, just as
+importantly, what it deliberately leaves on the old theme.
+
 ## Commands
 
 - `npm run dev` — start the dev server (Turbopack) at `http://localhost:3000`.
@@ -110,7 +116,8 @@ of Settings, but sitemap/robots/structured-data/Lighthouse work is still open.
   background and no alpha channel** — dropped in as-is on navy it renders as a white rectangle. Don't wire
   it into any of those spots without either cropping/keying it to transparency first or getting a
   transparent-background export from the client; it's fine to use once a white/light-background spot
-  exists for it.
+  exists for it. (On the `redesign/schbang-direction` branch, `Logo` gained a `variant?: "dark" | "light"`
+  prop for exactly this reason — see below — but the `.webp` question above is unaffected either way.)
 - **Animation primitives** live in `src/components/motion/reveal.tsx`: `Reveal` (single-element scroll
   reveal), `RevealGroup` (stagger container, `(index % 6) * 90ms` delay matching the README), `RiseWords`
   (hero heading words — mount-triggered via `animate`, **not** `whileInView`: these are always in view on
@@ -124,6 +131,82 @@ of Settings, but sitemap/robots/structured-data/Lighthouse work is still open.
   noise — see `SiteHeader`'s pathname-reset and `ContactForm`'s URL-prefill for the pattern used instead
   (derive/reset during render, or a lazy `useState(() => ...)` initializer, rather than `setState` inside
   `useEffect`).
+
+## Public-site visual redesign (`redesign/schbang-direction` branch)
+
+This branch reskins the public site's visual language on top of the same backend/content-admin wiring
+described everywhere else in this file — no Prisma/route/server-action changes. **It's scoped, not
+global**: only the five page components (`src/app/(site)/{page,services,how-we-work,faq,contact}/page.tsx`)
+plus shared chrome (`site-header.tsx`, `site-footer.tsx`, `logo.tsx`, `numbered-rows.tsx`,
+`faq-accordion.tsx`, `contact-form.tsx`) were touched. **The admin panel, the blog routes
+(`src/app/(site)/blog/`), and the revenue-check quiz (`src/components/home/revenue-check.tsx`) were not
+touched** and still render the original navy-900/blue-500 theme — don't assume the redesign reaches those
+just because it's the active branch, and don't be surprised to see both themes in the same `grep`.
+
+- **GSAP joins Framer Motion as a second animation system** (`gsap` + `@gsap/react` added to
+  `package.json`) rather than replacing it — the existing `Reveal`/`RevealGroup`/`RiseWords`/`GrowBar`
+  primitives (see "Architecture" above) are reused as-is on the redesigned pages too.
+  `src/components/gsap/gsap-registry.ts` registers `ScrollTrigger` + `ScrambleTextPlugin` once at module
+  load (both free since Webflow's 2024 GreenSock acquisition — no Club GreenSock license needed) and
+  exports a shared `prefersReducedMotion()` helper; `ScrambleReveal` below checks it and renders plain
+  static text instead — the GSAP-side equivalent of `MotionConfig reducedMotion="user"` on the Framer
+  Motion side.
+  - **Removed:** Home's two service lines (Research/Marketing) originally sat in a GSAP ScrollTrigger
+    pin+scrub horizontal "scroll-jacking" slider (`src/components/gsap/horizontal-scroll-section.tsx`,
+    `HorizontalScrollSection`). It went through three different pin/scrub configurations, each fixing one
+    real bug and surfacing another (a blank dead-zone while pinned with the viewport unfilled; a slide that
+    rushed past before finishing when unpinned; pinned content overlapping the next section once pinned
+    correctly but with `pinSpacing`/`pinType` auto-detection silently reserving zero extra scroll distance
+    for this nested-flex layout) — confirmed each time by driving a headless Chrome instance and reading
+    GSAP's own `ScrollTrigger.start`/`.end` and the rendered `.pin-spacer`, not by eyeballing it. After
+    repeated real-world reports that it still rendered wrong, it was pulled out entirely and replaced with a
+    plain static two-up grid (same visual panels, `CAPABILITY_SERVICES.map(...)` in
+    `src/app/(site)/page.tsx`, no scroll-jacking) — don't reintroduce a pinned/scrubbed version of this
+    section without being able to verify it the same rigorous way; it is not a component to eyeball-test in
+    a live browser only.
+  - `src/components/gsap/scramble-reveal.tsx`'s `ScrambleReveal` scrambles random characters into real text
+    once, on scroll-into-view (`ScrollTrigger` `once: true`) — used for eyebrows and the header's nav-label
+    strip. Renders plain static text under reduced motion.
+  - `src/components/schbang/section-intro.tsx`'s `SectionIntro` is the shared "eyebrow + headline + giant
+    arrow glyph + CTA" row reused across sections (Home's "What defines us", FAQ-adjacent blocks) instead of
+    one-off flex-rows per section; its eyebrow is always wrapped in `ScrambleReveal`.
+- **Colour swap, reusing existing tokens — nothing new added to `@theme inline`:** `navy-900/800/700` and
+  the `blue-*` accents are retired on the touched pages in favor of the existing `ink` (`#0f172a`) token for
+  dark sections and `orange-500`/`orange-400` as the single accent colour, replacing `blue-300`/`blue-600`
+  everywhere `splitFirstSentence()`/`splitLastWord()` (see "Backend: content admin" below) supply the
+  accented half of an admin-edited heading — those helpers themselves stayed colour-agnostic; only the
+  calling page's class changed.
+- **`Logo` (`src/components/logo.tsx`) gained a `variant?: "dark" | "light"` prop**: `"dark"` (the default)
+  is the original white-on-navy mark, unchanged, and is what every non-redesigned call site (admin
+  login/sidebar, Team accept-invite) still uses; `"light"` renders `text-ink` for the new white-background
+  `SiteHeader`. It's a real prop rather than an appended className because Tailwind's generated CSS order
+  doesn't guarantee a later-appended `text-*` class wins the cascade over one already baked into the
+  component.
+- Scale was deliberately tightened twice after review found an initial pass "too large/cinematic" — current
+  sizes/padding sit closer to the original site's proportions than that first draft did. Per the branch's
+  own commit message, fabricated trust signals (client logos, stats, case studies) were
+  deliberately **not** added even though the Schbang reference site has them — flagged as missing rather
+  than invented, since this is a live marketing site.
+- **Six standalone service landing pages** sit under `src/app/(site)/` — one per sub-service listed on
+  `/services`: `market-research-services`, `consumer-behaviour-satisfaction-analysis-services`,
+  `campaign-analytics-services`, `seo-services`, `brand-campaign-strategy-services`,
+  `social-media-marketing-services`. All content (copy, meta title/description, FAQs, related-service
+  links) lives in `src/lib/service-pages-data.ts`'s `SERVICE_PAGES` array, taken from a client-supplied doc
+  ("Kargatox – SEO Content for 6 Service update") — same word-for-word rule as the rest of the site's copy
+  (see "Key constraints" below), with two corrected broken fragments noted inline in that file where the
+  source doc itself was broken. Each `src/app/(site)/<slug>/page.tsx` is just a `metadata` export plus
+  `<ServiceLandingPage content={getServicePage("<slug>")} />` — `src/components/services/
+  service-landing-page.tsx`'s `ServiceLandingPage` is the one shared template (hero, numbered "what we
+  cover" rows via `NumberedRows`, an approach panel with optional numbered steps, `BulletList` columns, an
+  FAQ accordion reusing `FaqAccordion` from `/faq`, a "related services" chip row) — there's no per-page
+  layout code beyond the metadata export.
+- **Wired into nav/footer/hub, not just reachable by URL:** `SiteHeader`'s "Services" nav item is now a
+  hover/focus CSS-only dropdown on desktop (grouped Research/Marketing via `SERVICE_PAGE_GROUPS`) and an
+  expanded sub-list under "Services" in the mobile drawer; `SiteFooter` gained a "Services" column listing
+  all six; the `/services` hub's sub-service cards resolve their "Learn more" link through
+  `SUB_SERVICE_HREFS` (a `navTitle` → `/slug` map keyed by the exact `SubService.title` strings in
+  `src/app/(site)/services/data.ts`) instead of the previous dead `href="#"` — a renamed or admin-added
+  sub-service row that isn't one of these six slugs just renders with no link rather than a broken one.
 
 ## Backend: the enquiries API
 
@@ -313,11 +396,15 @@ way as `requireEnquiryAccess()`.
   deliberate deferral, not an oversight.
   - Three fields reproduce a two-tone heading style from plain text so the original visual design survives
     an admin edit: `src/lib/text-split.ts`'s `splitFirstSentence()` (first sentence plain, the rest accented
-    — Home's capabilities heading and FAQ's heading, both `text-blue-600`) and `splitLastWord()` (every word
-    but the last plain, last word accented — Contact's heading, `text-blue-300`). Home's hero headline uses
-    its own word-level version of the same idea: it's fed through `RiseWords` (see "Architecture" above) as
-    one word per array entry, with only the **last** word getting `text-blue-300` — this is what reproduces
-    the original "Growth." accent for any edited headline, not just the default. How-we-work's headline is
+    — Home's capabilities heading and FAQ's heading) and `splitLastWord()` (every word but the last plain,
+    last word accented — Contact's heading). The helpers themselves just split strings; the accent colour is
+    whatever class the calling page applies — on `main` that's `text-blue-600` (first-sentence fields) /
+    `text-blue-300` (last-word fields), but on the `redesign/schbang-direction` branch (see "Public-site
+    visual redesign" above) every one of those call sites was repointed to `text-orange-500`/`orange-400`
+    instead. Home's hero headline uses its own word-level version of the same idea: it's fed through
+    `RiseWords` (see "Architecture" above) as one word per array entry, with only the **last** word getting
+    the accent class — this is what reproduces the original "Growth." accent for any edited headline, not
+    just the default. How-we-work's headline is
     plain `"line one\nline two"` — split on the literal newline, second line rendered dimmed
     (`text-white/70`) after a `<br/>`. None of this is configurable from the editor beyond typing the text;
     it's baked into each page's rendering, not a generic rich-text feature.
@@ -421,7 +508,10 @@ rebuild the behaviour it shows using the target stack's normal patterns.
   above); without `SMTP_*` env vars configured it falls back to the same `console.log` stub pattern as
   before.
 - Framer Motion for animation — set up (`src/components/motion/`); decorative infinite loops (background
-  orbs, the sub-service marquee) use plain CSS keyframes in `globals.css` instead, not Framer Motion.
+  orbs, the sub-service marquee) use plain CSS keyframes in `globals.css` instead, not Framer Motion. (The
+  `redesign/schbang-direction` branch adds GSAP/ScrollTrigger alongside it for scroll-jacking and text-
+  scramble effects — not in the handoff README, see "Public-site visual redesign" above — and is not on
+  `main`.)
 - Page copy, services, FAQ and posts live in the database, edited via the admin panel, read by public
   pages at build time with ISR revalidation on publish. **Set up** — see "Backend: content admin (Pages,
   Services & FAQ, Blog, Settings)" above. Each piece of content still has a hardcoded fallback (the

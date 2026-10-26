@@ -5,6 +5,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { SERVICES } from "./data";
 import { getPublishedPageContent } from "@/lib/page-content";
 import { getSubServiceItems } from "@/lib/services-content";
+import { ScrambleReveal } from "@/components/gsap/scramble-reveal";
+import { SUB_SERVICE_HREFS } from "@/lib/service-pages-data";
 
 export const metadata: Metadata = {
   title: "Services — Kargatox",
@@ -25,28 +27,30 @@ export default async function ServicesPage() {
   );
   return (
     <main className="flex flex-1 flex-col">
-      <section className="bg-navy-900 text-white">
-        <div className="relative mx-auto grid max-w-(--width-site) gap-7 px-6 pb-[90px] pt-[100px]">
-          <div className="font-mono text-[13px] tracking-[0.12em] text-blue-300">SERVICES</div>
+      <section className="bg-white text-ink">
+        <div className="relative mx-auto grid max-w-(--width-site) gap-5 px-6 pb-[48px] pt-[56px]">
+          <div className="font-mono text-[12px] tracking-[0.12em] text-orange-500">
+            <ScrambleReveal text="SERVICES" />
+          </div>
           <Reveal>
-            <h1 className="max-w-[920px] font-display text-[clamp(30px,3.6vw,48px)] font-semibold leading-[1.15] tracking-[-0.02em]">
+            <h1 className="max-w-[720px] font-display text-[clamp(26px,3.4vw,42px)] font-bold leading-[1.1] tracking-[-0.022em]">
               {content.introHeadline}
             </h1>
           </Reveal>
-          <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] gap-x-14 gap-y-6 text-[18px] leading-[1.6] text-mist">
+          <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] gap-x-12 gap-y-4 text-[15px] leading-[1.6] text-slate">
             <p>{content.introParagraph1}</p>
             <p>{content.introParagraph2}</p>
           </div>
-          <div className="mt-4 flex flex-wrap gap-2.5">
+          <div className="mt-2 flex flex-wrap gap-2.5">
             <Link
               href="#research"
-              className="rounded-input border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-blue-300"
+              className="rounded-input border border-line px-4 py-2.5 text-[14px] font-semibold text-ink transition-colors hover:border-orange-500"
             >
               Research Services ↓
             </Link>
             <Link
               href="#marketing"
-              className="rounded-input border border-white/25 px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:border-blue-300"
+              className="rounded-input border border-line px-4 py-2.5 text-[14px] font-semibold text-ink transition-colors hover:border-orange-500"
             >
               Marketing Services ↓
             </Link>
@@ -55,45 +59,45 @@ export default async function ServicesPage() {
       </section>
 
       {servicesWithItems.map((svc, i) => (
-        <section key={svc.id} id={svc.id} className={`px-6 ${i === 0 ? "pt-[64px]" : "pt-[110px]"}`}>
-          <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-x-16 gap-y-10">
-            <div className="sticky top-[110px]">
-              <div className="font-mono text-[13px] tracking-[0.12em] text-blue-600">{svc.num}</div>
-              <h2 className="mt-3.5 font-display text-[clamp(34px,4vw,56px)] font-semibold leading-[1.02] tracking-[-0.025em]">
+        <section key={svc.id} id={svc.id} className={`px-6 ${i === 0 ? "pt-[40px]" : "pt-[64px]"}`}>
+          <div className="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-start gap-x-12 gap-y-8">
+            <div className="sticky top-[88px]">
+              <div className="font-mono text-[12px] tracking-[0.12em] text-orange-500">{svc.num}</div>
+              <h2 className="mt-2.5 font-display text-[clamp(24px,3vw,36px)] font-bold leading-[1.08] tracking-[-0.02em]">
                 {svc.title}
               </h2>
-              <p className="mt-[18px] text-[18px] leading-[1.6] text-slate">{svc.intro}</p>
+              <p className="mt-3 text-[15px] leading-[1.6] text-slate">{svc.intro}</p>
               {svc.tagline && (
-                <p className="mt-6 font-display text-2xl font-semibold tracking-[-0.01em] text-blue-600">
+                <p className="mt-4 font-display text-lg font-bold tracking-[-0.01em] text-orange-500">
                   {svc.tagline}
                 </p>
               )}
 
-              <div className="mt-8 grid gap-[22px] rounded-panel bg-navy-900 p-6 text-white shadow-[0_30px_60px_-30px_rgba(11,20,48,0.5)]">
+              <div className="mt-6 grid gap-4 rounded-panel bg-ink p-5 text-white shadow-[0_20px_40px_-24px_rgba(15,23,42,0.5)]">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="h-2 w-2 rounded-full bg-success-dark" />
-                    <span className="font-display text-lg font-semibold">{svc.panelTitle}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-success-dark" />
+                    <span className="font-display text-[15px] font-bold">{svc.panelTitle}</span>
                   </div>
-                  <span className="rounded-chip border border-white/18 px-2.5 py-[5px] font-mono text-[11px] tracking-[0.08em] text-mist-2">
+                  <span className="rounded-chip border border-white/18 px-2 py-1 font-mono text-[10px] tracking-[0.08em] text-mist-2">
                     SAMPLE DATA
                   </span>
                 </div>
 
                 {svc.kind === "research" && (
-                  <div className="grid gap-2.5">
-                    <div className="flex h-[140px] items-end gap-1.5">
+                  <div className="grid gap-2">
+                    <div className="flex h-[90px] items-end gap-1">
                       {svc.bars.map((b, i) => (
                         <GrowBar
                           key={i}
                           axis="y"
                           index={i}
-                          className={`flex-1 rounded-t-[5px] rounded-b-[2px] ${b.orange ? "bg-blue-500" : "bg-white/25"}`}
+                          className={`flex-1 rounded-t-[4px] rounded-b-[2px] ${b.orange ? "bg-orange-500" : "bg-white/25"}`}
                           style={{ height: `${b.h}%` }}
                         />
                       ))}
                     </div>
-                    <div className="flex justify-between font-mono text-[11px] text-[#737373]">
+                    <div className="flex justify-between font-mono text-[10px] text-[#737373]">
                       <span>JAN</span>
                       <span>JUN</span>
                       <span>DEC</span>
@@ -103,82 +107,89 @@ export default async function ServicesPage() {
 
                 {svc.kind === "marketing" && (
                   <>
-                    <div className="grid gap-2">
+                    <div className="grid gap-1.5">
                       {svc.keywords.map((k) => (
                         <div
                           key={k.term}
-                          className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3.5 rounded-xl bg-white/5 px-3.5 py-[11px]"
+                          className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2.5 rounded-lg bg-white/5 px-3 py-2"
                         >
-                          <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[15px] text-[#e5e5e5]">
+                          <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] text-[#e5e5e5]">
                             {k.term}
                           </span>
-                          <span className="font-mono text-xs text-[#737373] line-through">#{k.from}</span>
-                          <span className="rounded-chip bg-success-dark/12 px-2.5 py-1 font-mono text-[13px] text-success-dark">
+                          <span className="font-mono text-[11px] text-[#737373] line-through">#{k.from}</span>
+                          <span className="rounded-chip bg-success-dark/12 px-2 py-0.5 font-mono text-[11px] text-success-dark">
                             ↑ #{k.to}
                           </span>
                         </div>
                       ))}
                     </div>
-                    <div className="mt-1.5 grid gap-3">
+                    <div className="mt-1 grid gap-2">
                       {svc.channels.map((c, i) => (
-                        <div key={c.name} className="grid grid-cols-[90px_minmax(0,1fr)_44px] items-center gap-3">
-                          <span className="text-[13px] text-mist-2">{c.name}</span>
-                          <div className="h-2 overflow-hidden rounded-lg bg-white/8">
+                        <div key={c.name} className="grid grid-cols-[76px_minmax(0,1fr)_36px] items-center gap-2.5">
+                          <span className="text-[12px] text-mist-2">{c.name}</span>
+                          <div className="h-1.5 overflow-hidden rounded-lg bg-white/8">
                             <GrowBar
                               axis="x"
                               index={i}
-                              className={`h-full rounded-lg ${c.orange ? "bg-blue-500" : "bg-white/35"}`}
+                              className={`h-full rounded-lg ${c.orange ? "bg-orange-500" : "bg-white/35"}`}
                               style={{ width: `${c.w}%` }}
                             />
                           </div>
-                          <span className="text-right font-mono text-xs text-white">{c.w}%</span>
+                          <span className="text-right font-mono text-[11px] text-white">{c.w}%</span>
                         </div>
                       ))}
                     </div>
                   </>
                 )}
 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1.5">
                   {svc.kpis.map((kp) => (
-                    <div key={kp.label} className="grid gap-1 rounded-xl bg-white/5 p-3.5">
-                      <span className="text-xs text-mist-2">{kp.label}</span>
-                      <span className="font-display text-2xl font-semibold">{kp.value}</span>
-                      <span className="font-mono text-[11px] text-success-dark">{kp.delta}</span>
+                    <div key={kp.label} className="grid gap-1 rounded-lg bg-white/5 p-2.5">
+                      <span className="text-[11px] text-mist-2">{kp.label}</span>
+                      <span className="font-display text-lg font-bold">{kp.value}</span>
+                      <span className="font-mono text-[10px] text-success-dark">{kp.delta}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            <RevealGroup className="grid gap-4">
-              {svc.items.map((it) => (
-                <div
-                  key={it.num}
-                  className="rounded-card border border-line bg-white p-[30px] transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:translate-x-1.5 hover:border-blue-500"
-                >
-                  <div className="flex gap-4">
-                    <span className="font-mono text-[13px] text-blue-600">{it.num}</span>
-                    <div className="flex-1">
-                      <h3 className="font-display text-2xl font-semibold tracking-[-0.01em]">{it.title}</h3>
-                      <p className="mt-2.5 text-base leading-[1.6] text-slate">{it.body}</p>
-                      {it.link && (
-                        <Link
-                          href="#"
-                          className="mt-3.5 inline-block text-[15px] font-semibold text-blue-600 hover:text-ink"
-                        >
-                          {it.link} →
-                        </Link>
-                      )}
+            <RevealGroup className="grid gap-3">
+              {svc.items.map((it) => {
+                // The DB/admin `link` field (src/lib/services-content.ts) is display text
+                // only — the real destination comes from this title lookup, so renamed or
+                // admin-added rows that aren't one of the six known service pages just show
+                // no link rather than a dead "#" href.
+                const href = SUB_SERVICE_HREFS[it.title];
+                return (
+                  <div
+                    key={it.num}
+                    className="rounded-card border border-line bg-white p-5 transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:translate-x-1 hover:border-orange-500"
+                  >
+                    <div className="flex gap-3">
+                      <span className="font-mono text-[12px] text-orange-500">{it.num}</span>
+                      <div className="flex-1">
+                        <h3 className="font-display text-[17px] font-bold tracking-[-0.01em]">{it.title}</h3>
+                        <p className="mt-2 text-[14px] leading-[1.6] text-slate">{it.body}</p>
+                        {href && (
+                          <Link
+                            href={href}
+                            className="mt-2.5 inline-block text-[14px] font-semibold text-orange-500 hover:text-ink"
+                          >
+                            {it.link ?? "Learn more"} →
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </RevealGroup>
           </div>
         </section>
       ))}
 
-      <div className="h-[120px]" />
+      <div className="h-[64px]" />
       <SiteFooter />
     </main>
   );
