@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Kargatox — SEO Metadata Handoff</title>
+<style>
+  :root {
+    --ink: #0f172a;
+    --slate: #475569;
+    --line: #e2e8f0;
+    --paper: #f8fafc;
+    --orange: #ea580c;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 24px 80px;
+    background: #fff;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .meta-line { color: var(--slate); font-size: 14px; margin-bottom: 28px; }
+  .intro {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--slate);
+    margin-bottom: 32px;
+  }
+  .intro strong { color: var(--ink); }
+  h2 {
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--slate);
+    margin: 40px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--ink);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin-bottom: 8px;
+  }
+  caption {
+    text-align: left;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 10px 0;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 9px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--ink);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    width: 110px;
+  }
+  td.url { font-family: var(--mono); font-size: 12.5px; color: var(--orange); white-space: nowrap; }
+  td.note { color: var(--slate); font-size: 12.5px; }
+  .page-block { margin-bottom: 36px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .page-block table { margin: 0; }
+  .page-block th { width: 150px; }
+  .page-head {
+    background: var(--paper);
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 14.5px;
+    border-bottom: 1px solid var(--line);
+  }
+  .page-head .url { font-family: var(--mono); font-weight: 400; font-size: 12.5px; color: var(--orange); margin-left: 8px; }
+  .tag { display: inline-block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 4px; background: #fde68a; color: #92400e; margin-left: 8px; }
+  ul.gaps { font-size: 14px; color: var(--slate); padding-left: 20px; }
+  ul.gaps li { margin-bottom: 8px; }
+  ul.gaps strong { color: var(--ink); }
+  @media print {
+    body { padding: 0; }
+    .page-block { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Kargatox — SEO Metadata Handoff</h1>
+  <div class="meta-line">Generated 2026-10-31 · site source: github.com/RushiAbhang45/kargatox-web (main)</div>
+
+  <div class="intro">
+    This is a snapshot of every live page's <strong>URL</strong>, <strong>&lt;title&gt;</strong>, <strong>meta description</strong>
+    and <strong>H1</strong> as currently coded/stored, for an SEO audit. Most fields on the five core pages
+    (Home, Services, How we work, FAQ, Contact) are editable by the Kargatox team via the admin panel's
+    <strong>Pages</strong> section — the values below are the current live/default copy, not hardcoded forever.
+    The six service landing pages and all blog posts are not currently admin-editable for their meta tags.
+    See <strong>"Known gaps"</strong> at the bottom for things this site does not have yet that an SEO audit will likely flag.
+  </div>
+
+  <h2>Core pages</h2>
+
+  <div class="page-block">
+    <div class="page-head">Home <span class="url">/</span> <span class="tag">uses site default meta</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Kargatox — Strategy, Research &amp; Growth Marketing</td></tr>
+      <tr><th>Meta description</th><td>Kargatox helps founders and leadership teams understand their market, decode their customers, and turn that insight into campaigns that move revenue — across India.</td></tr>
+      <tr><th>H1</th><td>Built On Research. Measured In Growth. <span class="note">(editable in admin → Pages → Home → "Hero headline")</span></td></tr>
+      <tr><th>Note</th><td class="note">Home has no page-specific title/description — it inherits the site-wide default set in the root layout. Every other page below overrides this with its own values.</td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">Services <span class="url">/services</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Services — Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Research and marketing services from Kargatox: market research, consumer behaviour analysis, campaign analytics, SEO, social media marketing and brand campaign strategy.</td></tr>
+      <tr><th>H1</th><td>Research tells you what's true. We build the marketing that acts on it. <span class="note">(admin → Pages → Services → "Intro headline")</span></td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">How we work <span class="url">/how-we-work</span></div>
+    <table>
+      <tr><th>Title tag</th><td>How we work — Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Here is exactly what happens after you say yes: five steps from discovery to handover.</td></tr>
+      <tr><th>H1</th><td>We do the work. / You keep the system. <span class="note">(two-line H1, admin → Pages → How we work → "Headline")</span></td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">FAQ <span class="url">/faq</span></div>
+    <table>
+      <tr><th>Title tag</th><td>FAQ — Kargatox</td></tr>
+      <tr><th>Meta description</th><td>You have questions. We have straight answers — what we do, how fast we start, and what it costs.</td></tr>
+      <tr><th>H1</th><td>You have questions. We have straight answers. <span class="note">(admin → Pages → FAQ → "Heading")</span></td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">Contact <span class="url">/contact</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Contact — Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Connect with the Kargatox team to discuss your research, data structuring, or lead generation requirements.</td></tr>
+      <tr><th>H1</th><td>Initiate a Project <span class="note">(admin → Pages → Contact → "Heading")</span></td></tr>
+    </table>
+  </div>
+
+  <h2>Blog</h2>
+
+  <div class="page-block">
+    <div class="page-head">Blog listing <span class="url">/blog</span> <span class="tag">not in main nav</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Blog — Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Insights, case studies, and updates from the Kargatox team.</td></tr>
+      <tr><th>H1</th><td>Insights from the work. <span class="note">(hardcoded, not admin-editable)</span></td></tr>
+      <tr><th>Note</th><td class="note">No link to /blog exists anywhere in the site header or footer nav — it's only reachable by typing the URL directly. Flag this if the SEO team wants it crawlable/discoverable via internal links.</td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">Individual blog posts <span class="url">/blog/[slug]</span> <span class="tag">dynamic, per post</span></div>
+    <table>
+      <tr><th>Title tag</th><td><code>{post SEO title, or post title if blank} — Kargatox</code></td></tr>
+      <tr><th>Meta description</th><td><code>{post SEO description, or post excerpt if blank}</code></td></tr>
+      <tr><th>H1</th><td><code>{post title}</code></td></tr>
+      <tr><th>Note</th><td class="note">Title/description/excerpt are set per-post by whoever writes the post in the admin Blog editor — there's no fixed value to list here. Pull the live list of published slugs from the site (or ask the Kargatox team for the current published posts) to audit these individually.</td></tr>
+    </table>
+  </div>
+
+  <h2>Service landing pages (6)</h2>
+
+  <div class="page-block">
+    <div class="page-head">Market Research Services <span class="url">/market-research-services</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Market Research Services in India | Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Kargatox delivers market research in India: market sizing, competitor analysis, customer surveys and demand forecasting that help founders decide with data.</td></tr>
+      <tr><th>H1</th><td>Market Research Services in India That Turn Data into Decisions</td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">Consumer Behaviour &amp; Satisfaction Analysis <span class="url">/consumer-behaviour-satisfaction-analysis-services</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Consumer Behaviour &amp; Satisfaction Analysis | Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Understand why customers buy, stay or leave. Kargatox runs consumer behaviour research, CSAT and NPS studies and churn analysis for brands across India.</td></tr>
+      <tr><th>H1</th><td>Consumer Behaviour &amp; Customer Satisfaction Analysis</td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">Campaign Analytics <span class="url">/campaign-analytics-services</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Campaign Analytics &amp; Performance Reporting | Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Know which campaigns drive revenue. Kargatox offers campaign analytics, attribution, ROI tracking and dashboards so you stop wasting marketing budget.</td></tr>
+      <tr><th>H1</th><td>Campaign Analytics: See What Actually Drives Revenue</td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">SEO Services <span class="url">/seo-services</span></div>
+    <table>
+      <tr><th>Title tag</th><td>SEO Services in India for Revenue Growth | Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Rank higher and get qualified leads. Kargatox provides SEO services in India: technical SEO, keyword strategy, content and link building tied to revenue.</td></tr>
+      <tr><th>H1</th><td>SEO Services in India Built for Rankings</td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">Brand Campaign Strategy <span class="url">/brand-campaign-strategy-services</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Brand Campaign Strategy &amp; Positioning | Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Build a brand customers remember. Kargatox designs brand campaign strategy, positioning and messaging backed by research, with results you can measure.</td></tr>
+      <tr><th>H1</th><td>Brand Campaign Strategy That Is Built on Research and Measured in Growth</td></tr>
+    </table>
+  </div>
+
+  <div class="page-block">
+    <div class="page-head">Social Media Marketing <span class="url">/social-media-marketing-services</span></div>
+    <table>
+      <tr><th>Title tag</th><td>Social Media Marketing Services in India | Kargatox</td></tr>
+      <tr><th>Meta description</th><td>Grow with social media marketing in India: strategy, content, paid social and community management on LinkedIn, Instagram and more, tied to leads.</td></tr>
+      <tr><th>H1</th><td>Social Media Marketing Services in India That Drive Leads, Not Just Likes</td></tr>
+    </table>
+  </div>
+
+  <h2>Known gaps (flag for the SEO team, not yet built)</h2>
+  <ul class="gaps">
+    <li><strong>No sitemap.xml or robots.txt</strong> — neither file exists on the site yet.</li>
+    <li><strong>No canonical tags</strong> anywhere in the codebase.</li>
+    <li><strong>No Open Graph or Twitter card tags</strong> (no social preview image/title/description beyond the plain &lt;title&gt;/meta description above) on any page.</li>
+    <li><strong>No structured data / JSON-LD</strong> (Organization, LocalBusiness, Article, FAQPage, etc.) anywhere.</li>
+    <li><strong>Google Analytics is wired in but toggled from the admin Settings page</strong> — confirm with the Kargatox team whether it's currently switched on and what the Measurement ID is before assuming GA data exists.</li>
+    <li><strong>/blog has no internal links pointing to it</strong> from the main nav or footer — it's live but not discoverable through normal site navigation.</li>
+  </ul>
+</div>
+</body>
+</html>

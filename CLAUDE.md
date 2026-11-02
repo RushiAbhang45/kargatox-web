@@ -119,29 +119,35 @@ rendering, client-side interactivity) simply isn't built yet in this rewrite.
 
 ## Design reference material
 
-- **`design_handoff_kargatox/README.md`** — the original full spec: design tokens, per-screen
-  behaviour/interactions/animations, responsiveness rules, a Prisma data-model sketch, and a suggested
-  build order. Still the canonical source for colours/type/spacing/copy/interaction fidelity in this
-  rewrite, same as it was for the legacy app. **Read it before implementing a new section.**
-- **`design_handoff_kargatox/content/Website-content.pdf`** — the client's source copy. Site copy must be
-  taken from it **word for word** — this rule carried over unchanged from the legacy app and governs the
-  content already ported into `lib/*.js`.
-- **`design_handoff_kargatox/designs/*.dc.html`** — Divhunt-style component prototypes (template markup +
-  a `class Component extends DCLogic` script with logic/sample data), not plain HTML and not code to copy
-  verbatim. Open directly in a browser (`support.js` must sit alongside); rebuild the behaviour shown using
-  Express/EJS/vanilla-JS patterns, not by porting the markup as-is.
-- The `.dc.html`/`support.js` files at the repo root duplicate `design_handoff_kargatox/designs/` for
-  convenience. `uploads/` holds copies of the source PDF/a screenshot, not authoritative. `Kargatox
-  Website.dc.html` (root only) is an earlier single-page-scroll concept that predates and is superseded by
-  the multi-page structure in `designs/` — don't treat it as a spec.
-- **`kargatox-seo-meta-handoff.html`** (repo root) is a generated **outgoing** snapshot (title/meta
+Everything in this section lives under **`design-reference/`** — a dedicated folder (separate from
+`legacy-nextjs-app/`, the frozen *code* backup) holding non-code reference/prototype material, kept out of
+the repo root so the root only shows the actual deployable Express/EJS project.
+
+- **`design-reference/design_handoff_kargatox/README.md`** — the original full spec: design tokens,
+  per-screen behaviour/interactions/animations, responsiveness rules, a Prisma data-model sketch, and a
+  suggested build order. Still the canonical source for colours/type/spacing/copy/interaction fidelity in
+  this rewrite, same as it was for the legacy app. **Read it before implementing a new section.**
+- **`design-reference/design_handoff_kargatox/content/Website-content.pdf`** — the client's source copy.
+  Site copy must be taken from it **word for word** — this rule carried over unchanged from the legacy app
+  and governs the content already ported into `lib/*.js`.
+- **`design-reference/design_handoff_kargatox/designs/*.dc.html`** — Divhunt-style component prototypes
+  (template markup + a `class Component extends DCLogic` script with logic/sample data), not plain HTML and
+  not code to copy verbatim. Open directly in a browser (`support.js` must sit alongside); rebuild the
+  behaviour shown using Express/EJS/vanilla-JS patterns, not by porting the markup as-is.
+- The `.dc.html`/`support.js` files directly under `design-reference/` duplicate
+  `design-reference/design_handoff_kargatox/designs/` for convenience. `design-reference/uploads/` holds
+  copies of the source PDF/a screenshot, not authoritative. `design-reference/Kargatox Website.dc.html` is
+  an earlier single-page-scroll concept that predates and is superseded by the multi-page structure in
+  `designs/` — don't treat it as a spec.
+- **`design-reference/kargatox-seo-meta-handoff.html`** is a generated **outgoing** snapshot (title/meta
   description/H1 per live route circa the legacy app, plus a "Known gaps" list) handed to an external SEO
   team — not an incoming spec. It predates this rewrite and will go stale further as Phase 2+ lands; don't
   treat its contents as current truth.
 
 ## Key constraints to preserve when continuing the rewrite
 
-- Site copy comes from `design_handoff_kargatox/content/Website-content.pdf` verbatim — don't paraphrase.
+- Site copy comes from `design-reference/design_handoff_kargatox/content/Website-content.pdf` verbatim —
+  don't paraphrase.
 - Treat anything under `legacy-nextjs-app/` as read-only reference, not a place to make fixes — it's
   frozen. If a bug is ported along with the logic it came from, fix it in the new `lib/`/`routes/`/`views`
   files, not in the legacy copy.
