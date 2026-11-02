@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<%- include('../partials/doc-head', { title: "Blog — Kargatox", description: "Insights, case studies, and updates from the Kargatox team." }) %>
+</head>
+<body class="min-h-full flex flex-col bg-paper text-ink font-body">
+<%- include('../partials/site-header', { activePath: '/blog' }) %>
+<main class="flex flex-1 flex-col px-6 py-[64px]">
+  <div class="mx-auto max-w-(--width-site) text-center">
+    <h1 class="font-display text-[clamp(26px,3.4vw,42px)] font-bold tracking-[-0.02em]">Insights from the work.</h1>
+    <p class="mt-4 text-[15px] leading-[1.6] text-slate">
+      The Blog &amp; case studies section (Post model, editor, and public listing) is being
+      ported in a later phase — placeholder route for now, see Phase 8 of the rewrite plan.
+    </p>
+  </div>
+</main>
+<%- include('../partials/site-footer', { showCta: true }) %>
+</body>
+</html>

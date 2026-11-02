@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<%- include('../partials/doc-head', { title: "Contact — Kargatox", description: "Connect with the Kargatox team to discuss your research, data structuring, or lead generation requirements." }) %>
+</head>
+<body class="min-h-full flex flex-col bg-paper text-ink font-body">
+<%- include('../partials/site-header', { activePath: '/contact' }) %>
+<%
+// Ported from legacy-nextjs-app/src/app/(site)/contact/{page,contact-form}.tsx.
+// `content` (PAGE_DEFAULTS.contact for now), `headingPlain`/`headingAccent` (via
+// splitLastWord) come from routes/site.js. The form below is static markup only —
+// no submit handling yet (Phase 3 wires POST /api/enquiries + the honeypot/prefill
+// logic via public/js/contact-form.js); SERVICE_OPTIONS is inlined here for now and
+// should move to lib/enquiry-schema.js once Phase 3 creates it, so both the route's
+// zod schema and this <select> read from one place.
+const STEPS = [
+  { num: "01", title: "Discovery Call", body: "A brief technical discussion to align on your data needs and current workflow gaps." },
+  { num: "02", title: "Scope Definition", body: "We outline the specific deliverables, methodologies, and timeline." },
+];
+const SERVICE_OPTIONS = [
+  "General Inquiry",
+  "Market Research",
+  "Consumer Behaviour & Satisfaction Analysis",
+  "Campaign Analytics",
+  "SEO Services",
+  "Social Media Marketing",
+  "Brand Campaigns Strategy",
+];
+%>
+<main class="flex flex-1 flex-col bg-ink text-white">
+  <section class="px-6 pb-[64px] pt-[56px]">
+    <div class="relative mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-start gap-x-12 gap-y-8">
+      <div class="grid gap-4">
+        <div class="font-mono text-[12px] tracking-[0.14em] text-orange-400" data-scramble-reveal="GET IN TOUCH">GET IN TOUCH</div>
+        <h1 class="font-display text-[clamp(26px,3.2vw,40px)] font-bold leading-[1.08] tracking-[-0.02em]">
+          <%= headingPlain %> <span class="text-orange-400"><%= headingAccent %></span>
+        </h1>
+        <p class="max-w-[440px] text-[15px] leading-[1.6] text-mist"><%= content.intro %></p>
+
+        <div class="mt-3 grid gap-4">
+          <% STEPS.forEach(function(s) { %>
+            <div class="grid grid-cols-[32px_minmax(0,1fr)] gap-x-2.5 gap-y-1.5">
+              <span class="pt-[3px] font-mono text-[13px] text-orange-400"><%= s.num %></span>
+              <div>
+                <h3 class="text-[15px] font-bold"><%= s.title %></h3>
+                <p class="mt-1 text-[13px] leading-[1.6] text-mist-2"><%= s.body %></p>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <div class="mt-3 grid gap-1 border-t border-white/10 pt-4">
+          <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">PREFER EMAIL?</span>
+          <a href="mailto:hello@kargatox.com" class="font-display text-[17px] font-bold text-white transition-colors hover:text-orange-400">hello@kargatox.com</a>
+        </div>
+      </div>
+
+      <div id="contact-form-container" class="rounded-panel border border-white/10 bg-navy-800 p-[clamp(20px,3vw,32px)]">
+        <form id="contact-form" novalidate class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-x-6 gap-y-6">
+          <label class="grid gap-2">
+            <span class="font-mono text-[11px] tracking-[0.1em] text-white">FULL NAME *</span>
+            <input id="cf-name" name="name" placeholder="Jane Doe" class="border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400" />
+            <span class="min-h-4 text-[12px] text-orange-400" data-error-for="name"></span>
+          </label>
+
+          <label class="grid gap-2">
+            <span class="font-mono text-[11px] tracking-[0.1em] text-white">WORK EMAIL *</span>
+            <input type="email" id="cf-email" name="email" placeholder="jane@company.com" class="border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400" />
+            <span class="min-h-4 text-[12px] text-orange-400" data-error-for="email"></span>
+          </label>
+
+          <label class="grid gap-2">
+            <span class="font-mono text-[11px] tracking-[0.1em] text-white">PHONE NUMBER <span class="text-[#737373]">(optional)</span></span>
+            <input type="tel" id="cf-phone" name="phone" placeholder="+91 98765 43210" class="border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400" />
+          </label>
+
+          <label class="grid gap-2">
+            <span class="font-mono text-[11px] tracking-[0.1em] text-white">SERVICE REQUIRED</span>
+            <select id="cf-service" name="service" class="cursor-pointer border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400">
+              <% SERVICE_OPTIONS.forEach(function(o) { %>
+                <option value="<%= o %>" class="text-ink"><%= o %></option>
+              <% }) %>
+            </select>
+          </label>
+
+          <label class="grid gap-2 col-span-full">
+            <span class="font-mono text-[11px] tracking-[0.1em] text-white">PROJECT DETAILS *</span>
+            <textarea id="cf-details" name="details" rows="4" placeholder="Tell us about your requirements..." class="resize-y border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400"></textarea>
+            <span class="min-h-4 text-[12px] text-orange-400" data-error-for="details"></span>
+          </label>
+
+          <!-- Honeypot — visually hidden and out of tab order/screen-reader flow. Label/name
+               deliberately avoid recognizable autofill keywords ("Company", "Organization",
+               etc.) — a label literally reading "Company" got silently autofilled by a real
+               browser during testing, which dropped a genuine submission. Sent to the server
+               under the JSON key "company" regardless (see lib/enquiry-schema.js, Phase 3). -->
+          <div class="absolute h-px w-px overflow-hidden" style="clip: rect(0,0,0,0);" aria-hidden="true">
+            <label>
+              Leave this field blank
+              <input type="text" id="cf-hp" name="hp-field" tabindex="-1" autocomplete="off" />
+            </label>
+          </div>
+
+          <p id="contact-form-error" class="col-span-full text-[13px] text-orange-400 hidden"></p>
+
+          <button type="submit" class="rounded-xl bg-orange-500 py-3.5 font-body text-[15px] font-semibold text-white transition-colors hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-60 col-span-full">Submit Inquiry</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('../partials/site-footer', { showCta: false }) %>
+</body>
+</html>

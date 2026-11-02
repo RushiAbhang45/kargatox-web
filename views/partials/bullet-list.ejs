@@ -1,0 +1,15 @@
+<%
+// Ported from legacy-nextjs-app/src/components/services/bullet-list.tsx.
+// Needs `heading` (string) and `items` (string[]).
+%>
+<div>
+  <h3 class="font-display text-[15px] font-bold uppercase tracking-[0.04em] text-ink"><%= heading %></h3>
+  <ul class="mt-4 grid gap-3">
+    <% items.forEach(function(item) { %>
+      <li class="flex gap-2.5 text-[14px] leading-[1.6] text-slate">
+        <span aria-hidden="true" class="mt-[2px] text-orange-500">→</span>
+        <span><%= item %></span>
+      </li>
+    <% }) %>
+  </ul>
+</div>

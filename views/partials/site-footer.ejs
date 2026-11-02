@@ -1,0 +1,39 @@
+<%
+// Ported from legacy-nextjs-app/src/components/site-footer.tsx. `showCta` defaults to
+// true, false only on Contact — matches today's prop. NAV_LINKS/SERVICE_PAGES come from
+// app.locals (server.js) — see site-header.ejs for why.
+const _showCta = typeof showCta !== "undefined" ? showCta : true;
+%>
+<% if (_showCta) { %>
+  <section class="bg-paper px-6 pb-[120px]">
+    <div class="mx-auto max-w-(--width-site) rounded-panel bg-orange-500 p-[clamp(40px,7vw,96px)] text-white">
+      <div class="max-w-[640px]">
+        <h2 class="font-display text-[clamp(30px,3.6vw,52px)] font-bold leading-[1.08] tracking-[-0.028em]">We move the only number that matters. Yours.</h2>
+        <div class="mt-9 flex flex-wrap gap-3.5">
+          <a href="/contact" class="rounded-pill bg-ink px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-700">Start an Inquiry →</a>
+          <a href="/services" class="rounded-pill bg-white px-7 py-4 text-base font-semibold text-ink transition-colors hover:text-orange-500">See our services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+<% } %>
+<footer class="bg-ink px-6 pb-10 pt-16 text-mist-2 font-body">
+  <div class="mx-auto flex max-w-(--width-site) flex-wrap items-start justify-between gap-8">
+    <div class="grid max-w-[340px] gap-3.5">
+      <span class="font-display text-[26px] font-bold tracking-[-0.02em] text-white">Karga<span class="text-orange-400">tox</span></span>
+      <p class="text-[15px] leading-[1.6]">Strategy, research and marketing for founders and leadership teams across India.</p>
+    </div>
+    <div class="flex flex-wrap gap-7 text-[15px]">
+      <% NAV_LINKS.forEach(function(l) { %>
+        <a href="<%= l.href %>" class="text-mist transition-colors hover:text-orange-400"><%= l.label %></a>
+      <% }) %>
+    </div>
+    <div class="grid max-w-[260px] gap-2.5">
+      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Services</span>
+      <% SERVICE_PAGES.forEach(function(p) { %>
+        <a href="/<%= p.slug %>" class="text-[14px] text-mist transition-colors hover:text-orange-400"><%= p.navTitle %></a>
+      <% }) %>
+    </div>
+  </div>
+  <div class="mx-auto mt-12 max-w-(--width-site) border-t border-white/10 pt-6 text-sm">© 2026 Kargatox. All rights reserved.</div>
+</footer>

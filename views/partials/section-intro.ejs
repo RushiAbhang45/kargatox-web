@@ -1,0 +1,21 @@
+<%
+// Ported from legacy-nextjs-app/src/components/schbang/section-intro.tsx. Needs
+// `eyebrow` (string), `titleHtml` (pre-rendered HTML string — the original took a
+// React node), optional `ctaHtml` (pre-rendered HTML string), `arrow` ("left"|"right",
+// default "left"), `dark` (bool, default false).
+const _arrow = typeof arrow !== "undefined" ? arrow : "left";
+const _dark = typeof dark !== "undefined" ? dark : false;
+const _ctaHtml = typeof ctaHtml !== "undefined" ? ctaHtml : "";
+%>
+<div class="flex flex-wrap items-center justify-between gap-6">
+  <div>
+    <div class="font-mono text-[12px] tracking-[0.12em] <%= _dark ? 'text-orange-400' : 'text-orange-500' %>" data-scramble-reveal="<%= eyebrow %>"><%= eyebrow %></div>
+    <h2 class="mt-2.5 max-w-[560px] font-display text-[clamp(24px,3.2vw,40px)] font-bold leading-[1.08] tracking-[-0.02em]"><%- titleHtml %></h2>
+  </div>
+  <% if (_ctaHtml || _arrow) { %>
+    <div class="flex items-center gap-5">
+      <span aria-hidden="true" class="hidden text-[34px] leading-none font-black md:block <%= _dark ? 'text-white' : 'text-ink' %>"><%= _arrow === "left" ? "←" : "→" %></span>
+      <%- _ctaHtml %>
+    </div>
+  <% } %>
+</div>

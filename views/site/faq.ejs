@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<%- include('../partials/doc-head', { title: "FAQ — Kargatox", description: "You have questions. We have straight answers — what we do, how fast we start, and what it costs." }) %>
+</head>
+<body class="min-h-full flex flex-col bg-paper text-ink font-body">
+<%- include('../partials/site-header', { activePath: '/faq' }) %>
+<%
+// Ported from legacy-nextjs-app/src/app/(site)/faq/page.tsx. `content`
+// (PAGE_DEFAULTS.faq for now), `headingPlain`/`headingAccent` (via splitFirstSentence)
+// come from routes/site.js. `faqItems` is FAQ_DEFAULTS for now (Phase 2 wires the DB).
+%>
+<main class="flex flex-1 flex-col">
+  <section class="px-6 pb-[64px] pt-[56px]">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] items-start gap-x-16 gap-y-8">
+      <div class="grid gap-3">
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500" data-scramble-reveal="BEFORE YOU ASK">BEFORE YOU ASK</div>
+        <h1 class="font-display text-[clamp(26px,3.2vw,40px)] font-bold leading-[1.1] tracking-[-0.02em]">
+          <%= headingPlain %><% if (headingAccent) { %><span class="text-orange-500"> <%= headingAccent %></span><% } %>
+        </h1>
+        <a href="/contact" class="mt-2 w-fit rounded-pill bg-ink px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-orange-500">Ask us directly →</a>
+      </div>
+      <%- include('../partials/faq-accordion', { items: faqItems }) %>
+    </div>
+  </section>
+</main>
+<%- include('../partials/site-footer', { showCta: true }) %>
+</body>
+</html>

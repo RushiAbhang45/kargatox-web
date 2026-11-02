@@ -1,0 +1,23 @@
+{
+  "name": "kargatox-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kargatox marketing site + admin panel — plain Node/Express/EJS/vanilla JS (see CLAUDE.md).",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build:css": "tailwindcss -i public/css/input.css -o public/css/styles.css --minify",
+    "build": "npm run build:css"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

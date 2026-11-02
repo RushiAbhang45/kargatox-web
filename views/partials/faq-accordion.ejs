@@ -1,0 +1,18 @@
+<%
+// Ported from legacy-nextjs-app/src/app/(site)/faq/faq-accordion.tsx. Needs `items`
+// (array of {id, question, answer}) from the caller. Statically renders item 0 open
+// (matches the original's useState(0) default) — the click-to-toggle behaviour itself
+// is wired up in Phase 10, via the data-faq-trigger/data-faq-panel hooks below.
+%>
+<div class="faq-accordion border-t border-line-2">
+  <% items.forEach(function(f, i) { %>
+    <% const open = i === 0; %>
+    <div class="border-b border-line-2">
+      <button type="button" data-faq-trigger aria-expanded="<%= open %>" class="flex w-full items-center justify-between gap-5 border-0 bg-none py-[18px] text-left font-display text-[17px] font-bold tracking-[-0.01em] text-ink">
+        <span><%= f.question %></span>
+        <span class="faq-icon flex h-7 w-7 flex-none items-center justify-center rounded-full font-body text-base <%= open ? 'bg-orange-500 text-white' : 'bg-chip-neutral text-ink' %>"><%= open ? '−' : '+' %></span>
+      </button>
+      <p data-faq-panel class="pb-5 pr-10 text-[14px] leading-[1.65] text-slate <%= open ? '' : 'hidden' %>"><%= f.answer %></p>
+    </div>
+  <% }) %>
+</div>

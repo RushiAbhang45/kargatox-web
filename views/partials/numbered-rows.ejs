@@ -1,0 +1,44 @@
+<%
+// Ported from legacy-nextjs-app/src/components/numbered-rows.tsx. Needs `items`
+// (array of {num, title, body?, meta?}), `variant` ("full"|"compact"|"tight"),
+// `theme` ("light"|"dark"), optional `className`. The GrowBar underline renders at its
+// final (fully grown) width here — the grow-in animation itself is Phase 10.
+const NUMERAL_SIZE = { full: "text-[clamp(32px,3.6vw,48px)]", compact: "text-[clamp(24px,2.8vw,32px)]", tight: "text-[22px]" };
+const TITLE_SIZE = { full: "text-[clamp(19px,2.1vw,25px)] tracking-[-0.015em]", compact: "text-[17px] tracking-[-0.01em]", tight: "text-[15px] tracking-[-0.01em]" };
+const ROW_GAP = { full: "gap-5 py-6", compact: "gap-4 py-4", tight: "gap-2.5 py-3" };
+const UNDERLINE_WIDTH = { full: "w-14", compact: "w-10", tight: "w-8" };
+const dividerClass = theme === "light" ? "border-line-2" : "border-white/12";
+const numeralClass = theme === "light" ? "text-orange-500" : "text-orange-400";
+const titleClass = theme === "light" ? "text-ink" : "text-white";
+const bodyClass = theme === "light" ? "text-slate" : "text-mist-2";
+const _className = typeof className !== "undefined" ? className : "";
+%>
+<div class="<%= _className %>">
+  <% items.forEach(function(item) { %>
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 <%= dividerClass %> <%= ROW_GAP[variant] %>">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] <%= NUMERAL_SIZE[variant] %> <%= numeralClass %>"><%= item.num %></div>
+        <div class="mt-2 h-[2px] <%= UNDERLINE_WIDTH[variant] %> <%= theme === 'light' ? 'bg-orange-500' : 'bg-orange-400' %>"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          <% if (variant === "full") { %>
+            <h2 class="font-display font-semibold <%= TITLE_SIZE[variant] %> <%= titleClass %>"><%= item.title %></h2>
+          <% } else { %>
+            <h3 class="font-display font-semibold <%= TITLE_SIZE[variant] %> <%= titleClass %>"><%= item.title %></h3>
+          <% } %>
+          <% if (item.meta && variant !== "tight") { %>
+            <% const metaClass = theme === "light" ? "rounded-chip bg-orange-500/10 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.06em] text-orange-600" : "font-mono text-[11px] uppercase tracking-[0.06em] text-mist-2"; %>
+            <span class="whitespace-nowrap <%= metaClass %>"><%= item.meta %></span>
+          <% } %>
+        </div>
+        <% if (variant === "full" && item.body) { %>
+          <p class="max-w-[560px] text-[15px] leading-[1.6] <%= bodyClass %>"><%= item.body %></p>
+        <% } %>
+        <% if (variant === "tight" && item.body) { %>
+          <p class="max-w-[320px] text-sm leading-[1.55] <%= bodyClass %>"><%= item.body %></p>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>
