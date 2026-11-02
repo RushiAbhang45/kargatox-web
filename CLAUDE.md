@@ -32,11 +32,11 @@ enquiry-email settings plus a Google Analytics toggle) are all real now — see 
 component was deleted as dead code). **Only step 9 (SEO/analytics/a11y) remains** — GA is wired in as part
 of Settings, but sitemap/robots/structured-data/Lighthouse work is still open.
 
-Separately, the current branch (`redesign/schbang-direction`) carries an **experimental visual reskin** of
-the five public pages on top of all of the above — black/white/orange instead of navy/blue, GSAP-driven
-scroll effects alongside the existing Framer Motion primitives. It has not been merged to `main`. See
-"Public-site visual redesign (`redesign/schbang-direction` branch)" below for what it touches and, just as
-importantly, what it deliberately leaves on the old theme.
+Separately, `main` now also carries a **visual reskin** of the five public pages — black/white/orange
+instead of navy/blue, GSAP-driven scroll effects alongside the existing Framer Motion primitives. It was
+built on `redesign/schbang-direction` (which still exists as a branch, now historical) and merged into
+`main` via `131da4a`. See "Public-site visual redesign" below for what it touches and, just as importantly,
+what it deliberately leaves on the old theme.
 
 ## Commands
 
@@ -116,8 +116,8 @@ importantly, what it deliberately leaves on the old theme.
   background and no alpha channel** — dropped in as-is on navy it renders as a white rectangle. Don't wire
   it into any of those spots without either cropping/keying it to transparency first or getting a
   transparent-background export from the client; it's fine to use once a white/light-background spot
-  exists for it. (On the `redesign/schbang-direction` branch, `Logo` gained a `variant?: "dark" | "light"`
-  prop for exactly this reason — see below — but the `.webp` question above is unaffected either way.)
+  exists for it. (The public-site redesign gave `Logo` a `variant?: "dark" | "light"` prop for exactly this
+  reason — see below — but the `.webp` question above is unaffected either way.)
 - **Animation primitives** live in `src/components/motion/reveal.tsx`: `Reveal` (single-element scroll
   reveal), `RevealGroup` (stagger container, `(index % 6) * 90ms` delay matching the README), `RiseWords`
   (hero heading words — mount-triggered via `animate`, **not** `whileInView`: these are always in view on
@@ -132,16 +132,18 @@ importantly, what it deliberately leaves on the old theme.
   (derive/reset during render, or a lazy `useState(() => ...)` initializer, rather than `setState` inside
   `useEffect`).
 
-## Public-site visual redesign (`redesign/schbang-direction` branch)
+## Public-site visual redesign
 
-This branch reskins the public site's visual language on top of the same backend/content-admin wiring
-described everywhere else in this file — no Prisma/route/server-action changes. **It's scoped, not
-global**: only the five page components (`src/app/(site)/{page,services,how-we-work,faq,contact}/page.tsx`)
-plus shared chrome (`site-header.tsx`, `site-footer.tsx`, `logo.tsx`, `numbered-rows.tsx`,
-`faq-accordion.tsx`, `contact-form.tsx`) were touched. **The admin panel, the blog routes
-(`src/app/(site)/blog/`), and the revenue-check quiz (`src/components/home/revenue-check.tsx`) were not
-touched** and still render the original navy-900/blue-500 theme — don't assume the redesign reaches those
-just because it's the active branch, and don't be surprised to see both themes in the same `grep`.
+This reskins the public site's visual language on top of the same backend/content-admin wiring described
+everywhere else in this file — no Prisma/route/server-action changes. It was developed on
+`redesign/schbang-direction` and merged into `main` at `131da4a`; the branch still exists but `main` is now
+the live version of this work. **It's scoped, not global**: only the five page components
+(`src/app/(site)/{page,services,how-we-work,faq,contact}/page.tsx`) plus shared chrome (`site-header.tsx`,
+`site-footer.tsx`, `logo.tsx`, `numbered-rows.tsx`, `faq-accordion.tsx`, `contact-form.tsx`) were touched.
+**The admin panel, the blog routes (`src/app/(site)/blog/`), and the revenue-check quiz
+(`src/components/home/revenue-check.tsx`) were not touched** and still render the original
+navy-900/blue-500 theme — don't assume the redesign reaches those just because it's the current state of
+`main`, and don't be surprised to see both themes in the same `grep`.
 
 - **GSAP joins Framer Motion as a second animation system** (`gsap` + `@gsap/react` added to
   `package.json`) rather than replacing it — the existing `Reveal`/`RevealGroup`/`RiseWords`/`GrowBar`
@@ -398,10 +400,10 @@ way as `requireEnquiryAccess()`.
     an admin edit: `src/lib/text-split.ts`'s `splitFirstSentence()` (first sentence plain, the rest accented
     — Home's capabilities heading and FAQ's heading) and `splitLastWord()` (every word but the last plain,
     last word accented — Contact's heading). The helpers themselves just split strings; the accent colour is
-    whatever class the calling page applies — on `main` that's `text-blue-600` (first-sentence fields) /
-    `text-blue-300` (last-word fields), but on the `redesign/schbang-direction` branch (see "Public-site
-    visual redesign" above) every one of those call sites was repointed to `text-orange-500`/`orange-400`
-    instead. Home's hero headline uses its own word-level version of the same idea: it's fed through
+    whatever class the calling page applies — before the redesign that was `text-blue-600` (first-sentence
+    fields) / `text-blue-300` (last-word fields); the redesign (see "Public-site visual redesign" above)
+    repointed every one of those call sites to `text-orange-500`/`orange-400` instead, which is what
+    `main` renders today. Home's hero headline uses its own word-level version of the same idea: it's fed through
     `RiseWords` (see "Architecture" above) as one word per array entry, with only the **last** word getting
     the accent class — this is what reproduces the original "Growth." accent for any edited headline, not
     just the default. How-we-work's headline is
@@ -472,6 +474,13 @@ single-page-scroll concept (one page with `#capabilities`/`#services`/`#process`
 anchors) — it predates and is superseded by the multi-page structure in `designs/`; don't treat it as a
 spec, though its font `<link>` is the source for the Bricolage Grotesque + Figtree stand-in above.
 
+`kargatox-seo-meta-handoff.html` (repo root) is the opposite direction from everything else in this
+section — it's a generated **outgoing** snapshot (title/meta description/H1 per live route, plus a "Known
+gaps" list) handed to an external SEO team ahead of the step 9 work, not an incoming spec to build against.
+It goes stale the moment page copy changes via the admin Pages/Blog/Settings editors, so don't treat its
+contents as current truth — regenerate it from the live site/admin data if it's needed again rather than
+hand-editing it.
+
 ## Working with the `.dc.html` prototype files
 
 These are **Divhunt-style component prototypes**, not plain HTML — do not hand-edit them expecting normal
@@ -508,10 +517,10 @@ rebuild the behaviour it shows using the target stack's normal patterns.
   above); without `SMTP_*` env vars configured it falls back to the same `console.log` stub pattern as
   before.
 - Framer Motion for animation — set up (`src/components/motion/`); decorative infinite loops (background
-  orbs, the sub-service marquee) use plain CSS keyframes in `globals.css` instead, not Framer Motion. (The
-  `redesign/schbang-direction` branch adds GSAP/ScrollTrigger alongside it for scroll-jacking and text-
-  scramble effects — not in the handoff README, see "Public-site visual redesign" above — and is not on
-  `main`.)
+  orbs, the sub-service marquee) use plain CSS keyframes in `globals.css` instead, not Framer Motion. The
+  public-site redesign (now merged into `main`, see "Public-site visual redesign" above) adds
+  GSAP/ScrollTrigger alongside it for scroll-into-view reveals and text-scramble effects — not in the
+  handoff README.
 - Page copy, services, FAQ and posts live in the database, edited via the admin panel, read by public
   pages at build time with ISR revalidation on publish. **Set up** — see "Backend: content admin (Pages,
   Services & FAQ, Blog, Settings)" above. Each piece of content still has a hardcoded fallback (the
