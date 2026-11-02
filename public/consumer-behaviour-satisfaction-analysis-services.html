@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Consumer Behaviour &amp; Satisfaction Analysis | Kargatox</title>
+
+<meta name="description" content="Understand why customers buy, stay or leave. Kargatox runs consumer behaviour research, CSAT and NPS studies and churn analysis for brands across India." />
+
+<link rel="icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/styles.css" />
+<script src="/js/site.js" defer></script>
+
+</head>
+<body class="min-h-full flex flex-col bg-paper text-ink font-body">
+
+<header class="sticky top-0 z-50 border-b border-line bg-white">
+  <div class="mx-auto flex max-w-(--width-site) items-center justify-between gap-6 px-6 py-4">
+    
+<a href="/" class="flex items-center gap-2.5 text-ink ">
+  <span class="relative block h-[30px] w-[30px]">
+    <span class="absolute left-0 top-0 h-5 w-5 rounded-[5px] bg-orange-500"></span>
+    <span class="absolute bottom-0 right-0 h-5 w-5 rounded-[5px] bg-blue-500 mix-blend-screen"></span>
+  </span>
+  <span class="font-display text-[22px] font-bold tracking-[-0.02em] text-ink">Karga<span class="text-orange-400">tox</span></span>
+</a>
+
+    <div class="hidden font-mono text-xs uppercase tracking-[0.14em] text-slate nav:block" data-scramble-reveal="Research · Marketing · Growth">Research · Marketing · Growth</div>
+    <nav class="flex min-w-0 flex-none items-center justify-end gap-5">
+      <div class="hidden min-w-0 flex-wrap justify-end gap-x-7 nav:flex">
+        
+          
+          
+          
+            <a href="/" class="whitespace-nowrap border-b-2 pb-0.5 text-[15px] font-medium leading-6 transition-colors hover:text-ink border-transparent text-slate">Home</a>
+          
+        
+          
+          
+          
+            <div class="group relative">
+              <a href="/services" class="inline-flex items-center gap-1 whitespace-nowrap border-b-2 pb-0.5 text-[15px] font-medium leading-6 transition-colors hover:text-ink border-transparent text-slate">
+                Services
+                <span aria-hidden="true" class="text-[9px] transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180">▾</span>
+              </a>
+              <div class="invisible absolute left-0 top-full z-20 w-[300px] pt-3 opacity-0 transition-[opacity,visibility] duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                <div class="grid gap-5 rounded-card border border-line bg-white p-5 shadow-[0_24px_48px_-24px_rgba(15,23,42,0.28)]">
+                  
+                    <div class="grid gap-2">
+                      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-slate">Research Services</span>
+                      
+                        <a href="/market-research-services" class="text-[14px] font-medium text-ink transition-colors hover:text-orange-500">Market Research</a>
+                      
+                        <a href="/consumer-behaviour-satisfaction-analysis-services" class="text-[14px] font-medium text-ink transition-colors hover:text-orange-500">Consumer Behaviour &amp; Satisfaction Analysis</a>
+                      
+                        <a href="/campaign-analytics-services" class="text-[14px] font-medium text-ink transition-colors hover:text-orange-500">Campaign Analytics</a>
+                      
+                    </div>
+                  
+                    <div class="grid gap-2">
+                      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-slate">Marketing Services</span>
+                      
+                        <a href="/seo-services" class="text-[14px] font-medium text-ink transition-colors hover:text-orange-500">SEO Services</a>
+                      
+                        <a href="/brand-campaign-strategy-services" class="text-[14px] font-medium text-ink transition-colors hover:text-orange-500">Brand Campaigns Strategy</a>
+                      
+                        <a href="/social-media-marketing-services" class="text-[14px] font-medium text-ink transition-colors hover:text-orange-500">Social Media Marketing</a>
+                      
+                    </div>
+                  
+                </div>
+              </div>
+            </div>
+          
+        
+          
+          
+          
+            <a href="/how-we-work" class="whitespace-nowrap border-b-2 pb-0.5 text-[15px] font-medium leading-6 transition-colors hover:text-ink border-transparent text-slate">How we work</a>
+          
+        
+          
+          
+          
+            <a href="/faq" class="whitespace-nowrap border-b-2 pb-0.5 text-[15px] font-medium leading-6 transition-colors hover:text-ink border-transparent text-slate">FAQ</a>
+          
+        
+          
+          
+          
+            <a href="/contact" class="whitespace-nowrap border-b-2 pb-0.5 text-[15px] font-medium leading-6 transition-colors hover:text-ink border-transparent text-slate">Contact</a>
+          
+        
+      </div>
+      <a href="/contact" class="hidden flex-none whitespace-nowrap rounded-pill bg-ink px-4.5 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-orange-500 nav:block">Start an Inquiry</a>
+      <button type="button" id="mobile-menu-toggle" aria-label="Menu" aria-expanded="false" class="flex h-10 w-10 flex-none items-center justify-center rounded-[10px] border border-line text-lg text-ink nav:hidden">☰</button>
+    </nav>
+  </div>
+  <div id="mobile-menu" class="hidden border-t border-line bg-white nav:hidden">
+    <div class="mx-auto grid max-w-(--width-site) px-6 pb-6 pt-3">
+      
+        
+        <div class="border-b border-line">
+          <a href="/" class="block py-3.5 font-display text-2xl font-semibold transition-colors hover:text-orange-500 text-slate">Home</a>
+          
+        </div>
+      
+        
+        <div class="border-b border-line">
+          <a href="/services" class="block py-3.5 font-display text-2xl font-semibold transition-colors hover:text-orange-500 text-slate">Services</a>
+          
+            <div class="grid gap-0.5 pb-4 pl-1">
+              
+                <a href="/market-research-services" class="py-1.5 text-[15px] text-slate transition-colors hover:text-orange-500">Market Research</a>
+              
+                <a href="/consumer-behaviour-satisfaction-analysis-services" class="py-1.5 text-[15px] text-slate transition-colors hover:text-orange-500">Consumer Behaviour &amp; Satisfaction Analysis</a>
+              
+                <a href="/campaign-analytics-services" class="py-1.5 text-[15px] text-slate transition-colors hover:text-orange-500">Campaign Analytics</a>
+              
+                <a href="/seo-services" class="py-1.5 text-[15px] text-slate transition-colors hover:text-orange-500">SEO Services</a>
+              
+                <a href="/brand-campaign-strategy-services" class="py-1.5 text-[15px] text-slate transition-colors hover:text-orange-500">Brand Campaigns Strategy</a>
+              
+                <a href="/social-media-marketing-services" class="py-1.5 text-[15px] text-slate transition-colors hover:text-orange-500">Social Media Marketing</a>
+              
+            </div>
+          
+        </div>
+      
+        
+        <div class="border-b border-line">
+          <a href="/how-we-work" class="block py-3.5 font-display text-2xl font-semibold transition-colors hover:text-orange-500 text-slate">How we work</a>
+          
+        </div>
+      
+        
+        <div class="border-b border-line">
+          <a href="/faq" class="block py-3.5 font-display text-2xl font-semibold transition-colors hover:text-orange-500 text-slate">FAQ</a>
+          
+        </div>
+      
+        
+        <div class="border-b border-line">
+          <a href="/contact" class="block py-3.5 font-display text-2xl font-semibold transition-colors hover:text-orange-500 text-slate">Contact</a>
+          
+        </div>
+      
+    </div>
+  </div>
+</header>
+
+
+<main class="flex flex-1 flex-col">
+  <section class="bg-white text-ink">
+    <div class="mx-auto grid max-w-(--width-site) gap-5 px-6 pb-[48px] pt-[56px]">
+      <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500" data-scramble-reveal="RESEARCH SERVICES">RESEARCH SERVICES</div>
+      <h1 class="max-w-[760px] font-display text-[clamp(26px,3.4vw,42px)] font-bold leading-[1.1] tracking-[-0.022em]">Consumer Behaviour &amp; Customer Satisfaction Analysis</h1>
+      <p class="max-w-[760px] text-[15px] leading-[1.7] text-slate">Knowing what customers buy is useful. Understanding why they buy, what influences their decisions and what makes them return can be even more valuable. Kargatox offers consumer behaviour analysis services in India that help businesses explore consumer buying behaviour, customer preferences, buying patterns and satisfaction levels. Through consumer behaviour research and consumer behaviour audit, we uncover the motives behind every purchase. Our customer satisfaction analysis, customer satisfaction survey programs and customer satisfaction research for businesses show you how customers truly feel about your brand. With customer feedback analysis and customer feedback and satisfaction analysis, we turn opinions and available behavioural data into customer insights analysis you can act on. Our customer journey analysis and customer segmentation analysis reveal how different groups move through their buying process, while customer experience research and customer experience improvement research highlight where you can do better. The result is a stronger customer retention strategy, better customer experiences and lasting business relationships.</p>
+      <div class="mt-1 flex flex-wrap gap-3">
+        <a href="/contact" class="rounded-pill bg-ink px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-orange-500">Start an Inquiry →</a>
+        <a href="/services" class="rounded-pill border border-line px-6 py-3 text-[14px] font-semibold text-ink transition-colors hover:border-orange-500">← Back to Services</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 pb-[16px] pt-[8px]">
+    <div class="mx-auto max-w-(--width-site)">
+      <h2 class="font-display text-[clamp(22px,2.6vw,30px)] font-bold tracking-[-0.02em]">What we analyse</h2>
+      
+<div class="mt-6 max-w-[820px]">
+  
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 border-line-2 gap-5 py-6">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] text-[clamp(32px,3.6vw,48px)] text-orange-500">01</div>
+        <div class="mt-2 h-[2px] w-14 bg-orange-500"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          
+            <h2 class="font-display font-semibold text-[clamp(19px,2.1vw,25px)] tracking-[-0.015em] text-ink">Buying behaviour and purchase journey</h2>
+          
+          
+        </div>
+        
+          <p class="max-w-[560px] text-[15px] leading-[1.6] text-slate">We map how customers discover, compare and decide, and where they drop off.</p>
+        
+        
+      </div>
+    </div>
+  
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 border-line-2 gap-5 py-6">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] text-[clamp(32px,3.6vw,48px)] text-orange-500">02</div>
+        <div class="mt-2 h-[2px] w-14 bg-orange-500"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          
+            <h2 class="font-display font-semibold text-[clamp(19px,2.1vw,25px)] tracking-[-0.015em] text-ink">Customer satisfaction (CSAT) and Net Promoter Score (NPS)</h2>
+          
+          
+        </div>
+        
+          <p class="max-w-[560px] text-[15px] leading-[1.6] text-slate">We design and run satisfaction studies that go beyond a score and explain what is driving it.</p>
+        
+        
+      </div>
+    </div>
+  
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 border-line-2 gap-5 py-6">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] text-[clamp(32px,3.6vw,48px)] text-orange-500">03</div>
+        <div class="mt-2 h-[2px] w-14 bg-orange-500"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          
+            <h2 class="font-display font-semibold text-[clamp(19px,2.1vw,25px)] tracking-[-0.015em] text-ink">Churn and retention drivers</h2>
+          
+          
+        </div>
+        
+          <p class="max-w-[560px] text-[15px] leading-[1.6] text-slate">We identify why customers leave and which segments are most at risk, so retention work is aimed at the right people.</p>
+        
+        
+      </div>
+    </div>
+  
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 border-line-2 gap-5 py-6">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] text-[clamp(32px,3.6vw,48px)] text-orange-500">04</div>
+        <div class="mt-2 h-[2px] w-14 bg-orange-500"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          
+            <h2 class="font-display font-semibold text-[clamp(19px,2.1vw,25px)] tracking-[-0.015em] text-ink">Buyer personas and segmentation</h2>
+          
+          
+        </div>
+        
+          <p class="max-w-[560px] text-[15px] leading-[1.6] text-slate">We build segments from real behaviour and research, not assumptions, so your messaging and offers fit each group.</p>
+        
+        
+      </div>
+    </div>
+  
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 border-line-2 gap-5 py-6">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] text-[clamp(32px,3.6vw,48px)] text-orange-500">05</div>
+        <div class="mt-2 h-[2px] w-14 bg-orange-500"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          
+            <h2 class="font-display font-semibold text-[clamp(19px,2.1vw,25px)] tracking-[-0.015em] text-ink">Voice of customer</h2>
+          
+          
+        </div>
+        
+          <p class="max-w-[560px] text-[15px] leading-[1.6] text-slate">We analyse reviews, support tickets, call recordings and survey responses to surface the themes that matter.</p>
+        
+        
+      </div>
+    </div>
+  
+</div>
+
+    </div>
+  </section>
+
+  <section class="px-6 py-[48px]">
+    <div class="mx-auto grid max-w-(--width-site) gap-10 rounded-panel bg-ink p-[clamp(28px,5vw,56px)] text-white md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div>
+        <h2 class="font-display text-[clamp(20px,2.4vw,28px)] font-bold tracking-[-0.02em]">How it works</h2>
+        <p class="mt-3 text-[15px] leading-[1.7] text-mist-2">We sit inside your CRM, your support data and your customer conversations. We combine that behavioural data with surveys and interviews so you get both the what and the why.</p>
+      </div>
+      
+        <div>
+          
+          
+<div class="">
+  
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 border-white/12 gap-2.5 py-3">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] text-[22px] text-orange-400">01</div>
+        <div class="mt-2 h-[2px] w-8 bg-orange-400"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          
+            <h3 class="font-display font-semibold text-[15px] tracking-[-0.01em] text-white">We listen</h3>
+          
+          
+        </div>
+        
+        
+          <p class="max-w-[320px] text-sm leading-[1.55] text-mist-2">Audit of your existing customer data and feedback channels.</p>
+        
+      </div>
+    </div>
+  
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 border-white/12 gap-2.5 py-3">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] text-[22px] text-orange-400">02</div>
+        <div class="mt-2 h-[2px] w-8 bg-orange-400"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          
+            <h3 class="font-display font-semibold text-[15px] tracking-[-0.01em] text-white">You get the plan</h3>
+          
+          
+        </div>
+        
+        
+          <p class="max-w-[320px] text-sm leading-[1.55] text-mist-2">Research design and the metrics we will move, agreed by day 7.</p>
+        
+      </div>
+    </div>
+  
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] border-t transition-colors duration-300 hover:border-orange-500/50 border-white/12 gap-2.5 py-3">
+      <div class="grid content-start">
+        <div class="min-w-[1.2em] font-display font-semibold leading-[0.9] text-[22px] text-orange-400">03</div>
+        <div class="mt-2 h-[2px] w-8 bg-orange-400"></div>
+      </div>
+      <div class="grid gap-2.5 self-start">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          
+            <h3 class="font-display font-semibold text-[15px] tracking-[-0.01em] text-white">We build it</h3>
+          
+          
+        </div>
+        
+        
+          <p class="max-w-[320px] text-sm leading-[1.55] text-mist-2">Analysis, insights and a prioritised action plan your team can run.</p>
+        
+      </div>
+    </div>
+  
+</div>
+
+        </div>
+      
+    </div>
+  </section>
+
+  
+    <section class="px-6 pb-[16px]">
+      <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-10">
+        
+          
+<div>
+  <h3 class="font-display text-[15px] font-bold uppercase tracking-[0.04em] text-ink">Why it matters for revenue</h3>
+  <ul class="mt-4 grid gap-3">
+    
+      <li class="flex gap-2.5 text-[14px] leading-[1.6] text-slate">
+        <span aria-hidden="true" class="mt-[2px] text-orange-500">→</span>
+        <span>Retaining a customer usually costs less than acquiring a new one</span>
+      </li>
+    
+      <li class="flex gap-2.5 text-[14px] leading-[1.6] text-slate">
+        <span aria-hidden="true" class="mt-[2px] text-orange-500">→</span>
+        <span>Understanding satisfaction drivers lets you reduce churn, lift repeat purchase and improve referrals, which directly moves revenue</span>
+      </li>
+    
+  </ul>
+</div>
+
+        
+          
+<div>
+  <h3 class="font-display text-[15px] font-bold uppercase tracking-[0.04em] text-ink">What you receive</h3>
+  <ul class="mt-4 grid gap-3">
+    
+      <li class="flex gap-2.5 text-[14px] leading-[1.6] text-slate">
+        <span aria-hidden="true" class="mt-[2px] text-orange-500">→</span>
+        <span>Customer journey map with drop-off points</span>
+      </li>
+    
+      <li class="flex gap-2.5 text-[14px] leading-[1.6] text-slate">
+        <span aria-hidden="true" class="mt-[2px] text-orange-500">→</span>
+        <span>Satisfaction and NPS findings with root-cause drivers</span>
+      </li>
+    
+      <li class="flex gap-2.5 text-[14px] leading-[1.6] text-slate">
+        <span aria-hidden="true" class="mt-[2px] text-orange-500">→</span>
+        <span>Churn risk segments</span>
+      </li>
+    
+      <li class="flex gap-2.5 text-[14px] leading-[1.6] text-slate">
+        <span aria-hidden="true" class="mt-[2px] text-orange-500">→</span>
+        <span>Buyer personas</span>
+      </li>
+    
+      <li class="flex gap-2.5 text-[14px] leading-[1.6] text-slate">
+        <span aria-hidden="true" class="mt-[2px] text-orange-500">→</span>
+        <span>A ranked list of fixes by impact</span>
+      </li>
+    
+  </ul>
+</div>
+
+        
+      </div>
+    </section>
+  
+
+  <section class="px-6 py-[56px]">
+    <div class="mx-auto max-w-[820px]">
+      <h2 class="font-display text-[clamp(22px,2.6vw,30px)] font-bold tracking-[-0.02em]">FAQs</h2>
+      <div class="mt-6">
+        
+<div class="faq-accordion border-t border-line-2">
+  
+    
+    <div class="border-b border-line-2">
+      <button type="button" data-faq-trigger aria-expanded="true" class="flex w-full items-center justify-between gap-5 border-0 bg-none py-[18px] text-left font-display text-[17px] font-bold tracking-[-0.01em] text-ink">
+        <span>What is the difference between CSAT and NPS?</span>
+        <span class="faq-icon flex h-7 w-7 flex-none items-center justify-center rounded-full font-body text-base bg-orange-500 text-white">−</span>
+      </button>
+      <p data-faq-panel class="pb-5 pr-10 text-[14px] leading-[1.65] text-slate ">CSAT measures satisfaction with a specific interaction or purchase. NPS measures how likely customers are to recommend you, which signals overall loyalty. We often use both.</p>
+    </div>
+  
+    
+    <div class="border-b border-line-2">
+      <button type="button" data-faq-trigger aria-expanded="false" class="flex w-full items-center justify-between gap-5 border-0 bg-none py-[18px] text-left font-display text-[17px] font-bold tracking-[-0.01em] text-ink">
+        <span>How many customers do we need to survey?</span>
+        <span class="faq-icon flex h-7 w-7 flex-none items-center justify-center rounded-full font-body text-base bg-chip-neutral text-ink">+</span>
+      </button>
+      <p data-faq-panel class="pb-5 pr-10 text-[14px] leading-[1.65] text-slate hidden">It depends on your base and the segments you want to compare. We recommend a sample size in the plan stage.</p>
+    </div>
+  
+    
+    <div class="border-b border-line-2">
+      <button type="button" data-faq-trigger aria-expanded="false" class="flex w-full items-center justify-between gap-5 border-0 bg-none py-[18px] text-left font-display text-[17px] font-bold tracking-[-0.01em] text-ink">
+        <span>Can you work with our existing CRM data?</span>
+        <span class="faq-icon flex h-7 w-7 flex-none items-center justify-center rounded-full font-body text-base bg-chip-neutral text-ink">+</span>
+      </button>
+      <p data-faq-panel class="pb-5 pr-10 text-[14px] leading-[1.65] text-slate hidden">Yes. We work inside your CRM and analytics tools wherever possible.</p>
+    </div>
+  
+</div>
+
+      </div>
+    </div>
+  </section>
+
+  
+    <section class="px-6 pb-[32px]">
+      <div class="mx-auto flex max-w-(--width-site) flex-wrap items-center gap-3 border-t border-line-2 pt-8 text-[14px]">
+        <span class="font-mono text-[12px] uppercase tracking-[0.1em] text-slate">Related services</span>
+        
+          <a href="/market-research-services" class="rounded-chip border border-line px-3.5 py-1.5 font-semibold text-ink transition-colors hover:border-orange-500 hover:text-orange-500">Market Research</a>
+        
+          <a href="/campaign-analytics-services" class="rounded-chip border border-line px-3.5 py-1.5 font-semibold text-ink transition-colors hover:border-orange-500 hover:text-orange-500">Campaign Analytics</a>
+        
+      </div>
+    </section>
+  
+</main>
+
+
+  <section class="bg-paper px-6 pb-[120px]">
+    <div class="mx-auto max-w-(--width-site) rounded-panel bg-orange-500 p-[clamp(40px,7vw,96px)] text-white">
+      <div class="max-w-[640px]">
+        <h2 class="font-display text-[clamp(30px,3.6vw,52px)] font-bold leading-[1.08] tracking-[-0.028em]">We move the only number that matters. Yours.</h2>
+        <div class="mt-9 flex flex-wrap gap-3.5">
+          <a href="/contact" class="rounded-pill bg-ink px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-700">Start an Inquiry →</a>
+          <a href="/services" class="rounded-pill bg-white px-7 py-4 text-base font-semibold text-ink transition-colors hover:text-orange-500">See our services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<footer class="bg-ink px-6 pb-10 pt-16 text-mist-2 font-body">
+  <div class="mx-auto flex max-w-(--width-site) flex-wrap items-start justify-between gap-8">
+    <div class="grid max-w-[340px] gap-3.5">
+      <span class="font-display text-[26px] font-bold tracking-[-0.02em] text-white">Karga<span class="text-orange-400">tox</span></span>
+      <p class="text-[15px] leading-[1.6]">Strategy, research and marketing for founders and leadership teams across India.</p>
+    </div>
+    <div class="flex flex-wrap gap-7 text-[15px]">
+      
+        <a href="/" class="text-mist transition-colors hover:text-orange-400">Home</a>
+      
+        <a href="/services" class="text-mist transition-colors hover:text-orange-400">Services</a>
+      
+        <a href="/how-we-work" class="text-mist transition-colors hover:text-orange-400">How we work</a>
+      
+        <a href="/faq" class="text-mist transition-colors hover:text-orange-400">FAQ</a>
+      
+        <a href="/contact" class="text-mist transition-colors hover:text-orange-400">Contact</a>
+      
+    </div>
+    <div class="grid max-w-[260px] gap-2.5">
+      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Services</span>
+      
+        <a href="/market-research-services" class="text-[14px] text-mist transition-colors hover:text-orange-400">Market Research</a>
+      
+        <a href="/consumer-behaviour-satisfaction-analysis-services" class="text-[14px] text-mist transition-colors hover:text-orange-400">Consumer Behaviour &amp; Satisfaction Analysis</a>
+      
+        <a href="/campaign-analytics-services" class="text-[14px] text-mist transition-colors hover:text-orange-400">Campaign Analytics</a>
+      
+        <a href="/seo-services" class="text-[14px] text-mist transition-colors hover:text-orange-400">SEO Services</a>
+      
+        <a href="/brand-campaign-strategy-services" class="text-[14px] text-mist transition-colors hover:text-orange-400">Brand Campaigns Strategy</a>
+      
+        <a href="/social-media-marketing-services" class="text-[14px] text-mist transition-colors hover:text-orange-400">Social Media Marketing</a>
+      
+    </div>
+  </div>
+  <div class="mx-auto mt-12 max-w-(--width-site) border-t border-white/10 pt-6 text-sm">© 2026 Kargatox. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
