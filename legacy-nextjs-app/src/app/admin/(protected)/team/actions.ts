@@ -6,9 +6,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { canAccessTeam, ROLES, type Role } from "@/lib/roles";
 import { sendMail } from "@/lib/mailer";
+import { hashPassword } from "@/lib/password-auth";
 import { inviteSchema, MAX_TEAM_SEATS } from "@/lib/team-schema";
-
-const INVITE_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -40,12 +39,13 @@ export async function inviteMember(formData: FormData): Promise<ActionResult> {
   const parsed = inviteSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
+    password: formData.get("password"),
     role: formData.get("role"),
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid invite" };
   }
-  const { name, email, role } = parsed.data;
+  const { name, email, password, role } = parsed.data;
 
   const seatCount = await prisma.user.count();
   if (seatCount >= MAX_TEAM_SEATS) {
@@ -57,24 +57,26 @@ export async function inviteMember(formData: FormData): Promise<ActionResult> {
     return { ok: false, error: "That email is already a team member" };
   }
 
+  // The admin sets the password directly (unlike the older accept-invite
+  // flow still served at src/app/admin/accept-invite/ for any invite created
+  // before this change) — no verification token, no email dependency to
+  // make the account usable; setting acceptedAt here is what moves the
+  // member out of TeamView's "Invited — pending" state.
+  const hash = await hashPassword(password);
   await prisma.user.create({
-    data: { name, email, role, invitedAt: new Date() },
+    data: { name, email, role, password: hash, invitedAt: new Date(), acceptedAt: new Date() },
   });
 
-  const token = crypto.randomUUID();
-  const expires = new Date(Date.now() + INVITE_TOKEN_TTL_MS);
-  await prisma.verificationToken.create({ data: { identifier: email, token, expires } });
-
-  const url = `${await siteBaseUrl()}/admin/accept-invite?token=${token}`;
+  const url = `${await siteBaseUrl()}/admin/login`;
   try {
     await sendMail({
       to: email,
-      subject: "You're invited to the Kargatox admin panel",
-      text: `Hi ${name},\n\nYou've been invited as ${role} on the Kargatox admin panel. Set your password to accept the invite:\n${url}\n\nThis link expires in 7 days.`,
+      subject: "Your Kargatox admin account is ready",
+      text: `Hi ${name},\n\nAn admin account has been created for you on the Kargatox admin panel as ${role}. Sign in with your email and the password your admin shared with you:\n${url}`,
     });
   } catch (err) {
-    // The invite is already created — a flaky SMTP send shouldn't undo it or
-    // fail the request (same save-first-then-best-effort-email pattern as
+    // The account is already created — a flaky SMTP send shouldn't undo it
+    // or fail the request (same save-first-then-best-effort-email pattern as
     // sendReply in the Enquiries actions).
     console.error("[team] inviteMember sendMail failed:", err);
   }

@@ -49,7 +49,7 @@ export function TeamView({ members, currentUserId }: { members: Member[]; curren
     startTransition(async () => {
       const result = await inviteMember(formData);
       if (result.ok) {
-        showToast("Invite sent");
+        showToast("Member added");
         setInviteOpen(false);
       } else {
         showToast(result.error);
@@ -84,14 +84,14 @@ export function TeamView({ members, currentUserId }: { members: Member[]; curren
           disabled={seatsFull && !inviteOpen}
           className="rounded-pill bg-orange-500 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {inviteOpen ? "Cancel" : "+ Invite member"}
+          {inviteOpen ? "Cancel" : "+ Add member"}
         </button>
       </div>
 
       {inviteOpen && (
         <form
           action={handleInvite}
-          className="grid gap-3 rounded-[20px] border border-admin-border bg-admin-panel p-5 sm:grid-cols-[1fr_1fr_160px_auto]"
+          className="grid gap-3 rounded-[20px] border border-admin-border bg-admin-panel p-5 sm:grid-cols-[1fr_1fr_1fr_160px_auto]"
         >
           <label className="grid gap-1.5">
             <span className="font-mono text-[11px] tracking-[0.08em] text-admin-muted">NAME</span>
@@ -107,6 +107,18 @@ export function TeamView({ members, currentUserId }: { members: Member[]; curren
               type="email"
               name="email"
               required
+              className="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400"
+            />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="font-mono text-[11px] tracking-[0.08em] text-admin-muted">PASSWORD</span>
+            <input
+              type="password"
+              name="password"
+              required
+              minLength={8}
+              autoComplete="new-password"
+              placeholder="••••••••"
               className="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400"
             />
           </label>
@@ -129,7 +141,7 @@ export function TeamView({ members, currentUserId }: { members: Member[]; curren
             disabled={isPending}
             className="self-end rounded-pill bg-orange-500 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400 disabled:opacity-50"
           >
-            Send invite
+            Create member
           </button>
         </form>
       )}
