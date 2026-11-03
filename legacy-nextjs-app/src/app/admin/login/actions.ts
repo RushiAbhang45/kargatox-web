@@ -10,7 +10,10 @@ const LOGIN_ATTEMPT_LIMIT = 10;
 const LOGIN_ATTEMPT_WINDOW_MS = 10 * 60 * 1000;
 
 export async function signInWithPassword(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim();
+  // Lowercased to match how inviteMember() now stores emails
+  // (src/lib/team-schema.ts) — otherwise a correctly-typed password still
+  // fails to match if the casing differs from how the account was created.
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
 
   const headerList = await headers();
