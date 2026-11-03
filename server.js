@@ -6,8 +6,6 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-app.use(express.static(path.join(__dirname, "public")));
-
 // EJS templates rendered via res.render() don't close over this module's `require` —
 // shared, request-independent data the partials need (nav links, service pages) goes
 // on app.locals instead, which Express merges into every template's scope by name.
@@ -19,7 +17,15 @@ app.locals.SUB_SERVICE_HREFS = servicePagesData.SUB_SERVICE_HREFS;
 app.locals.PROCESS_STEPS = require("./lib/process-steps").PROCESS_STEPS;
 app.locals.SERVICES = require("./lib/services-data").SERVICES;
 
+// Router mounted BEFORE express.static deliberately: public/*.html is prerendered
+// output (scripts/build-static.js) that this same server serves at those same paths
+// (e.g. public/index.html for GET /). If static came first, it would permanently
+// shadow the live EJS route with whatever was last prerendered — including when
+// build-static.js itself scrapes this server, making "regenerate the static output"
+// silently re-write the same stale content back to itself. Static stays mounted for
+// genuine assets (/css, /js, /images, /favicon.ico) that have no matching route.
 app.use("/", require("./routes/site"));
+app.use(express.static(path.join(__dirname, "public")));
 // Later phases mount:
 // app.use("/api", require("./routes/api"));
 // app.use("/admin", require("./routes/admin"));

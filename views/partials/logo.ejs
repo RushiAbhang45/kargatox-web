@@ -1,14 +1,22 @@
 <%
 // Ported from legacy-nextjs-app/src/components/logo.tsx. variant: "dark" (default,
 // white-on-navy) | "light" (text-ink, used by the white-background site header).
+// "light" renders the real logo file (public/images/kargatox-logo.jpg) since that
+// asset has a baked-in white background — it only reads correctly on a white/light
+// surface. "dark" has no transparent/dark-background version of that asset, so it
+// keeps the original CSS-drawn wordmark for use on navy surfaces.
 const _variant = typeof variant !== "undefined" ? variant : "dark";
 const _class = typeof className !== "undefined" ? className : "";
 const textColor = _variant === "light" ? "text-ink" : "text-white";
 %>
 <a href="/" class="flex items-center gap-2.5 <%= textColor %> <%= _class %>">
-  <span class="relative block h-[30px] w-[30px]">
-    <span class="absolute left-0 top-0 h-5 w-5 rounded-[5px] bg-orange-500"></span>
-    <span class="absolute bottom-0 right-0 h-5 w-5 rounded-[5px] bg-blue-500 mix-blend-screen"></span>
-  </span>
-  <span class="font-display text-[22px] font-bold tracking-[-0.02em] <%= textColor %>">Karga<span class="text-orange-400">tox</span></span>
+  <% if (_variant === "light") { %>
+    <img src="/images/kargatox-logo.jpg" alt="Kargatox — Knowledge Partners" class="h-16 w-auto" />
+  <% } else { %>
+    <span class="relative block h-[30px] w-[30px]">
+      <span class="absolute left-0 top-0 h-5 w-5 rounded-[5px] bg-orange-500"></span>
+      <span class="absolute bottom-0 right-0 h-5 w-5 rounded-[5px] bg-blue-500 mix-blend-screen"></span>
+    </span>
+    <span class="font-display text-[22px] font-bold tracking-[-0.02em] <%= textColor %>">Karga<span class="text-orange-400">tox</span></span>
+  <% } %>
 </a>
