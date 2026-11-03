@@ -16,29 +16,33 @@ real source file to diff against, not a guess.
 **Where the rewrite stands:** Phase 1 is done (commit `c8ecbf2`) — an Express entry point, Tailwind v4
 CLI pipeline, and all 11 public page templates (home, services, how-we-work, faq, contact, the 6
 service-landing pages via one shared template, plus placeholder blog routes) rendering hardcoded content,
-no database, no client-side JS. The remaining phases are tracked only as inline code comments (grep for
-`Phase \d`), not a separate plan doc:
+no database. Phase 10 is also mostly done (commit `afdb1c0`, see `public/js/site.js`). After that, the
+site's deploy target changed to a prerendered static build (commit `775b6fd`, not itself phase-numbered —
+see "Static prerender / Vercel deploy" in Architecture below). The remaining phases are tracked only as
+inline code comments (grep for `Phase \d`), not a separate plan doc:
 - **Phase 2** — wire a database back in; swap the hardcoded `PAGE_DEFAULTS`/`FAQ_DEFAULTS`/sub-service
   content in `routes/site.js` for a real DB-backed merge (the "default until a row exists" pattern the
-  legacy app used).
+  legacy app used). Note this would also need to feed the static-prerender script (see Architecture) or
+  that script's output goes stale against the DB.
 - **Phase 3** — `POST /api/enquiries`: real submit handling for the Contact form, including the
   honeypot/prefill logic currently only sketched as static markup in `views/site/contact.ejs`. Move
   `SERVICE_OPTIONS` (currently inlined in that template) into a shared `lib/enquiry-schema.js` once this
   lands, so the API route and the `<select>` read from one place.
 - **Phase 8** — blog & case studies rendering (`views/site/blog-list.ejs` / `blog-post.ejs` are placeholder
   routes today).
-- **Phase 10** — client-side JS/animation: the mobile nav drawer toggle (`site-header.ejs`'s
-  `#mobile-menu-toggle`/`#mobile-menu`), the FAQ accordion's click-to-toggle (`faq-accordion.ejs`'s
-  `data-faq-trigger`/`data-faq-panel` hooks), the scramble-text effect (`data-scramble-reveal` attributes
-  scattered through the templates), and `numbered-rows.ejs`'s grow-in underline animation are all static
-  markup right now with the DOM hooks already in place for later wiring.
+- **Phase 10 (mostly done, one piece left)** — `public/js/site.js` wires the mobile nav drawer toggle
+  (`site-header.ejs`'s `#mobile-menu-toggle`/`#mobile-menu`), the FAQ accordion's click-to-toggle
+  (`faq-accordion.ejs`'s `data-faq-trigger`/`data-faq-panel` hooks), and the scramble-text effect
+  (`data-scramble-reveal` attributes). **Not done:** `numbered-rows.ejs`'s grow-in underline animation —
+  its own header comment still says the underline "renders at its final (fully grown) width" and the
+  grow-in itself remains unbuilt; don't assume it's covered by the rest of Phase 10 landing.
 - Phases 4–7 and 9 (auth/admin, revenue-check API, admin panels, team/settings, SEO) aren't ported yet and
   have no phase-numbered comments pointing at them — treat the legacy app's equivalent sections as the
   spec when that work starts, the same way Phase 1–3/8/10 above do.
 
 Don't assume feature parity with `legacy-nextjs-app/` just because this is "the current app" — anything
 not listed as done above (DB content, the enquiries API, revenue-check quiz, admin panel, auth, blog
-rendering, client-side interactivity) simply isn't built yet in this rewrite.
+rendering, the one remaining animation) simply isn't built yet in this rewrite.
 
 ## Commands
 
@@ -48,9 +52,13 @@ rendering, client-side interactivity) simply isn't built yet in this rewrite.
   `public/css/styles.css` (minified). Templates read `/css/styles.css`, which is committed — **re-run this
   after any class/token change in `public/css/input.css` or any `.ejs` file**, since there's no dev-time
   watcher rebuilding it for you.
-- `npm run build` — alias for `build:css` (no other build step; no TypeScript, no bundler).
-- No lint script, no test suite, and no `vercel.json`/`.vercel/` yet in this rewrite (the legacy app had
-  all of these; none have been re-added here).
+- `npm run build:static` — runs `scripts/build-static.js`, which boots the real Express/EJS app (`require("../server.js")`)
+  on an ephemeral port, HTTP-fetches every known public route, and writes each response verbatim to a flat
+  `public/<slug>.html` (plus a static `public/404.html`). These generated HTML files **are committed** — re-run
+  this (or `npm run build`) and commit the diff after any route/content/template change, or the deployed
+  static output silently drifts from what `npm run dev` renders.
+- `npm run build` — runs `build:css` then `build:static`; this is the full build step before a deploy.
+- No lint script and no test suite in this rewrite (the legacy app had both; neither has been re-added here).
 - No `.env` is required for Phase 1 — the app has no DB/SMTP/auth wiring yet. The committed `.env.example`
   still documents the legacy app's Postgres/Auth.js/SMTP variables; those are **not consumed by anything in
   this rewrite today** and only become relevant again once Phase 2+ reintroduces that wiring (check
@@ -95,10 +103,12 @@ rendering, client-side interactivity) simply isn't built yet in this rewrite.
     contact's `STEPS`/`SERVICE_OPTIONS`) are declared inline in a `<% ... %>` block at the top of the
     template, mirroring where the legacy `page.tsx` had them in module scope — don't hoist these into
     `lib/` unless a second page needs the same array.
-  - DOM hooks for not-yet-wired interactivity are already named and present in the static markup —
-    `data-faq-trigger`/`data-faq-panel`, `#mobile-menu-toggle`/`#mobile-menu`, `data-scramble-reveal="..."`
-    — so Phase 10 only needs to add `public/js/*.js` behavior, not markup. Keep using these exact
-    attribute/id names when that phase lands rather than introducing new ones.
+  - DOM hooks for interactivity are named and present in the markup — `data-faq-trigger`/`data-faq-panel`,
+    `#mobile-menu-toggle`/`#mobile-menu`, `data-scramble-reveal="..."` — and `public/js/site.js` (Phase 10)
+    now binds behavior to all three via plain `<script defer>`, no build step. Keep using these exact
+    attribute/id names rather than introducing new ones. `numbered-rows.ejs`'s grow-in underline is the one
+    DOM/animation piece still unwired — its underline `<div>` has no `data-*` hook yet, so that part of
+    Phase 10 still needs both a markup hook and the `site.js` behavior, not just the latter.
 - **Tailwind v4 is CSS-first — there is no `tailwind.config.js`.** All tokens live in the `@theme inline`
   block of `public/css/input.css`, ported verbatim (same names/hex values) from the legacy app's
   `globals.css`. Colours (`navy-*`, `orange-500/400`, `blue-*`, `paper`/`ink`/`slate`/`mist*`/`line*`,
@@ -113,9 +123,21 @@ rendering, client-side interactivity) simply isn't built yet in this rewrite.
     its display-font stand-in; if fidelity to the legacy app's rendered look matters, check which one is
     actually intended before assuming they're interchangeable. Real Clash Display/Satoshi self-hosting
     (the design handoff's actual spec) still hasn't been done in either app.
-- **No admin panel, no auth, no database, no email, no client-side JS** exist in this rewrite yet — don't
-  reach for Prisma/Auth.js/nodemailer patterns from `legacy-nextjs-app/` as if they apply here; they're the
-  target to port *to*, in later phases, not current dependencies.
+- **No admin panel, no auth, no database, no email** exist in this rewrite yet — don't reach for
+  Prisma/Auth.js/nodemailer patterns from `legacy-nextjs-app/` as if they apply here; they're the target to
+  port *to*, in later phases, not current dependencies. (Client-side JS does now exist — `public/js/site.js`,
+  see Phase 10 above and the prerender bullet below.)
+- **Static prerender / Vercel deploy (`scripts/build-static.js`, `vercel.json`, committed `public/*.html`)**
+  — added after Phase 10 (commit `775b6fd`), this is the actual deploy mechanism and is easy to miss since
+  it's not phase-numbered. `vercel.json` sets `"outputDirectory": "public"` and `"cleanUrls": true`, so
+  Vercel serves the committed static files directly — **the Express app (`server.js`) is not run in
+  production**; it's only used locally (`npm run dev`) and as the HTTP source `build-static.js` scrapes at
+  build time. This means **every route/content/template change needs `npm run build` (or at least
+  `build:static`) re-run and its `public/*.html` diff committed**, or production keeps serving the old
+  render — there is no server-side rendering in the deployed site despite `routes/site.js`/`views/` using
+  `res.render()`. `scripts/build-static.js`'s `ROUTES` array is a hardcoded list derived from `NAV_LINKS` +
+  `SERVICE_PAGES`; a new route added to `routes/site.js` also needs an entry there or it won't get
+  prerendered. `/blog/:slug` is deliberately excluded (no real posts exist pre-Phase-8).
 
 ## Design reference material
 
@@ -158,6 +180,7 @@ the repo root so the root only shows the actual deployable Express/EJS project.
   `src/lib/rate-limit.ts`, the `company`-field honeypot naming note in that app's contact form) before
   re-designing it from scratch — most of this logic was already debugged once.
 - Animations must respect `prefers-reduced-motion: reduce` — `public/css/input.css` already disables the
-  CSS-keyframe ones; any JS-driven animation added in Phase 10 needs the same guard (the legacy app used
-  Framer Motion's `reducedMotion="user"` / a GSAP `prefersReducedMotion()` helper for this — there's no
-  equivalent helper here yet, so one will need to be written for vanilla JS).
+  CSS-keyframe ones, and `public/js/site.js` has its own `prefersReducedMotion()` helper (a plain
+  `matchMedia` check) that `initScrambleReveal()` already uses to skip straight to the final text. Reuse
+  that same helper for any new JS-driven animation (e.g. the still-unwired `numbered-rows.ejs` grow-in)
+  instead of writing a second one.
