@@ -67,8 +67,14 @@ rendering, the one remaining animation) simply isn't built yet in this rewrite.
 ## Architecture
 
 - **`server.js`** is the entire app bootstrap: creates the Express app, sets `view engine`/`views` to
-  `ejs`/`./views`, serves `./public` as static, and mounts `routes/site.js` at `/`. It exports the `app`
-  (for a future serverless target) and only calls `.listen()` when `process.env.VERCEL` isn't set.
+  `ejs`/`./views`, and mounts `routes/site.js` at `/` **before** `express.static("./public")`. That order
+  is deliberate, not incidental (commit `9966970`): `public/*.html` is prerendered output that this same
+  server also serves at those same paths (e.g. `public/index.html` for `GET /`), so if static came first it
+  would permanently shadow the live EJS route with whatever was last prerendered — including when
+  `build-static.js` itself scrapes this server, which would silently re-write the same stale content back
+  to itself. Static stays mounted (after the router) for genuine assets (`/css`, `/js`, `/images`,
+  `/favicon.ico`) that have no matching route. It exports the `app` (for a future serverless target) and
+  only calls `.listen()` when `process.env.VERCEL` isn't set.
 - **Shared, request-independent data goes on `app.locals`, not `require()` inside templates.** EJS
   templates rendered via `res.render()` don't close over `server.js`'s `require` — so `NAV_LINKS`,
   `SERVICE_PAGES`/`SERVICE_PAGE_GROUPS`/`SUB_SERVICE_HREFS`, `PROCESS_STEPS`, and `SERVICES` are all
