@@ -16,6 +16,11 @@ app.locals.SERVICE_PAGE_GROUPS = servicePagesData.SERVICE_PAGE_GROUPS;
 app.locals.SUB_SERVICE_HREFS = servicePagesData.SUB_SERVICE_HREFS;
 app.locals.PROCESS_STEPS = require("./lib/process-steps").PROCESS_STEPS;
 app.locals.SERVICES = require("./lib/services-data").SERVICES;
+const seoData = require("./lib/seo-data");
+app.locals.SITE_URL = seoData.SITE_URL;
+app.locals.GA_MEASUREMENT_ID = seoData.GA_MEASUREMENT_ID;
+app.locals.GOOGLE_SITE_VERIFICATION = seoData.GOOGLE_SITE_VERIFICATION;
+app.locals.LOGO_URL = seoData.LOGO_URL;
 
 // Router mounted BEFORE express.static deliberately: public/*.html is prerendered
 // output (scripts/build-static.js) that this same server serves at those same paths

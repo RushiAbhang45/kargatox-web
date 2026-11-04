@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<%- include('../partials/doc-head', { meta: meta }) %>
+</head>
+<body class="min-h-full flex flex-col bg-paper text-ink font-body">
+<%- include('../partials/site-header', { activePath: '/about-us' }) %>
+<%
+// New page (no legacy-nextjs-app equivalent) — content ported verbatim from the
+// client's SEO content upload. Needs no locals beyond `meta` (see routes/site.js).
+%>
+<main class="flex flex-1 flex-col">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="Breadcrumb" class="bg-white px-6 pt-6">
+    <ol class="mx-auto flex max-w-(--width-site) flex-wrap gap-2 font-mono text-[11px] uppercase tracking-[0.1em] text-slate">
+      <li><a href="/" class="transition-colors hover:text-orange-500">Home</a></li>
+      <li aria-hidden="true">/</li>
+      <li aria-current="page" class="text-ink">About Us</li>
+    </ol>
+  </nav>
+
+  <!-- Hero -->
+  <section class="bg-white px-6 text-ink">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-end gap-x-14 gap-y-6 pb-[48px] pt-[40px]">
+      <div>
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500" data-scramble-reveal="ABOUT KARGATOX">ABOUT KARGATOX</div>
+        <h1 class="mt-3 font-display text-[clamp(26px,3.4vw,42px)] font-bold leading-[1.08] tracking-[-0.02em]">
+          About Kargatox: Research &amp; Marketing Agency <span class="text-slate">in Pune</span>
+        </h1>
+      </div>
+      <div>
+        <p class="text-[15px] leading-[1.6] text-slate">Kargatox is a founder-led research and marketing agency based in Pimple Saudagar, Pune. We help founders and leadership teams across India understand their market, decode their customers and turn that insight into campaigns that move revenue.</p>
+        <p class="mt-3 rounded-input border border-orange-400/35 bg-orange-500/8 px-4 py-3 text-[14px] leading-[1.6] text-ink">
+          <strong class="text-orange-500">Knowledge partners, not vendors:</strong> we work inside your team and stay close enough to the data to know it is working.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who we are -->
+  <section class="border-t border-line bg-white px-6 py-[64px] text-ink">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] gap-x-14 gap-y-8">
+      <div>
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">WHO WE ARE</div>
+        <h2 class="mt-3 font-display text-[clamp(22px,2.6vw,32px)] font-bold leading-[1.12] tracking-[-0.02em]">Built on research. <span class="text-slate">Measured in growth.</span></h2>
+      </div>
+      <div class="grid gap-4 text-[15px] leading-[1.7] text-slate">
+        <p>Most businesses don't have a marketing problem. They have an information problem. They spend on ads, content and campaigns without a clear picture of who their market is, why customers buy, or which channel is actually bringing in revenue.</p>
+        <p>Kargatox was started to close that gap. We bring <strong class="text-ink">market research, consumer behaviour analysis and campaign analytics</strong> together with <strong class="text-ink">SEO, social media marketing and brand campaign strategy</strong> under one roof, so the insight and the execution never drift apart.</p>
+        <p>Every engagement is scoped against a number that needs to move: pipeline, retention or revenue. You always know what we are doing, why we are doing it and what it is meant to change for your business.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- What defines us -->
+  <section class="bg-ink px-6 py-[72px] text-white">
+    <div class="mx-auto max-w-(--width-site)">
+      <div class="font-mono text-[12px] tracking-[0.14em] text-orange-400">WHAT DEFINES US</div>
+      <h2 class="mt-3 max-w-[640px] font-display text-[clamp(22px,2.6vw,34px)] font-bold leading-[1.12] tracking-[-0.02em]">Founder-led, numbers-obsessed and in the weeds with your team.</h2>
+      <div class="kx-grid mt-10">
+        <div class="rounded-card border border-white/10 bg-navy-800 p-6">
+          <span class="font-mono text-[13px] text-orange-400">01</span>
+          <h3 class="mt-3 font-display text-[19px] font-semibold">Founder-Led</h3>
+          <p class="mt-2 text-[14px] leading-[1.6] text-mist">Started and run by people who have built businesses themselves, not advisors reciting a framework.</p>
+        </div>
+        <div class="rounded-card border border-white/10 bg-navy-800 p-6">
+          <span class="font-mono text-[13px] text-orange-400">02</span>
+          <h3 class="mt-3 font-display text-[19px] font-semibold">In The Weeds</h3>
+          <p class="mt-2 text-[14px] leading-[1.6] text-mist">We sit inside your CRM, your campaigns and your calls. The work happens with your team, not around it.</p>
+        </div>
+        <div class="rounded-card border border-white/10 bg-navy-800 p-6">
+          <span class="font-mono text-[13px] text-orange-400">03</span>
+          <h3 class="mt-3 font-display text-[19px] font-semibold">Numbers First</h3>
+          <p class="mt-2 text-[14px] leading-[1.6] text-mist">Every recommendation ships with a metric attached. Not a deck, a measurable change.</p>
+        </div>
+        <div class="rounded-card border border-white/10 bg-navy-800 p-6">
+          <span class="font-mono text-[13px] text-orange-400">04</span>
+          <h3 class="mt-3 font-display text-[19px] font-semibold">Straight Answers</h3>
+          <p class="mt-2 text-[14px] leading-[1.6] text-mist">If we are not the right fix for your problem, we tell you on the first call.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What we do -->
+  <section class="bg-white px-6 py-[72px] text-ink">
+    <div class="mx-auto max-w-(--width-site)">
+      <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">WHAT WE DO</div>
+      <h2 class="mt-3 max-w-[680px] font-display text-[clamp(22px,2.6vw,34px)] font-bold leading-[1.12] tracking-[-0.02em]">Two disciplines. <span class="text-slate">One growth engine.</span></h2>
+      <p class="mt-4 max-w-[680px] text-[15px] leading-[1.7] text-slate">Research tells you who your market actually is. Marketing is built to reach them. Kargatox runs both side by side, so each campaign is grounded in evidence and every insight turns into action.</p>
+
+      <div class="kx-grid kx-grid-2 mt-10">
+        <div class="rounded-card border border-line bg-white p-6">
+          <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-slate">01 · Research Services</span>
+          <h3 class="mt-3 font-display text-[21px] font-semibold">Insight you can act on</h3>
+          <ul class="kx-list text-[15px]">
+            <li><a href="/market-research-services">Market Research</a><span>Market trends, sizing and practical action plans for growth.</span></li>
+            <li><a href="/consumer-behaviour-satisfaction-analysis-services">Consumer Behaviour &amp; Satisfaction Analysis</a><span>Why customers buy, stay or leave.</span></li>
+            <li><a href="/campaign-analytics-services">Campaign Analytics</a><span>Measure and optimise performance across digital and mainline.</span></li>
+          </ul>
+        </div>
+        <div class="rounded-card border border-line bg-white p-6">
+          <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-slate">02 · Marketing Services</span>
+          <h3 class="mt-3 font-display text-[21px] font-semibold">Visibility that converts</h3>
+          <ul class="kx-list text-[15px]">
+            <li><a href="/seo-services">SEO Services</a><span>SEO, AEO and GEO for Google and AI-powered search.</span></li>
+            <li><a href="/social-media-marketing-services">Social Media Marketing</a><span>Communities on Instagram, LinkedIn, Facebook and YouTube.</span></li>
+            <li><a href="/brand-campaign-strategy-services">Brand Campaigns Strategy</a><span>High-impact campaigns built on real audience insight.</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="mt-6 text-[15px]"><a href="/services" class="font-semibold text-ink transition-colors hover:text-orange-500">Explore all our services →</a></p>
+    </div>
+  </section>
+
+  <!-- Who we work with -->
+  <section class="border-t border-line bg-white px-6 py-[64px] text-ink">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] gap-x-14 gap-y-8">
+      <div>
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">WHO WE WORK WITH</div>
+        <h2 class="mt-3 font-display text-[clamp(22px,2.6vw,32px)] font-bold leading-[1.12] tracking-[-0.02em]">Founders and leadership teams <span class="text-slate">across India.</span></h2>
+      </div>
+      <div class="grid gap-4 text-[15px] leading-[1.7] text-slate">
+        <p>From early-stage startups finding product-market fit to established SMEs entering new markets, we partner with teams that want decisions backed by data. Our clients come to us when growth has stalled, when a launch needs proof before budget, or when marketing spend needs to show a clear return.</p>
+        <p>Based in Pune and working with businesses all over India, we keep engagements flat-fee and clearly scoped. Want to see what that looks like in practice? Read <a href="/how-we-work" class="font-semibold text-ink underline decoration-orange-500 underline-offset-4">how we work</a> or browse our <a href="/faq" class="font-semibold text-ink underline decoration-orange-500 underline-offset-4">FAQ</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visit us -->
+  <section id="visit-us" class="bg-ink px-6 py-[72px] text-white">
+    <div class="mx-auto grid max-w-(--width-site)">
+      <div class="grid content-start gap-4">
+        <div class="font-mono text-[12px] tracking-[0.14em] text-orange-400">VISIT OR CALL US</div>
+        <h2 class="font-display text-[clamp(22px,2.6vw,34px)] font-bold leading-[1.12] tracking-[-0.02em]">Our office in <span class="text-orange-400">Pimple Saudagar, Pune</span></h2>
+        <p class="max-w-[440px] text-[15px] leading-[1.6] text-mist">Drop by for a conversation, call us, or send us an email.</p>
+
+        <address class="kx-contact kx-grid mt-6 not-italic">
+          <div>
+            <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">ADDRESS</span>
+            <p class="mt-1 text-[16px] leading-[1.6] text-white">Kargatox, Coffice 24x7,<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India</p>
+          </div>
+          <div>
+            <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">PHONE</span>
+            <p class="mt-1"><a href="tel:+917887789471" class="font-display text-[18px] font-bold text-white transition-colors hover:text-orange-400">+91 78877 89471</a></p>
+          </div>
+          <div>
+            <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">EMAIL</span>
+            <p class="mt-1"><a href="mailto:Kargatox@gmail.com" class="font-display text-[18px] font-bold text-white transition-colors hover:text-orange-400">Kargatox@gmail.com</a></p>
+          </div>
+        </address>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('../partials/site-footer', { showCta: true }) %>
+</body>
+</html>

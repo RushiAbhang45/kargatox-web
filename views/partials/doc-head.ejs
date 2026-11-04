@@ -1,9 +1,53 @@
+<%
+// Takes one `meta` object: { title, description, path, robots?, jsonLd? }. `path` is
+// the page's own route (e.g. "/", "/about-us") — canonical/OG/Twitter URLs and the
+// google-site-verification tag are derived from it. SITE_URL/GA_MEASUREMENT_ID/
+// GOOGLE_SITE_VERIFICATION/LOGO_URL come from app.locals (server.js) — partials have
+// no `require`. See lib/seo-data.js for how callers build `meta.jsonLd`.
+const canonicalUrl = SITE_URL + meta.path;
+const robots = meta.robots || "index, follow, max-image-preview:large";
+%>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=<%= GA_MEASUREMENT_ID %>"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '<%= GA_MEASUREMENT_ID %>');
+</script>
+
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title><%= title %></title>
-<% if (typeof description !== "undefined") { %>
-<meta name="description" content="<%= description %>" />
+<title><%= meta.title %></title>
+
+<meta name="description" content="<%= meta.description %>" />
+<meta name="robots" content="<%= robots %>" />
+<link rel="canonical" href="<%= canonicalUrl %>" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Kargatox" />
+<meta property="og:locale" content="en_IN" />
+<meta property="og:title" content="<%= meta.title %>" />
+<meta property="og:description" content="<%= meta.description %>" />
+<meta property="og:url" content="<%= canonicalUrl %>" />
+<meta property="og:image" content="<%= LOGO_URL %>" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="<%= meta.title %>" />
+<meta name="twitter:description" content="<%= meta.description %>" />
+<meta name="twitter:image" content="<%= LOGO_URL %>" />
+
+<meta name="geo.region" content="IN-MH" />
+<meta name="geo.placename" content="Pimple Saudagar, Pune" />
+
+<% if (meta.path === "/") { %>
+<meta name="google-site-verification" content="<%= GOOGLE_SITE_VERIFICATION %>" />
 <% } %>
+
+<% if (meta.jsonLd) { %>
+<script type="application/ld+json"><%- JSON.stringify(meta.jsonLd) %></script>
+<% } %>
+
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />

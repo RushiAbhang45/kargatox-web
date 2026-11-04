@@ -128,3 +128,46 @@
     animation: none;
   }
 }
+
+/* About page component helpers (views/site/about-us.ejs) — hand-rolled, not Tailwind
+   utility syntax, so they live here rather than relying on the JIT scanner. */
+.kx-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.kx-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+}
+.kx-list {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: grid;
+}
+.kx-list li {
+  display: grid;
+  gap: 4px;
+  padding: 14px 0;
+  border-top: 1px solid #e2e8f0;
+}
+.kx-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.kx-list a {
+  font-weight: 600;
+  color: #0f172a;
+  transition: color 0.2s;
+}
+.kx-list a:hover {
+  color: #f26a1b;
+}
+.kx-list span {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #47536b;
+}
+.kx-contact {
+  font-style: normal;
+}
