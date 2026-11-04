@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin login — Kargatox</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-full flex flex-1 items-center justify-center bg-navy-900 px-6 py-16 text-white font-body">
+  <div class="w-full max-w-[420px] rounded-3xl border border-white/10 bg-navy-800 p-[clamp(28px,4vw,44px)]">
+    <%- include('../partials/logo') %>
+    <p class="mt-1 font-mono text-xs tracking-[0.1em] text-mist-2">ADMIN</p>
+
+    <h1 class="mt-6 font-display text-[28px] font-semibold tracking-[-0.02em]">Sign in</h1>
+
+    <% if (typeof error !== "undefined" && error) { %>
+      <p class="mt-4 rounded-xl border border-orange-400/40 bg-orange-400/10 px-3.5 py-3 text-[13px] text-orange-400"><%= error %></p>
+    <% } %>
+
+    <form method="post" action="/admin/login" class="mt-6 grid gap-4">
+      <label class="grid gap-2">
+        <span class="font-mono text-xs tracking-[0.1em] text-white">EMAIL</span>
+        <input
+          type="email"
+          name="email"
+          required
+          autoComplete="email"
+          class="rounded-xl border border-white/20 bg-transparent px-3.5 py-3 font-body text-[16px] text-white outline-none focus:border-orange-400"
+        />
+      </label>
+      <label class="grid gap-2">
+        <span class="font-mono text-xs tracking-[0.1em] text-white">PASSWORD</span>
+        <input
+          type="password"
+          name="password"
+          required
+          autoComplete="current-password"
+          placeholder="••••••••"
+          class="rounded-xl border border-white/20 bg-transparent px-3.5 py-3 font-body text-[16px] text-white outline-none focus:border-orange-400"
+        />
+      </label>
+      <button
+        type="submit"
+        class="rounded-xl bg-orange-500 py-3.5 font-body text-[16px] font-semibold text-white transition-colors hover:bg-orange-400"
+      >
+        Sign in
+      </button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Team — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<header class="border-b border-admin-border bg-admin-panel px-6 py-4">
+  <div class="mx-auto flex max-w-[1000px] items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <%- include('../partials/logo', { variant: 'light' }) %>
+      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-admin-muted">Admin</span>
+    </div>
+    <div class="flex items-center gap-3 text-[13px] text-admin-muted">
+      <span><%= currentUser.name || currentUser.email %> · <%= currentUser.role %></span>
+      <form method="post" action="/admin/logout">
+        <button type="submit" class="rounded-pill border border-admin-border px-3.5 py-1.5 text-admin-text transition-colors hover:border-orange-400 hover:text-orange-500">Sign out</button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto grid max-w-[1000px] gap-[18px] px-6 py-10">
+  <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Team</h1>
+
+  <% if (error) { %>
+    <p class="rounded-input border border-orange-400/40 bg-orange-400/10 px-3.5 py-3 text-[13px] text-orange-600"><%= error %></p>
+  <% } %>
+
+  <div class="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-admin-border bg-admin-panel px-5 py-4">
+    <p class="text-[14px] font-medium text-admin-text"><%= members.length %> of <%= maxSeats %> seats used</p>
+  </div>
+
+  <details class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+    <summary class="cursor-pointer select-none text-[13px] font-semibold text-admin-text">+ Add member</summary>
+    <form method="post" action="/admin/team/create" class="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_1fr_160px_auto]">
+      <label class="grid gap-1.5">
+        <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">NAME</span>
+        <input name="name" required class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400" />
+      </label>
+      <label class="grid gap-1.5">
+        <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">EMAIL</span>
+        <input type="email" name="email" required class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400" />
+      </label>
+      <label class="grid gap-1.5">
+        <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">PASSWORD</span>
+        <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="••••••••" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400" />
+      </label>
+      <label class="grid gap-1.5">
+        <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">ROLE</span>
+        <select name="role" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400">
+          <% roles.forEach(function(role) { %>
+            <option value="<%= role %>" <%= role === "SALES" ? "selected" : "" %>><%= role %></option>
+          <% }) %>
+        </select>
+      </label>
+      <button type="submit" class="self-end rounded-pill bg-orange-500 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400">Create member</button>
+    </form>
+  </details>
+
+  <div class="overflow-x-auto rounded-[20px] border border-admin-border bg-admin-panel">
+    <table class="w-full min-w-[720px] border-collapse text-left text-[14px]">
+      <thead>
+        <tr class="border-b border-admin-border text-[11px] font-mono tracking-[0.08em] text-admin-muted">
+          <th class="px-5 py-3 font-medium">Member</th>
+          <th class="px-5 py-3 font-medium">Role</th>
+          <th class="px-5 py-3 font-medium">Last active</th>
+          <th class="px-5 py-3 font-medium"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% members.forEach(function(member) { %>
+          <tr class="border-b border-admin-border last:border-0">
+            <td class="px-5 py-3.5">
+              <div class="flex items-center gap-3">
+                <span class="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-orange-500 text-[12px] font-semibold text-white"><%= (member.name || member.email).charAt(0).toUpperCase() %></span>
+                <div class="min-w-0">
+                  <p class="truncate font-medium text-admin-text">
+                    <%= member.name || member.email %>
+                    <% if (member.id === currentUser.id) { %><span class="ml-1.5 text-[12px] font-normal text-admin-muted">(you)</span><% } %>
+                  </p>
+                  <p class="truncate text-[12px] text-admin-muted"><%= member.email %></p>
+                </div>
+              </div>
+            </td>
+            <td class="px-5 py-3.5">
+              <form method="post" action="/admin/team/<%= member.id %>/role">
+                <select name="role" onchange="this.form.submit()" class="rounded-input border border-admin-border bg-admin-bg px-2.5 py-1.5 text-[13px] text-admin-text outline-none focus:border-orange-400">
+                  <% roles.forEach(function(role) { %>
+                    <option value="<%= role %>" <%= role === member.role ? "selected" : "" %>><%= role %></option>
+                  <% }) %>
+                </select>
+              </form>
+            </td>
+            <td class="px-5 py-3.5 text-admin-muted">
+              <% if (member.lastActiveAt) { %>
+                <%= new Date(member.lastActiveAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) %>
+              <% } else { %>
+                <%= member.acceptedAt ? "Never signed in" : "Invited — pending" %>
+              <% } %>
+            </td>
+            <td class="px-5 py-3.5 text-right">
+              <form method="post" action="/admin/team/<%= member.id %>/remove" onsubmit="return confirm('Remove <%= (member.name || member.email).replace(/'/g, '') %> from the team?')">
+                <button type="submit" aria-label="Remove <%= member.name || member.email %>" class="rounded-[8px] px-2 py-1 text-admin-muted transition-colors hover:text-orange-500">✕</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>

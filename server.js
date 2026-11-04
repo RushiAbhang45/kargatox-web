@@ -1,10 +1,22 @@
 const path = require("path");
 const express = require("express");
 
+// Local dev only — Vercel injects env vars directly, and there's no .env file in that
+// environment for this to find (it's gitignored), so this is a silent no-op there.
+if (!process.env.VERCEL) {
+  try {
+    require("dotenv").config({ path: path.join(__dirname, ".env") });
+  } catch {
+    // dotenv not installed (e.g. a fresh clone before `npm install`) — fine, just
+    // means local dev won't have DATABASE_URL/AUTH_SECRET until it's added.
+  }
+}
+
 const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.use(express.urlencoded({ extended: true }));
 
 // EJS templates rendered via res.render() don't close over this module's `require` —
 // shared, request-independent data the partials need (nav links, service pages) goes
@@ -29,11 +41,11 @@ app.locals.LOGO_URL = seoData.LOGO_URL;
 // build-static.js itself scrapes this server, making "regenerate the static output"
 // silently re-write the same stale content back to itself. Static stays mounted for
 // genuine assets (/css, /js, /images, /favicon.ico) that have no matching route.
+app.use("/admin", require("./routes/admin"));
 app.use("/", require("./routes/site"));
 app.use(express.static(path.join(__dirname, "public")));
 // Later phases mount:
 // app.use("/api", require("./routes/api"));
-// app.use("/admin", require("./routes/admin"));
 
 app.use((req, res) => {
   res.status(404).send("Not found");

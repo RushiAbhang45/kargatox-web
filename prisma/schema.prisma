@@ -1,0 +1,27 @@
+// Minimal schema — only the User model, matching the real columns on the shared
+// Postgres database (same DB legacy-nextjs-app/prisma/schema.prisma describes in
+// full, including Account/Session/Enquiry/Post etc.). This app only ever reads/
+// writes User rows for the admin Team panel, so declaring just that model keeps
+// `prisma generate` fast and this file easy to read — Prisma doesn't require every
+// column/table in the database to be declared, only the ones a query touches.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String?
+  email        String    @unique
+  role         String    @default("SALES") // OWNER | ADMIN | EDITOR | SALES
+  password     String?
+  createdAt    DateTime  @default(now())
+  invitedAt    DateTime?
+  acceptedAt   DateTime?
+  lastActiveAt DateTime?
+}
