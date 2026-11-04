@@ -25,6 +25,15 @@ export const metadata: Metadata = {
   title: "Kargatox — Strategy, Research & Growth Marketing",
   description:
     "Kargatox helps founders and leadership teams understand their market, decode their customers, and turn that insight into campaigns that move revenue — across India.",
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    // src/app/favicon.ico (Next.js's file-convention route) already serves /favicon.ico.
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

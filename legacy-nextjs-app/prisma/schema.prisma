@@ -90,11 +90,11 @@ model User {
   // flow would — see src/lib/password-auth.ts.
   password      String?
   createdAt     DateTime  @default(now())
-  // Team invite flow (src/app/admin/(protected)/team/). invitedAt is set when
-  // an OWNER/ADMIN sends an invite (the row is created with no password yet);
-  // acceptedAt is set once the invitee sets a password via
-  // src/app/admin/accept-invite/. Both null for users created by
-  // `npm run db:seed` / `admin:set-password` directly, not through an invite.
+  // Team invite flow (src/app/admin/(protected)/team/). invitedAt and
+  // acceptedAt are both set when an OWNER/ADMIN creates the member (see
+  // inviteMember() in team/actions.ts) — there's no separate accept step.
+  // Both null for users created by `npm run db:seed` / `admin:set-password`
+  // directly, not through this flow.
   invitedAt     DateTime?
   acceptedAt    DateTime?
   // Updated on every successful password sign-in (src/lib/password-auth.ts's

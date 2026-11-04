@@ -57,11 +57,9 @@ export async function inviteMember(formData: FormData): Promise<ActionResult> {
     return { ok: false, error: "That email is already a team member" };
   }
 
-  // The admin sets the password directly (unlike the older accept-invite
-  // flow still served at src/app/admin/accept-invite/ for any invite created
-  // before this change) — no verification token, no email dependency to
-  // make the account usable; setting acceptedAt here is what moves the
-  // member out of TeamView's "Invited — pending" state.
+  // The admin sets the password directly — no verification token, no email
+  // dependency to make the account usable; setting acceptedAt here is what
+  // moves the member out of TeamView's "Invited — pending" state.
   const hash = await hashPassword(password);
   await prisma.user.create({
     data: { name, email, role, password: hash, invitedAt: new Date(), acceptedAt: new Date() },
@@ -91,16 +89,8 @@ export async function updateMemberRole(userId: string, role: Role): Promise<Acti
     return { ok: false, error: "Invalid role" };
   }
 
-  // Owner is a single, seeded role (see prisma/schema.prisma's User model) —
-  // block both changing it away from and promoting another member into it.
-  if (role === "OWNER") {
-    return { ok: false, error: "Can't promote a member to Owner" };
-  }
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "Member not found" };
-  if (target.role === "OWNER") {
-    return { ok: false, error: "Can't change the Owner's role" };
-  }
 
   await prisma.user.update({ where: { id: userId }, data: { role } });
   revalidatePath("/admin/team");
@@ -112,10 +102,6 @@ export async function removeMember(userId: string): Promise<ActionResult> {
 
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "Member not found" };
-  // README: "The Owner cannot be removed."
-  if (target.role === "OWNER") {
-    return { ok: false, error: "The Owner can't be removed" };
-  }
 
   await prisma.user.delete({ where: { id: userId } });
   revalidatePath("/admin/team");

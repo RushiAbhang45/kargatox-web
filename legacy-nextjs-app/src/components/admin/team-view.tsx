@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useAdminToast } from "@/components/admin/toast";
-import { INVITE_ROLE_OPTIONS } from "@/lib/team-schema";
-import type { Role } from "@/lib/roles";
+import { ROLES, type Role } from "@/lib/roles";
 import { inviteMember, removeMember, updateMemberRole } from "@/app/admin/(protected)/team/actions";
 
 const MAX_SEATS = 5;
@@ -129,7 +128,7 @@ export function TeamView({ members, currentUserId }: { members: Member[]; curren
               defaultValue="SALES"
               className="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400"
             >
-              {INVITE_ROLE_OPTIONS.map((role) => (
+              {ROLES.map((role) => (
                 <option key={role} value={role}>
                   {role}
                 </option>
@@ -157,61 +156,52 @@ export function TeamView({ members, currentUserId }: { members: Member[]; curren
             </tr>
           </thead>
           <tbody>
-            {members.map((member) => {
-              const isOwner = member.role === "OWNER";
-              return (
-                <tr key={member.id} className="border-b border-admin-border last:border-0">
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-orange-500 text-[12px] font-semibold text-white">
-                        {(member.name ?? member.email).charAt(0).toUpperCase()}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-admin-text">
-                          {member.name ?? member.email}
-                          {member.id === currentUserId && (
-                            <span className="ml-1.5 text-[12px] font-normal text-admin-muted">(you)</span>
-                          )}
-                        </p>
-                        <p className="truncate text-[12px] text-admin-muted">{member.email}</p>
-                      </div>
+            {members.map((member) => (
+              <tr key={member.id} className="border-b border-admin-border last:border-0">
+                <td className="px-5 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-orange-500 text-[12px] font-semibold text-white">
+                      {(member.name ?? member.email).charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-admin-text">
+                        {member.name ?? member.email}
+                        {member.id === currentUserId && (
+                          <span className="ml-1.5 text-[12px] font-normal text-admin-muted">(you)</span>
+                        )}
+                      </p>
+                      <p className="truncate text-[12px] text-admin-muted">{member.email}</p>
                     </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    {isOwner ? (
-                      <span className="font-mono text-[12px] tracking-[0.06em] text-admin-muted">OWNER</span>
-                    ) : (
-                      <select
-                        defaultValue={member.role}
-                        disabled={isPending}
-                        onChange={(e) => handleRoleChange(member.id, e.target.value as Role)}
-                        className="rounded-input border border-admin-border bg-admin-bg px-2.5 py-1.5 text-[13px] text-admin-text outline-none focus:border-orange-400"
-                      >
-                        {INVITE_ROLE_OPTIONS.map((role) => (
-                          <option key={role} value={role}>
-                            {role}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </td>
-                  <td className="px-5 py-3.5 text-admin-muted">{formatLastActive(member)}</td>
-                  <td className="px-5 py-3.5 text-right">
-                    {!isOwner && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemove(member)}
-                        disabled={isPending}
-                        aria-label={`Remove ${member.name ?? member.email}`}
-                        className="rounded-[8px] px-2 py-1 text-admin-muted transition-colors hover:text-orange-500 disabled:opacity-50"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
+                  </div>
+                </td>
+                <td className="px-5 py-3.5">
+                  <select
+                    defaultValue={member.role}
+                    disabled={isPending}
+                    onChange={(e) => handleRoleChange(member.id, e.target.value as Role)}
+                    className="rounded-input border border-admin-border bg-admin-bg px-2.5 py-1.5 text-[13px] text-admin-text outline-none focus:border-orange-400"
+                  >
+                    {ROLES.map((role) => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="px-5 py-3.5 text-admin-muted">{formatLastActive(member)}</td>
+                <td className="px-5 py-3.5 text-right">
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(member)}
+                    disabled={isPending}
+                    aria-label={`Remove ${member.name ?? member.email}`}
+                    className="rounded-[8px] px-2 py-1 text-admin-muted transition-colors hover:text-orange-500 disabled:opacity-50"
+                  >
+                    ✕
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
