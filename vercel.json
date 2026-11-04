@@ -1,7 +1,13 @@
 {
-  "cleanUrls": true,
-  "outputDirectory": "public",
-  "framework": null,
-  "buildCommand": null,
-  "installCommand": null
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": { "includeFiles": ["public/**", "views/**"] }
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "server.js" }
+  ]
 }
