@@ -1,0 +1,101 @@
+<%
+// Ported from legacy-nextjs-app/src/app/admin/(protected)/blog/{[id]/page.tsx,new/page.tsx,
+// actions.ts}, shared between /admin/blog/new and /admin/blog/:id.
+// Needs from routes/admin.js: currentUser, post (null for new, else Post row — or a
+// partial {id, ...input} echoed back on a validation error), authors, types, typeLabel,
+// error. Reads SITE_URL from app.locals (server.js) for the search-result preview card.
+// `body` is plain HTML/text in a textarea, not legacy's Tiptap JSON — see
+// lib/post-schema.js's header comment.
+const p = typeof post !== "undefined" && post ? post : {};
+const isNew = !p.id;
+%>
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title><%= isNew ? "New post" : "Edit post" %> — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+<script defer src="/js/admin.js"></script>
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin/blog', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col gap-[18px] px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[1000px] gap-[18px]">
+    <a href="/admin/blog" class="text-[13px] text-admin-muted hover:text-orange-500">← All posts</a>
+
+    <% if (error) { %>
+      <p class="rounded-input border border-orange-400/40 bg-orange-400/10 px-3.5 py-3 text-[13px] text-orange-600"><%= error %></p>
+    <% } %>
+
+    <form method="post" action="<%= isNew ? '/admin/blog' : '/admin/blog/' + p.id %>" data-post-editor data-site-url="<%= SITE_URL %>" class="grid gap-[18px] lg:grid-cols-[1fr_320px]">
+      <div class="grid gap-[14px] rounded-[20px] border border-admin-border bg-admin-panel p-6">
+        <input data-post-title name="title" value="<%= p.title || '' %>" placeholder="Post title" required class="rounded-input border border-admin-border bg-admin-bg px-3.5 py-3 font-display text-[22px] font-semibold text-admin-text outline-none focus:border-orange-400" />
+        <textarea name="excerpt" rows="2" placeholder="Short excerpt" class="rounded-input border border-admin-border bg-admin-bg px-3.5 py-2.5 text-[14px] text-admin-text outline-none focus:border-orange-400"><%= p.excerpt || '' %></textarea>
+        <textarea name="body" rows="16" placeholder="Post body (HTML)" class="rounded-input border border-admin-border bg-admin-bg px-3.5 py-2.5 font-mono text-[13px] text-admin-text outline-none focus:border-orange-400"><%= p.body || '' %></textarea>
+      </div>
+
+      <div class="grid gap-[14px]">
+        <div class="grid gap-3 rounded-[20px] border border-admin-border bg-admin-panel p-5">
+          <label class="grid gap-1.5">
+            <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">TYPE</span>
+            <select name="type" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400">
+              <% types.forEach(function(t) { %>
+                <option value="<%= t %>" <%= p.type === t ? "selected" : "" %>><%= typeLabel[t] %></option>
+              <% }) %>
+            </select>
+          </label>
+
+          <label class="grid gap-1.5">
+            <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">AUTHOR</span>
+            <select name="authorId" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400">
+              <option value="">—</option>
+              <% authors.forEach(function(a) { %>
+                <option value="<%= a.id %>" <%= (p.authorId || currentUser.id) === a.id ? "selected" : "" %>><%= a.name || a.email %></option>
+              <% }) %>
+            </select>
+          </label>
+
+          <label class="grid gap-1.5">
+            <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">URL SLUG</span>
+            <input data-post-slug name="slug" value="<%= p.slug || '' %>" placeholder="post-url-slug" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 font-mono text-[13px] text-admin-text outline-none focus:border-orange-400" />
+          </label>
+
+          <label class="grid gap-1.5">
+            <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">SEO TITLE</span>
+            <input data-post-seo-title name="seoTitle" value="<%= p.seoTitle || '' %>" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400" />
+          </label>
+
+          <label class="grid gap-1.5">
+            <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">META DESCRIPTION</span>
+            <textarea data-post-seo-description name="seoDescription" rows="3" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400"><%= p.seoDescription || '' %></textarea>
+          </label>
+        </div>
+
+        <div class="grid gap-1 rounded-[20px] border border-admin-border bg-admin-panel p-4">
+          <p class="mb-1.5 font-mono text-[10px] tracking-[0.08em] text-admin-muted">SEARCH PREVIEW</p>
+          <p data-preview-title class="truncate text-[16px] text-blue-600"></p>
+          <p data-preview-url class="truncate text-[12px] text-success"></p>
+          <p data-preview-description class="text-[12px] text-admin-muted"></p>
+        </div>
+
+        <div class="flex flex-wrap gap-2.5">
+          <button type="submit" name="status" value="DRAFT" class="rounded-pill border border-admin-border px-5 py-2.5 text-[13px] font-semibold text-admin-text transition-colors hover:border-orange-400">Save draft</button>
+          <button type="submit" name="status" value="PUBLISHED" class="rounded-pill bg-orange-500 px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400">Publish</button>
+        </div>
+      </div>
+    </form>
+
+    <% if (!isNew) { %>
+      <form method="post" action="/admin/blog/<%= p.id %>/delete" onsubmit="return confirm('Delete this post? This can\'t be undone.')" class="justify-self-start">
+        <button type="submit" class="text-[13px] text-admin-muted underline-offset-2 hover:text-orange-500 hover:underline">Delete post</button>
+      </form>
+    <% } %>
+  </div>
+</main>
+</div>
+</body>
+</html>

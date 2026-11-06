@@ -1,0 +1,141 @@
+<%
+// Ported from legacy-nextjs-app/src/app/admin/(protected)/enquiries/{page.tsx,actions.ts}.
+// Needs from routes/admin.js: currentUser, enquiries (filtered list), users (assignee
+// options), selected (full Enquiry + messages, or null), statusFilter, statusCounts,
+// totalCount, statuses, statusLabel, statusColor.
+// No email send on reply — see routes/admin.js's header comment on this section.
+%>
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enquiries — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+<script defer src="/js/admin.js"></script>
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin/enquiries', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col gap-[18px] px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[1240px] gap-[18px]">
+    <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Enquiries</h1>
+
+    <div class="flex flex-wrap gap-2">
+      <a href="/admin/enquiries" class="rounded-pill border px-3.5 py-1.5 text-[13px] font-medium transition-colors <%= !statusFilter ? 'border-orange-500 bg-orange-500 text-white' : 'border-admin-border text-admin-muted hover:text-admin-text' %>">All <span class="opacity-70">(<%= totalCount %>)</span></a>
+      <% statuses.forEach(function(s) { %>
+        <a href="/admin/enquiries?status=<%= s %>" class="rounded-pill border px-3.5 py-1.5 text-[13px] font-medium transition-colors <%= statusFilter === s ? 'border-orange-500 bg-orange-500 text-white' : 'border-admin-border text-admin-muted hover:text-admin-text' %>"><%= statusLabel[s] %> <span class="opacity-70">(<%= statusCounts[s] || 0 %>)</span></a>
+      <% }) %>
+    </div>
+
+    <div class="flex items-start gap-[18px]">
+      <div class="min-w-0 flex-1 overflow-x-auto rounded-[20px] border border-admin-border bg-admin-panel">
+        <table class="w-full min-w-[640px] border-collapse text-left text-[14px]">
+          <thead>
+            <tr class="border-b border-admin-border text-[11px] font-mono tracking-[0.08em] text-admin-muted">
+              <th class="px-5 py-3 font-medium">Contact</th>
+              <th class="px-5 py-3 font-medium">Service</th>
+              <th class="px-5 py-3 font-medium">Status</th>
+              <th class="px-5 py-3 font-medium">Owner</th>
+              <th class="px-5 py-3 font-medium">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (enquiries.length === 0) { %>
+              <tr><td colspan="5" class="px-5 py-8 text-center text-admin-muted">No enquiries<%= statusFilter ? ' with status "' + statusLabel[statusFilter] + '"' : '' %> yet.</td></tr>
+            <% } %>
+            <% enquiries.forEach(function(e) { %>
+              <tr class="cursor-pointer border-b border-admin-border last:border-0 transition-colors hover:bg-admin-soft <%= selected && selected.id === e.id ? 'bg-admin-soft' : '' %>" onclick="location.href='/admin/enquiries?id=<%= e.id %><%= statusFilter ? '&status=' + statusFilter : '' %>'">
+                <td class="px-5 py-3.5">
+                  <p class="font-medium text-admin-text"><%= e.name %><% if (e.source === "Revenue check") { %> <span class="ml-1.5 rounded-pill bg-chip-blue px-2 py-0.5 text-[10px] font-semibold tracking-[0.04em] text-blue-700">CHECK</span><% } %></p>
+                  <p class="truncate text-[12px] text-admin-muted"><%= [e.company, e.email].filter(Boolean).join(' · ') %></p>
+                </td>
+                <td class="px-5 py-3.5 text-admin-muted"><%= e.service %></td>
+                <td class="px-5 py-3.5"><span class="rounded-pill <%= statusColor[e.status] %> px-2.5 py-1 text-[11px] font-semibold text-white"><%= statusLabel[e.status] %></span></td>
+                <td class="px-5 py-3.5 text-admin-muted"><%= e.owner ? (e.owner.name || e.owner.email) : "Unassigned" %></td>
+                <td class="px-5 py-3.5 text-admin-muted"><%= new Date(e.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if (selected) { %>
+        <div class="w-[420px] flex-none rounded-[20px] border border-admin-border bg-admin-panel p-5">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="truncate font-display text-[18px] font-semibold text-admin-text"><%= selected.name %></p>
+              <p class="truncate text-[12px] text-admin-muted"><%= [selected.company, selected.source].filter(Boolean).join(' · ') %></p>
+            </div>
+            <a href="/admin/enquiries<%= statusFilter ? '?status=' + statusFilter : '' %>" aria-label="Close" class="rounded-[8px] px-2 py-1 text-admin-muted transition-colors hover:text-orange-500">✕</a>
+          </div>
+
+          <dl class="mt-4 grid grid-cols-2 gap-3 text-[13px]">
+            <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">EMAIL</dt><dd class="truncate text-admin-text"><%= selected.email %></dd></div>
+            <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">PHONE</dt><dd class="text-admin-text"><%= selected.phone || "—" %></dd></div>
+            <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">SERVICE</dt><dd class="text-admin-text"><%= selected.service %></dd></div>
+            <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">RECEIVED</dt><dd class="text-admin-text"><%= new Date(selected.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) %></dd></div>
+          </dl>
+
+          <div class="mt-4">
+            <p class="mb-2 font-mono text-[10px] tracking-[0.08em] text-admin-muted">PIPELINE</p>
+            <div class="flex flex-wrap gap-1.5">
+              <% statuses.forEach(function(s) { %>
+                <form method="post" action="/admin/enquiries/<%= selected.id %>/status">
+                  <input type="hidden" name="status" value="<%= s %>" />
+                  <button type="submit" class="rounded-pill px-2.5 py-1 text-[11px] font-semibold transition-colors <%= selected.status === s ? statusColor[s] + ' text-white' : 'border border-admin-border text-admin-muted hover:text-admin-text' %>"><%= statusLabel[s] %></button>
+                </form>
+              <% }) %>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <p class="mb-1.5 font-mono text-[10px] tracking-[0.08em] text-admin-muted">ASSIGNED TO</p>
+            <form method="post" action="/admin/enquiries/<%= selected.id %>/assign">
+              <select name="ownerId" onchange="this.form.submit()" class="w-full rounded-input border border-admin-border bg-admin-bg px-2.5 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400">
+                <option value="">Unassigned</option>
+                <% users.forEach(function(u) { %>
+                  <option value="<%= u.id %>" <%= selected.owner && selected.owner.id === u.id ? "selected" : "" %>><%= u.name || u.email %></option>
+                <% }) %>
+              </select>
+            </form>
+          </div>
+
+          <div class="mt-4">
+            <p class="mb-2 font-mono text-[10px] tracking-[0.08em] text-admin-muted">CONVERSATION</p>
+            <div class="grid max-h-[260px] gap-2 overflow-y-auto">
+              <div class="rounded-xl bg-admin-soft px-3 py-2.5 text-[13px] text-admin-text"><%= selected.details %></div>
+              <% selected.messages.forEach(function(m) { %>
+                <div class="rounded-xl border border-admin-border px-3 py-2.5 text-[13px] text-admin-text">
+                  <p class="mb-1 text-[11px] text-admin-muted"><%= m.sender ? (m.sender.name || m.sender.email) : "Team" %> · <%= new Date(m.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short" }) %></p>
+                  <%= m.body %>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+
+          <form method="post" action="/admin/enquiries/<%= selected.id %>/reply" class="mt-4 grid gap-2">
+            <p class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">REPLY</p>
+            <div class="flex flex-wrap gap-1.5">
+              <% const firstName = (selected.name || "").split(" ")[0] || selected.name; %>
+              <% [
+                ["Reviewing", "Hi " + firstName + ",\n\nThanks for reaching out — we're reviewing your requirement and will follow up shortly.\n\n— Kargatox"],
+                ["Request a call", "Hi " + firstName + ",\n\nThanks for your enquiry. Could we set up a quick call this week to understand your requirement better?\n\n— Kargatox"],
+                ["Send proposal", "Hi " + firstName + ",\n\nThanks for your patience — please find our proposal below.\n\n— Kargatox"],
+              ].forEach(function(t) { %>
+                <button type="button" data-fill-template="<%= t[1] %>" data-fill-target="reply-body" class="rounded-pill border border-admin-border px-3 py-1.5 text-[12px] font-medium text-admin-muted transition-colors hover:border-orange-400 hover:text-admin-text"><%= t[0] %></button>
+              <% }) %>
+            </div>
+            <textarea id="reply-body" name="body" rows="4" placeholder="Write a reply…" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400"></textarea>
+            <button type="submit" class="justify-self-start rounded-pill bg-orange-500 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400">Send reply</button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+</div>
+</body>
+</html>

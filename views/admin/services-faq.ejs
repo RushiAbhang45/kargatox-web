@@ -1,0 +1,121 @@
+<%
+// Ported from legacy-nextjs-app/src/app/admin/(protected)/services-faq/{page.tsx,actions.ts}.
+// Needs from routes/admin.js: currentUser, services (SERVICES array: id/title/items),
+// subServicesByKey ({[serviceId]: {title,body,link}[]}), faqItems ({question,answer}[]),
+// tab ("services"|"faq"), saved (bool).
+// One combined <form> posts both tabs' rows at once (hidden via the inactive tab's
+// `hidden` class, not unmounted) — a full delete+recreate per section on the server,
+// not a diff, same as the legacy action. Reorder/add/remove needs public/js/admin.js's
+// repeater behavior since there's no page reload per row.
+%>
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Services & FAQ — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+<script defer src="/js/admin.js"></script>
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin/services-faq', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col gap-[18px] px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[900px] gap-[18px]">
+    <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Services &amp; FAQ</h1>
+
+    <% if (saved) { %>
+      <p class="rounded-input border border-success/40 bg-success/10 px-3.5 py-3 text-[13px] text-success">Changes saved.</p>
+    <% } %>
+
+    <form method="post" action="/admin/services-faq" data-tabs class="grid gap-[18px]">
+      <input type="hidden" name="activeTab" value="<%= tab %>" data-active-tab-input />
+
+      <div class="flex gap-2">
+        <button type="button" data-tab-button="services" <%= tab === "services" ? "data-active" : "" %> class="rounded-pill border border-admin-border px-4 py-2 text-[13px] font-semibold text-admin-muted transition-colors data-[active]:border-orange-500 data-[active]:bg-orange-500 data-[active]:text-white">Services</button>
+        <button type="button" data-tab-button="faq" <%= tab === "faq" ? "data-active" : "" %> class="rounded-pill border border-admin-border px-4 py-2 text-[13px] font-semibold text-admin-muted transition-colors data-[active]:border-orange-500 data-[active]:bg-orange-500 data-[active]:text-white">FAQ</button>
+      </div>
+
+      <div data-tab-panel="services" class="grid gap-[18px] <%= tab === "services" ? "" : "hidden" %>">
+        <% services.forEach(function(svc) { %>
+          <div data-repeater data-repeater-name="subServices[<%= svc.id %>]" class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+            <h2 class="mb-3 font-display text-[16px] font-semibold text-admin-text"><%= svc.title %></h2>
+
+            <div data-repeater-rows class="grid gap-3">
+              <% subServicesByKey[svc.id].forEach(function(item, i) { %>
+                <div class="grid gap-2 rounded-[14px] border border-admin-border p-3 sm:grid-cols-[1fr_1.4fr_160px_auto] sm:items-start">
+                  <input data-field="title" name="subServices[<%= svc.id %>][<%= i %>][title]" value="<%= item.title %>" placeholder="Title" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400" />
+                  <textarea data-field="body" name="subServices[<%= svc.id %>][<%= i %>][body]" rows="2" placeholder="Body" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400"><%= item.body %></textarea>
+                  <input data-field="link" name="subServices[<%= svc.id %>][<%= i %>][link]" value="<%= item.link %>" placeholder="Link text" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400" />
+                  <div class="flex gap-1">
+                    <button type="button" data-row-up aria-label="Move up" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-admin-text">↑</button>
+                    <button type="button" data-row-down aria-label="Move down" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-admin-text">↓</button>
+                    <button type="button" data-row-remove aria-label="Remove" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-orange-500">✕</button>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+
+            <template data-repeater-template>
+              <div class="grid gap-2 rounded-[14px] border border-admin-border p-3 sm:grid-cols-[1fr_1.4fr_160px_auto] sm:items-start">
+                <input data-field="title" placeholder="Title" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400" />
+                <textarea data-field="body" rows="2" placeholder="Body" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400"></textarea>
+                <input data-field="link" placeholder="Link text" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400" />
+                <div class="flex gap-1">
+                  <button type="button" data-row-up aria-label="Move up" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-admin-text">↑</button>
+                  <button type="button" data-row-down aria-label="Move down" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-admin-text">↓</button>
+                  <button type="button" data-row-remove aria-label="Remove" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-orange-500">✕</button>
+                </div>
+              </div>
+            </template>
+
+            <button type="button" data-repeater-add class="mt-3 rounded-pill border border-admin-border px-3.5 py-1.5 text-[12px] font-semibold text-admin-muted transition-colors hover:border-orange-400 hover:text-admin-text">+ Add sub-service</button>
+          </div>
+        <% }) %>
+      </div>
+
+      <div data-tab-panel="faq" class="grid gap-[18px] <%= tab === "faq" ? "" : "hidden" %>">
+        <div data-repeater data-repeater-name="faqItems" class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+          <h2 class="mb-3 font-display text-[16px] font-semibold text-admin-text">FAQ</h2>
+
+          <div data-repeater-rows class="grid gap-3">
+            <% faqItems.forEach(function(item, i) { %>
+              <div class="grid gap-2 rounded-[14px] border border-admin-border p-3 sm:grid-cols-[1fr_1.6fr_auto] sm:items-start">
+                <input data-field="question" name="faqItems[<%= i %>][question]" value="<%= item.question %>" placeholder="Question" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400" />
+                <textarea data-field="answer" name="faqItems[<%= i %>][answer]" rows="2" placeholder="Answer" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400"><%= item.answer %></textarea>
+                <div class="flex gap-1">
+                  <button type="button" data-row-up aria-label="Move up" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-admin-text">↑</button>
+                  <button type="button" data-row-down aria-label="Move down" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-admin-text">↓</button>
+                  <button type="button" data-row-remove aria-label="Remove" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-orange-500">✕</button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+
+          <template data-repeater-template>
+            <div class="grid gap-2 rounded-[14px] border border-admin-border p-3 sm:grid-cols-[1fr_1.6fr_auto] sm:items-start">
+              <input data-field="question" placeholder="Question" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400" />
+              <textarea data-field="answer" rows="2" placeholder="Answer" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[13px] text-admin-text outline-none focus:border-orange-400"></textarea>
+              <div class="flex gap-1">
+                <button type="button" data-row-up aria-label="Move up" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-admin-text">↑</button>
+                <button type="button" data-row-down aria-label="Move down" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-admin-text">↓</button>
+                <button type="button" data-row-remove aria-label="Remove" class="rounded-[8px] px-2 py-1.5 text-admin-muted transition-colors hover:text-orange-500">✕</button>
+              </div>
+            </div>
+          </template>
+
+          <button type="button" data-repeater-add class="mt-3 rounded-pill border border-admin-border px-3.5 py-1.5 text-[12px] font-semibold text-admin-muted transition-colors hover:border-orange-400 hover:text-admin-text">+ Add FAQ item</button>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="rounded-pill bg-orange-500 px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400">Save changes</button>
+      </div>
+    </form>
+  </div>
+</main>
+</div>
+</body>
+</html>

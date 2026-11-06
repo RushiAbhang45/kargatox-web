@@ -17,32 +17,40 @@ real source file to diff against, not a guess.
 CLI pipeline, and all 11 public page templates (home, services, how-we-work, faq, contact, the 6
 service-landing pages via one shared template, plus placeholder blog routes) rendering hardcoded content,
 no database. Phase 10 is also mostly done (commit `afdb1c0`, see `public/js/site.js`). After that, the
-site's deploy target changed to a prerendered static build (commit `775b6fd`, not itself phase-numbered —
-see "Static prerender / Vercel deploy" in Architecture below). The remaining phases are tracked only as
-inline code comments (grep for `Phase \d`), not a separate plan doc:
-- **Phase 2** — wire a database back in; swap the hardcoded `PAGE_DEFAULTS`/`FAQ_DEFAULTS`/sub-service
-  content in `routes/site.js` for a real DB-backed merge (the "default until a row exists" pattern the
-  legacy app used). Note this would also need to feed the static-prerender script (see Architecture) or
-  that script's output goes stale against the DB.
+site's deploy target briefly changed to a prerendered static build (commit `775b6fd`), then changed back
+to a live Node function (commit `dcdc668`) once the admin panel below needed real server-side DB/session
+handling — see "Deploy target: live Node function on Vercel" in Architecture below; don't trust the
+static-prerender framing as current. The remaining phases are tracked only as inline code comments (grep
+for `Phase \d`), not a separate plan doc:
+- **Phase 2** — wire a database back in **for the public site**; swap the hardcoded
+  `PAGE_DEFAULTS`/`FAQ_DEFAULTS`/sub-service content in `routes/site.js` for a real DB-backed merge (the
+  "default until a row exists" pattern the legacy app used). The DB this would read from already exists
+  (see "Admin panel, auth, and database" below) — `routes/site.js` just doesn't query it yet. Note this
+  would also need to feed the static-prerender script (see Architecture) or that script's output goes
+  stale against the DB.
 - **Phase 3** — `POST /api/enquiries`: real submit handling for the Contact form, including the
   honeypot/prefill logic currently only sketched as static markup in `views/site/contact.ejs`. Move
   `SERVICE_OPTIONS` (currently inlined in that template) into a shared `lib/enquiry-schema.js` once this
-  lands, so the API route and the `<select>` read from one place.
+  lands, so the API route and the `<select>` read from one place. The admin Dashboard already reads
+  `Enquiry` rows (see below) but will show all-zero counts until this phase actually creates any.
 - **Phase 8** — blog & case studies rendering (`views/site/blog-list.ejs` / `blog-post.ejs` are placeholder
-  routes today).
+  routes today; the admin sidebar's "Blog & case studies" link is also still a placeholder, see below).
 - **Phase 10 (mostly done, one piece left)** — `public/js/site.js` wires the mobile nav drawer toggle
   (`site-header.ejs`'s `#mobile-menu-toggle`/`#mobile-menu`), the FAQ accordion's click-to-toggle
   (`faq-accordion.ejs`'s `data-faq-trigger`/`data-faq-panel` hooks), and the scramble-text effect
   (`data-scramble-reveal` attributes). **Not done:** `numbered-rows.ejs`'s grow-in underline animation —
   its own header comment still says the underline "renders at its final (fully grown) width" and the
   grow-in itself remains unbuilt; don't assume it's covered by the rest of Phase 10 landing.
-- Phases 4–7 and 9 (auth/admin, revenue-check API, admin panels, team/settings, SEO) aren't ported yet and
-  have no phase-numbered comments pointing at them — treat the legacy app's equivalent sections as the
-  spec when that work starts, the same way Phase 1–3/8/10 above do.
+- **Phases 4–7/9, partially started** — a minimal admin panel (login, Dashboard, Team, Settings — commit
+  `5a6b9d0`) now exists with a real Postgres/Prisma DB and its own cookie-based auth, built directly into
+  this app rather than ported from `legacy-nextjs-app/`. See "Admin panel, auth, and database" below for
+  what's real vs. still a placeholder link — Enquiries, Revenue checks, Pages, and Services & FAQ have no
+  backing routes yet, so treat the legacy app's equivalent sections as the spec for those, same as
+  Phase 1–3/8/10 above.
 
 Don't assume feature parity with `legacy-nextjs-app/` just because this is "the current app" — anything
-not listed as done above (DB content, the enquiries API, revenue-check quiz, admin panel, auth, blog
-rendering, the one remaining animation) simply isn't built yet in this rewrite.
+not listed as done above (DB-backed *public-site* content, the enquiries API, revenue-check quiz, most of
+the admin panel, blog rendering, the one remaining animation) simply isn't built yet in this rewrite.
 
 ## Commands
 
@@ -57,12 +65,20 @@ rendering, the one remaining animation) simply isn't built yet in this rewrite.
   `public/<slug>.html` (plus a static `public/404.html`). These generated HTML files **are committed** — re-run
   this (or `npm run build`) and commit the diff after any route/content/template change, or the deployed
   static output silently drifts from what `npm run dev` renders.
-- `npm run build` — runs `build:css` then `build:static`; this is the full build step before a deploy.
+- `npm run build` — runs `build:css` then `build:static`. Still worth running after a public-page content/
+  template change (see the deploy-target note in Architecture for why this no longer gates production the
+  way it used to), but it is **not** the deploy mechanism anymore.
+- `postinstall` (`prisma generate`) runs automatically on `npm install` — needed for `@prisma/client` to
+  exist at all; there's no `prisma migrate`/`db:seed` script in `package.json` yet (migrations are owned
+  by `legacy-nextjs-app/`, which shares this DB — see "Admin panel, auth, and database" below).
 - No lint script and no test suite in this rewrite (the legacy app had both; neither has been re-added here).
-- No `.env` is required for Phase 1 — the app has no DB/SMTP/auth wiring yet. The committed `.env.example`
-  still documents the legacy app's Postgres/Auth.js/SMTP variables; those are **not consumed by anything in
-  this rewrite today** and only become relevant again once Phase 2+ reintroduces that wiring (check
-  `server.js`/`routes/` for actual `process.env` reads before assuming an env var does anything).
+- Public-site pages still need no `.env`. The admin panel does: `DATABASE_URL`, `DATABASE_URL_UNPOOLED`,
+  and `AUTH_SECRET` are now genuinely read (`lib/db.js`, `lib/admin-auth.js`) and required for anything
+  under `/admin` to work — `/admin/login` throws if `AUTH_SECRET` is unset. The committed `.env.example`'s
+  `SMTP_*`/`ADMIN_NOTIFY_EMAIL` block is still **not** consumed by anything here (no `lib/mailer.js` exists;
+  that comment block still literally points at `src/lib/mailer.ts`, a `legacy-nextjs-app/`-only path) —
+  check `server.js`/`routes/`/`lib/` for actual `process.env` reads before assuming any given env var does
+  something in this app.
 
 ## Architecture
 
@@ -129,21 +145,60 @@ rendering, the one remaining animation) simply isn't built yet in this rewrite.
     its display-font stand-in; if fidelity to the legacy app's rendered look matters, check which one is
     actually intended before assuming they're interchangeable. Real Clash Display/Satoshi self-hosting
     (the design handoff's actual spec) still hasn't been done in either app.
-- **No admin panel, no auth, no database, no email** exist in this rewrite yet — don't reach for
-  Prisma/Auth.js/nodemailer patterns from `legacy-nextjs-app/` as if they apply here; they're the target to
-  port *to*, in later phases, not current dependencies. (Client-side JS does now exist — `public/js/site.js`,
-  see Phase 10 above and the prerender bullet below.)
-- **Static prerender / Vercel deploy (`scripts/build-static.js`, `vercel.json`, committed `public/*.html`)**
-  — added after Phase 10 (commit `775b6fd`), this is the actual deploy mechanism and is easy to miss since
-  it's not phase-numbered. `vercel.json` sets `"outputDirectory": "public"` and `"cleanUrls": true`, so
-  Vercel serves the committed static files directly — **the Express app (`server.js`) is not run in
-  production**; it's only used locally (`npm run dev`) and as the HTTP source `build-static.js` scrapes at
-  build time. This means **every route/content/template change needs `npm run build` (or at least
-  `build:static`) re-run and its `public/*.html` diff committed**, or production keeps serving the old
-  render — there is no server-side rendering in the deployed site despite `routes/site.js`/`views/` using
-  `res.render()`. `scripts/build-static.js`'s `ROUTES` array is a hardcoded list derived from `NAV_LINKS` +
-  `SERVICE_PAGES`; a new route added to `routes/site.js` also needs an entry there or it won't get
-  prerendered. `/blog/:slug` is deliberately excluded (no real posts exist pre-Phase-8).
+- **Admin panel, auth, and database now exist** — see the dedicated section below. Prisma/bcryptjs are
+  real dependencies now (`package.json`), not legacy-only patterns to avoid; just don't assume the rest of
+  the legacy admin's feature set (Auth.js, nodemailer, enquiries pipeline, revenue-check quiz) carried over
+  too — most of it didn't, see that section for exactly what's real vs. placeholder.
+- **Deploy target: live Node function on Vercel, not the static build.** `vercel.json` now uses the
+  explicit v2 `builds`/`routes` form — `@vercel/node` on `server.js`, every path routed to it (commit
+  `dcdc668`) — after briefly trying (and reverting, commits `43575cd`/`5bbcf58`) a hybrid multi-build
+  config and, before that, a pure static deploy (`"outputDirectory": "public"`, commit `775b6fd`). The
+  live Node function was necessary once the admin panel needed real per-request DB reads and signed-cookie
+  session checks, which a static prerender can't do. **`scripts/build-static.js`'s own header comment is
+  now stale** — it still claims "Vercel deploys that folder directly, no build step"; trust `vercel.json`,
+  not that comment. In production, `server.js` behaves exactly like it does locally: its live EJS routers
+  are mounted before `express.static`, so the committed `public/*.html` files (still regenerated by
+  `npm run build:static`) are shadowed by the live render for every path that has a real route, and now
+  only actually serve as `express.static` fallback content for paths with no matching route. Keep running
+  `npm run build:css` after Tailwind/token changes regardless — `styles.css` is a static asset nothing
+  rebuilds automatically on deploy. `scripts/build-static.js`'s `ROUTES` array is a hardcoded list derived
+  from `NAV_LINKS` + `SERVICE_PAGES`; a new route added to `routes/site.js` also needs an entry there or it
+  won't get prerendered. `/blog/:slug` is deliberately excluded (no real posts exist pre-Phase-8).
+
+## Admin panel, auth, and database
+
+A minimal admin panel exists, built directly into this app (`routes/admin.js`, `views/admin/*.ejs`,
+`views/partials/admin-sidebar.ejs`, commit `5a6b9d0`) — **not** ported from `legacy-nextjs-app/`, unlike
+everything else in this rewrite. `server.js` mounts it at `/admin` before `routes/site.js`, so admin
+routes always take precedence over the public router and over `express.static`.
+
+- **Database**: `prisma/schema.prisma` is a real data model (`User`, `Enquiry`, `RevenueCheck`,
+  `EnquiryMessage`, `PageContent`, `SubService`, `FaqItem`, `Post`, `Settings`) describing a Postgres DB
+  *shared* with `legacy-nextjs-app/prisma/schema.prisma` — this app only ever reads/writes rows; migrations
+  are owned by the legacy app (there's no `prisma migrate`/`db:seed` script here, despite `.env.example`
+  mentioning `npm run db:seed` — that script doesn't exist yet). `lib/db.js` exports a `PrismaClient`
+  singleton cached on `global` so warm serverless invocations reuse one connection pool instead of opening
+  a new one per request.
+- **Auth**: `lib/admin-auth.js` is a stateless, signed-cookie session (`kx_admin_session`, HMAC-SHA256 over
+  `AUTH_SECRET`, 30-day expiry, `HttpOnly`/`SameSite=Lax`/`Secure`-when-on-Vercel) — deliberately *not*
+  Auth.js, even though it reads/writes the same `User` table the legacy app's Auth.js adapter used.
+  `routes/admin.js`'s `requireAuth` / `requireTeamAccess` / `requireSettingsAccess` middlewares gate routes
+  by session presence and by `role` (`OWNER`/`ADMIN`/`EDITOR`/`SALES` — only `OWNER`/`ADMIN` can reach Team
+  or Settings).
+- **What's actually built**: login (`GET`/`POST /admin/login`, `POST /admin/logout`), a Dashboard
+  (`GET /admin`, reading real `Enquiry` rows for 30-day/total counts and a 12-week chart — see the Phase 3
+  note above for why these currently read as zero), Team (seat-limited to `MAX_TEAM_SEATS = 5`, mirrors the
+  already-reviewed "admin sets the password directly" flow from
+  `legacy-nextjs-app/src/app/admin/(protected)/team/actions.ts`), and Settings (a `Settings` singleton row
+  for site name/notification email/auto-reply message/GA measurement id).
+- **What's still placeholder**: `views/partials/admin-sidebar.ejs` links to `/admin/enquiries`,
+  `/admin/revenue-checks`, `/admin/pages`, and `/admin/services-faq` — none of those routes exist in
+  `routes/admin.js` yet, so clicking them 404s. A link existing in the sidebar is not evidence the page
+  behind it is built — check `routes/admin.js` directly.
+- **Email is still not wired**: there's no `lib/mailer.js`. Don't assume `SMTP_*`/`ADMIN_NOTIFY_EMAIL` do
+  anything here yet (see the Commands section's `.env` note).
+- Required env for any of this to work locally: `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `AUTH_SECRET`
+  (see `.env.example`) — public-site pages still need none of it.
 
 ## Design reference material
 

@@ -1,0 +1,28 @@
+<%
+// Rendered by routes/admin.js's requireRole() when the signed-in user's role doesn't
+// have access to a section. Needs `currentUser`, `activeHref`, `title` from the route.
+%>
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title><%= title %> — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: activeHref, currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[1000px] gap-[18px]">
+    <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]"><%= title %></h1>
+    <p class="rounded-[20px] border border-admin-border bg-admin-panel px-5 py-4 text-[14px] text-admin-muted">
+      Your role (<%= currentUser.role %>) doesn't have access to <%= title %>.
+    </p>
+  </div>
+</main>
+</div>
+</body>
+</html>

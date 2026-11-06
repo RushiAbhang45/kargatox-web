@@ -1,0 +1,86 @@
+<%
+// Ported from legacy-nextjs-app/src/app/admin/(protected)/revenue-checks/page.tsx.
+// Read-only — no actions.ts exists for this section in the legacy app either.
+// Needs from routes/admin.js: currentUser, checks (RevenueCheck[] + enquiries{id}[]),
+// total, weakestPct ({leads,sales,retention} -> 0-100).
+function barClass(score) { return score <= 0 ? "bg-orange-400" : score === 1 ? "bg-blue-300" : "bg-status-won"; }
+function barWidth(score) { return score <= 0 ? 25 : score === 1 ? 60 : 100; }
+%>
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Revenue checks — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin/revenue-checks', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col gap-[18px] px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[1100px] gap-[18px]">
+    <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Revenue checks</h1>
+
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-[18px]">
+      <div class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+        <p class="font-mono text-[11px] tracking-[0.1em] text-admin-muted">CHECKS COMPLETED</p>
+        <p class="mt-2 font-display text-[28px] font-semibold text-admin-text"><%= total %></p>
+      </div>
+      <div class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+        <p class="font-mono text-[11px] tracking-[0.1em] text-admin-muted">WEAKEST: LEADS</p>
+        <p class="mt-2 font-display text-[28px] font-semibold text-admin-text"><%= weakestPct.leads %>%</p>
+      </div>
+      <div class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+        <p class="font-mono text-[11px] tracking-[0.1em] text-admin-muted">WEAKEST: SALES</p>
+        <p class="mt-2 font-display text-[28px] font-semibold text-admin-text"><%= weakestPct.sales %>%</p>
+      </div>
+      <div class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+        <p class="font-mono text-[11px] tracking-[0.1em] text-admin-muted">WEAKEST: RETENTION</p>
+        <p class="mt-2 font-display text-[28px] font-semibold text-admin-text"><%= weakestPct.retention %>%</p>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto rounded-[20px] border border-admin-border bg-admin-panel">
+      <table class="w-full min-w-[760px] border-collapse text-left text-[14px]">
+        <thead>
+          <tr class="border-b border-admin-border text-[11px] font-mono tracking-[0.08em] text-admin-muted">
+            <th class="px-5 py-3 font-medium">Visitor</th>
+            <th class="px-5 py-3 font-medium">Date</th>
+            <th class="px-5 py-3 font-medium">Leads</th>
+            <th class="px-5 py-3 font-medium">Sales</th>
+            <th class="px-5 py-3 font-medium">Retention</th>
+            <th class="px-5 py-3 font-medium">Weakest</th>
+            <th class="px-5 py-3 font-medium">Outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (checks.length === 0) { %>
+            <tr><td colspan="7" class="px-5 py-8 text-center text-admin-muted">No revenue checks completed yet.</td></tr>
+          <% } %>
+          <% checks.forEach(function(c) { %>
+            <tr class="border-b border-admin-border last:border-0">
+              <td class="px-5 py-3.5 text-admin-text"><%= c.email || (c.city ? "visitor · " + c.city : "Anonymous visitor") %></td>
+              <td class="px-5 py-3.5 text-admin-muted"><%= new Date(c.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) %></td>
+              <td class="px-5 py-3.5"><div class="h-2 w-20 overflow-hidden rounded-pill bg-admin-soft"><div class="h-full <%= barClass(c.leads) %>" style="width: <%= barWidth(c.leads) %>%"></div></div></td>
+              <td class="px-5 py-3.5"><div class="h-2 w-20 overflow-hidden rounded-pill bg-admin-soft"><div class="h-full <%= barClass(c.sales) %>" style="width: <%= barWidth(c.sales) %>%"></div></div></td>
+              <td class="px-5 py-3.5"><div class="h-2 w-20 overflow-hidden rounded-pill bg-admin-soft"><div class="h-full <%= barClass(c.retention) %>" style="width: <%= barWidth(c.retention) %>%"></div></div></td>
+              <td class="px-5 py-3.5 text-admin-muted capitalize"><%= c.weakest %></td>
+              <td class="px-5 py-3.5">
+                <% if (c.enquiries.length > 0) { %>
+                  <span class="rounded-pill bg-success/15 px-2.5 py-1 text-[11px] font-semibold text-success">Sent enquiry</span>
+                <% } else { %>
+                  <span class="rounded-pill bg-admin-soft px-2.5 py-1 text-[11px] font-semibold text-admin-muted">No enquiry</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+</div>
+</body>
+</html>

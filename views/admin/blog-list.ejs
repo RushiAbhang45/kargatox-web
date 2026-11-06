@@ -1,0 +1,52 @@
+<%
+// Ported from legacy-nextjs-app/src/app/admin/(protected)/blog/page.tsx.
+// Needs from routes/admin.js: currentUser, posts (Post[] + author{name,email}),
+// typeFilter ("BLOG"|"CASE_STUDY"|null), typeLabel.
+%>
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blog &amp; case studies — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin/blog', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col gap-[18px] px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[1000px] gap-[18px]">
+    <div class="flex items-center justify-between gap-3">
+      <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Blog &amp; case studies</h1>
+      <a href="/admin/blog/new" class="rounded-pill bg-orange-500 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400">+ New post</a>
+    </div>
+
+    <div class="flex gap-2">
+      <a href="/admin/blog" class="rounded-pill border px-3.5 py-1.5 text-[13px] font-medium transition-colors <%= !typeFilter ? 'border-orange-500 bg-orange-500 text-white' : 'border-admin-border text-admin-muted hover:text-admin-text' %>">All</a>
+      <a href="/admin/blog?type=BLOG" class="rounded-pill border px-3.5 py-1.5 text-[13px] font-medium transition-colors <%= typeFilter === "BLOG" ? 'border-orange-500 bg-orange-500 text-white' : 'border-admin-border text-admin-muted hover:text-admin-text' %>">Blog</a>
+      <a href="/admin/blog?type=CASE_STUDY" class="rounded-pill border px-3.5 py-1.5 text-[13px] font-medium transition-colors <%= typeFilter === "CASE_STUDY" ? 'border-orange-500 bg-orange-500 text-white' : 'border-admin-border text-admin-muted hover:text-admin-text' %>">Case studies</a>
+    </div>
+
+    <% if (posts.length === 0) { %>
+      <p class="rounded-[20px] border border-admin-border bg-admin-panel px-5 py-8 text-center text-[13px] text-admin-muted">No posts yet.</p>
+    <% } else { %>
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-[14px]">
+        <% posts.forEach(function(post) { %>
+          <a href="/admin/blog/<%= post.id %>" class="grid gap-2 rounded-[20px] border border-admin-border bg-admin-panel p-5 transition-colors hover:border-orange-400">
+            <div class="flex flex-wrap gap-1.5">
+              <span class="rounded-pill bg-chip-neutral px-2.5 py-1 text-[11px] font-semibold text-admin-text"><%= typeLabel[post.type] %></span>
+              <span class="rounded-pill px-2.5 py-1 text-[11px] font-semibold <%= post.status === "PUBLISHED" ? "bg-success/15 text-success" : "bg-admin-soft text-admin-muted" %>"><%= post.status === "PUBLISHED" ? "Published" : "Draft" %></span>
+            </div>
+            <p class="font-display text-[16px] font-semibold text-admin-text"><%= post.title %></p>
+            <p class="text-[12px] text-admin-muted"><%= (post.author && (post.author.name || post.author.email)) || "Unknown" %> · <%= new Date(post.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) %></p>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</main>
+</div>
+</body>
+</html>

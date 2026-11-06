@@ -1,0 +1,69 @@
+<%
+// Ported from legacy-nextjs-app/src/app/admin/(protected)/pages/{page.tsx,actions.ts}.
+// Needs from routes/admin.js: currentUser, pageKeys, pageLabels, pageRoutes, pageFields,
+// hasDraft ({[key]: bool}), selectedPage, values (draft-or-published merge for the
+// selected page), saved ("draft" | "published" | null).
+// NOTE: publishing here only updates the PageContent row — routes/site.js doesn't read
+// PageContent yet (Phase 2 in CLAUDE.md), so the public page won't change until that lands.
+%>
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pages — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin/pages', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col gap-[18px] px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[1000px] gap-[18px]">
+    <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Pages</h1>
+
+    <% if (saved) { %>
+      <p class="rounded-input border border-success/40 bg-success/10 px-3.5 py-3 text-[13px] text-success"><%= saved === "published" ? "Published." : "Draft saved." %></p>
+    <% } %>
+
+    <div class="flex items-start gap-[18px]">
+      <div class="w-[220px] flex-none grid gap-1 rounded-[20px] border border-admin-border bg-admin-panel p-3">
+        <% pageKeys.forEach(function(key) { %>
+          <a href="/admin/pages?page=<%= key %>" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-colors <%= selectedPage === key ? 'bg-admin-soft text-admin-text' : 'text-admin-muted hover:text-admin-text' %>">
+            <span class="h-2 w-2 flex-none rounded-full <%= hasDraft[key] ? 'bg-orange-400' : 'bg-success' %>"></span>
+            <%= pageLabels[key] %>
+          </a>
+        <% }) %>
+      </div>
+
+      <div class="min-w-0 flex-1 rounded-[20px] border border-admin-border bg-admin-panel p-6">
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <h2 class="font-display text-[18px] font-semibold text-admin-text"><%= pageLabels[selectedPage] %></h2>
+          <a href="<%= pageRoutes[selectedPage] %>" target="_blank" rel="noopener noreferrer" class="text-[13px] text-admin-muted hover:text-orange-500">Preview ↗</a>
+        </div>
+
+        <form method="post" action="/admin/pages/<%= selectedPage %>/draft" class="grid gap-4">
+          <% pageFields[selectedPage].forEach(function(field) { %>
+            <label class="grid gap-1.5">
+              <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted"><%= field.label.toUpperCase() %></span>
+              <% if (field.multiline) { %>
+                <textarea name="<%= field.key %>" rows="4" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400"><%= values[field.key] || "" %></textarea>
+              <% } else { %>
+                <input name="<%= field.key %>" value="<%= values[field.key] || "" %>" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400" />
+              <% } %>
+            </label>
+          <% }) %>
+
+          <div class="flex gap-2.5">
+            <button type="submit" formaction="/admin/pages/<%= selectedPage %>/draft" class="rounded-pill border border-admin-border px-5 py-2.5 text-[13px] font-semibold text-admin-text transition-colors hover:border-orange-400">Save draft</button>
+            <button type="submit" formaction="/admin/pages/<%= selectedPage %>/publish" class="rounded-pill bg-orange-500 px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400">Publish</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+</body>
+</html>

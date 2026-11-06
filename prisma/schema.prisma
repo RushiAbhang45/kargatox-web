@@ -1,9 +1,9 @@
-// Minimal schema — only the User model, matching the real columns on the shared
-// Postgres database (same DB legacy-nextjs-app/prisma/schema.prisma describes in
-// full, including Account/Session/Enquiry/Post etc.). This app only ever reads/
-// writes User rows for the admin Team panel, so declaring just that model keeps
-// `prisma generate` fast and this file easy to read — Prisma doesn't require every
-// column/table in the database to be declared, only the ones a query touches.
+// Full data model for the admin panel, matching the shared Postgres database that
+// legacy-nextjs-app/prisma/schema.prisma also describes (same DB, migrated by that
+// app — this app only ever reads/writes rows, never runs migrations). Account/
+// Session/VerificationToken are intentionally omitted: they're Auth.js adapter
+// plumbing that app needed, not used by this app's own cookie-based session (see
+// lib/admin-auth.js) or by this schema's User model.
 generator client {
   provider = "prisma-client-js"
 }
@@ -24,4 +24,104 @@ model User {
   invitedAt    DateTime?
   acceptedAt   DateTime?
   lastActiveAt DateTime?
+
+  enquiries       Enquiry[]
+  enquiryMessages EnquiryMessage[]
+  posts           Post[]
+}
+
+model Enquiry {
+  id             String        @id @default(cuid())
+  name           String
+  email          String
+  phone          String?
+  company        String?
+  service        String
+  details        String
+  status         String        @default("NEW") // NEW | CONTACTED | PROPOSAL | WON | LOST
+  ownerId        String?
+  owner          User?         @relation(fields: [ownerId], references: [id])
+  source         String // "Contact form" | "Revenue check"
+  revenueCheckId String?
+  revenueCheck   RevenueCheck? @relation(fields: [revenueCheckId], references: [id])
+  createdAt      DateTime      @default(now())
+  messages       EnquiryMessage[]
+}
+
+model RevenueCheck {
+  id        String    @id @default(cuid())
+  leads     Int
+  sales     Int
+  retention Int
+  weakest   String
+  sessionId String
+  email     String?
+  city      String?
+  createdAt DateTime  @default(now())
+  enquiries Enquiry[]
+}
+
+model EnquiryMessage {
+  id        String   @id @default(cuid())
+  enquiryId String
+  enquiry   Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  senderId  String?
+  sender    User?    @relation(fields: [senderId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+}
+
+model PageContent {
+  id        String   @id @default(cuid())
+  page      String   @unique
+  draft     Json?
+  published Json
+  updatedAt DateTime @updatedAt
+}
+
+model SubService {
+  id         String   @id @default(cuid())
+  serviceKey String
+  order      Int
+  title      String
+  body       String
+  link       String?
+  updatedAt  DateTime @updatedAt
+}
+
+model FaqItem {
+  id        String   @id @default(cuid())
+  order     Int
+  question  String
+  answer    String
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id             String    @id @default(cuid())
+  title          String
+  slug           String    @unique
+  type           String // "BLOG" | "CASE_STUDY"
+  status         String    @default("DRAFT") // "DRAFT" | "PUBLISHED"
+  excerpt        String?
+  body           String
+  authorId       String?
+  author         User?     @relation(fields: [authorId], references: [id])
+  seoTitle       String?
+  seoDescription String?
+  publishedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Settings {
+  id                String   @id @default("singleton")
+  siteName          String   @default("Kargatox")
+  notificationEmail String?
+  alsoNotify        String?
+  autoReplyMessage  String   @default("Hi {firstName},\n\nThank you for your requirement. Our team will contact you shortly.\n\n— Kargatox")
+  sendAutoReply     Boolean  @default(true)
+  gaMeasurementId   String?
+  gaEnabled         Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
 }

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[1000px] gap-[22px]">
+    <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Dashboard</h1>
+
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[22px]">
+      <div class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+        <p class="font-mono text-[11px] tracking-[0.1em] text-admin-muted">ENQUIRIES (30 DAYS)</p>
+        <p class="mt-2 font-display text-[32px] font-semibold text-admin-text"><%= last30d %></p>
+      </div>
+      <div class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+        <p class="font-mono text-[11px] tracking-[0.1em] text-admin-muted">TOTAL ENQUIRIES</p>
+        <p class="mt-2 font-display text-[32px] font-semibold text-admin-text"><%= total %></p>
+      </div>
+    </div>
+
+    <div class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+      <p class="mb-5 text-[15px] font-semibold text-admin-text">Enquiries per week</p>
+      <div class="flex h-[140px] items-end gap-2">
+        <% buckets.forEach(function(count, i) { %>
+          <div title="<%= count %> enquiries" class="min-h-[3px] flex-1 rounded-t-[4px] <%= i >= buckets.length - 2 ? 'bg-orange-500' : 'bg-blue-300' %>" style="height: <%= Math.max(3, (count / max) * 100) %>%"></div>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="rounded-[20px] border border-admin-border bg-admin-panel p-5">
+      <p class="mb-3 text-[15px] font-semibold text-admin-text">Latest enquiries</p>
+      <% if (latest.length === 0) { %>
+        <p class="py-4 text-[13px] text-admin-muted">No enquiries yet.</p>
+      <% } else { %>
+        <div class="grid gap-1">
+          <% latest.forEach(function(e) { %>
+            <a href="/admin/enquiries?id=<%= e.id %>" class="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-admin-soft">
+              <div class="min-w-0">
+                <p class="truncate text-[14px] font-medium text-admin-text"><%= e.name %></p>
+                <p class="truncate text-[12px] text-admin-muted"><%= e.service %></p>
+              </div>
+              <span class="rounded-pill bg-admin-soft px-2.5 py-1 text-[11px] font-semibold text-admin-muted"><%= e.status %></span>
+            </a>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+</div>
+</body>
+</html>

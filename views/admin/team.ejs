@@ -9,22 +9,10 @@
 <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body class="min-h-full bg-admin-bg text-admin-text font-body">
-<header class="border-b border-admin-border bg-admin-panel px-6 py-4">
-  <div class="mx-auto flex max-w-[1000px] items-center justify-between gap-4">
-    <div class="flex items-center gap-3">
-      <%- include('../partials/logo', { variant: 'light' }) %>
-      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-admin-muted">Admin</span>
-    </div>
-    <div class="flex items-center gap-3 text-[13px] text-admin-muted">
-      <span><%= currentUser.name || currentUser.email %> · <%= currentUser.role %></span>
-      <form method="post" action="/admin/logout">
-        <button type="submit" class="rounded-pill border border-admin-border px-3.5 py-1.5 text-admin-text transition-colors hover:border-orange-400 hover:text-orange-500">Sign out</button>
-      </form>
-    </div>
-  </div>
-</header>
-
-<main class="mx-auto grid max-w-[1000px] gap-[18px] px-6 py-10">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin/team', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col gap-[18px] px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[1000px] gap-[18px]">
   <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Team</h1>
 
   <% if (error) { %>
@@ -113,6 +101,8 @@
       </tbody>
     </table>
   </div>
+  </div>
 </main>
+</div>
 </body>
 </html>

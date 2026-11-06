@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Settings — Kargatox Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-full bg-admin-bg text-admin-text font-body">
+<div class="flex min-h-screen">
+<%- include('../partials/admin-sidebar', { activeHref: '/admin/settings', currentUser: currentUser }) %>
+<main class="flex min-w-0 flex-1 flex-col px-8 py-8">
+  <div class="mx-auto grid w-full max-w-[720px] gap-[18px]">
+    <h1 class="font-display text-[26px] font-bold tracking-[-0.02em]">Settings</h1>
+
+    <% if (error) { %>
+      <p class="rounded-input border border-orange-400/40 bg-orange-400/10 px-3.5 py-3 text-[13px] text-orange-600"><%= error %></p>
+    <% } %>
+    <% if (saved) { %>
+      <p class="rounded-input border border-success/40 bg-success/10 px-3.5 py-3 text-[13px] text-success">Settings saved</p>
+    <% } %>
+
+    <form method="post" action="/admin/settings" class="grid gap-[18px]">
+      <div class="grid gap-4 rounded-[20px] border border-admin-border bg-admin-panel p-6">
+        <h2 class="font-display text-[16px] font-semibold text-admin-text">General</h2>
+
+        <label class="grid gap-1.5">
+          <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">SITE NAME</span>
+          <input name="siteName" value="<%= settings.siteName %>" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400" />
+        </label>
+
+        <label class="grid gap-1.5">
+          <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">NOTIFICATION EMAIL</span>
+          <input type="email" name="notificationEmail" value="<%= settings.notificationEmail || '' %>" placeholder="you@kargatox.com" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400" />
+          <span class="text-[12px] text-admin-muted">Who gets the "new enquiry" email. Falls back to ADMIN_NOTIFY_EMAIL if left blank.</span>
+        </label>
+
+        <label class="grid gap-1.5">
+          <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">ALSO NOTIFY</span>
+          <input name="alsoNotify" value="<%= settings.alsoNotify || '' %>" placeholder="comma-separated extra emails" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400" />
+        </label>
+
+        <label class="grid gap-1.5">
+          <span class="font-mono text-[11px] tracking-[0.08em] text-admin-muted">AUTO-REPLY MESSAGE</span>
+          <textarea name="autoReplyMessage" rows="4" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 text-[14px] text-admin-text outline-none focus:border-orange-400"><%= settings.autoReplyMessage %></textarea>
+          <span class="text-[12px] text-admin-muted">Use {firstName} to insert the enquirer's first name.</span>
+        </label>
+
+        <label class="flex items-center gap-2.5 text-[14px] text-admin-text">
+          <input type="checkbox" name="sendAutoReply" <%= settings.sendAutoReply ? "checked" : "" %> class="h-4 w-4 accent-orange-500" />
+          Send auto-reply to enquiries
+        </label>
+      </div>
+
+      <div class="grid gap-4 rounded-[20px] border border-admin-border bg-admin-panel p-6">
+        <h2 class="font-display text-[16px] font-semibold text-admin-text">Integrations</h2>
+
+        <div class="grid gap-3 rounded-[14px] border border-admin-border p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-[14px] font-medium text-admin-text">Google Analytics</span>
+            <label class="flex items-center gap-2 text-[13px] text-admin-muted">
+              <input type="checkbox" name="gaEnabled" <%= settings.gaEnabled ? "checked" : "" %> class="h-4 w-4 accent-orange-500" />
+              Enabled
+            </label>
+          </div>
+          <input name="gaMeasurementId" value="<%= settings.gaMeasurementId || '' %>" placeholder="G-XXXXXXXXXX" class="rounded-input border border-admin-border bg-admin-bg px-3 py-2 font-mono text-[13px] text-admin-text outline-none focus:border-orange-400" />
+        </div>
+
+        <div class="grid gap-1.5 rounded-[14px] border border-admin-border p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-[14px] font-medium text-admin-text">Email (SMTP)</span>
+            <span class="rounded-pill px-2.5 py-1 text-[11px] font-semibold text-white <%= smtpConfigured ? 'bg-success' : 'bg-admin-muted' %>"><%= smtpConfigured ? "CONNECTED" : "NOT CONFIGURED" %></span>
+          </div>
+          <p class="text-[12px] text-admin-muted">Set via <code>SMTP_HOST</code>/<code>SMTP_PORT</code>/<code>SMTP_USER</code>/<code>SMTP_PASSWORD</code> environment variables, not here — credentials don't live in the database.</p>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="rounded-pill bg-orange-500 px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-orange-400">Save settings</button>
+      </div>
+    </form>
+  </div>
+</main>
+</div>
+</body>
+</html>
