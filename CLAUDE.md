@@ -175,14 +175,14 @@ rewrite.
   `meta` object (title/description/path/`jsonLd`) from it and pass it to `res.render()`, consumed by
   `views/partials/doc-head.ejs`, while the plain constants are also exposed directly on `app.locals` for
   `doc-head.ejs`/`site-footer.ejs` to read without the `meta` indirection.
-- **Microsoft Clarity + Calendly (both tied to the `Kargatox@gmail.com` account).**
-  `lib/seo-data.js`'s `CLARITY_PROJECT_ID` is real (`zddpq7gv8o` — the "Kargatox Knowledge Partners"
-  project at clarity.microsoft.com). `CALENDLY_URL` is still a literal `REPLACE_WITH_EVENT_SLUG`
-  placeholder — swap it for the real scheduling link (calendly.com → an event type's "Copy link")
-  once that event exists; nothing else needs to change. `doc-head.ejs` loads the Clarity tracking
-  snippet and Calendly's `widget.js`/`widget.css` sitewide (same unconditional pattern as
-  `GA_MEASUREMENT_ID` — a bad Clarity ID just records nothing, it doesn't throw). `site-footer.ejs`'s
-  shared CTA banner (every page except Contact,
+- **Microsoft Clarity + Calendly (both tied to the `Kargatox@gmail.com` account) — both real now.**
+  `lib/seo-data.js`'s `CLARITY_PROJECT_ID` is `zddpq7gv8o` (the "Kargatox Knowledge Partners" project
+  at clarity.microsoft.com); `CALENDLY_URL` is `https://calendly.com/kargatox`, the account's general
+  scheduling link rather than one event type's URL — correct today (one event type, "30 Minute
+  Meeting") and stays correct if more get added. `doc-head.ejs` loads the Clarity tracking snippet and
+  Calendly's `widget.js`/`widget.css` sitewide (same unconditional pattern as `GA_MEASUREMENT_ID` — a
+  bad Clarity ID just records nothing, it doesn't throw). `site-footer.ejs`'s shared CTA banner (every
+  page except Contact,
   which has its own) has a third "Book a call" button calling `Calendly.initPopupWidget()`, falling
   back to a plain link if the async widget script hasn't loaded yet. `contact.ejs` additionally has a
   "PREFER A CALL?" quick link next to "PREFER EMAIL?" and a full `calendly-inline-widget` embed
