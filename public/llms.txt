@@ -1,0 +1,27 @@
+# Kargatox
+
+> Kargatox is a founder-led research and marketing agency in Pimple Saudagar, Pune, Maharashtra, India. It helps founders and leadership teams across India understand their market, decode their customers and turn that insight into campaigns that move revenue.
+
+- Address: Coffice 24x7 (CO-102), Sai Vision, Pimple Saudagar, Pune, Maharashtra 411027, India
+- Phone: +91 78877 89471
+- Email: Kargatox@gmail.com
+- Map: https://maps.app.goo.gl/NeJyGs6Z2QePoPEL6
+
+## Research services
+- [Market Research](https://www.kargatox.com/market-research-services): market sizing, competitor analysis, customer surveys, demand forecasting
+- [Consumer Behaviour & Satisfaction Analysis](https://www.kargatox.com/consumer-behaviour-satisfaction-analysis-services): CSAT, NPS and churn analysis
+- [Campaign Analytics](https://www.kargatox.com/campaign-analytics-services): attribution, ROI tracking, dashboards
+
+## Marketing services
+- [SEO Services](https://www.kargatox.com/seo-services): technical SEO, keyword strategy, content, link building, AEO and GEO
+- [Social Media Marketing](https://www.kargatox.com/social-media-marketing-services): strategy, content, paid social, community management
+- [Brand Campaigns Strategy](https://www.kargatox.com/brand-campaign-strategy-services): positioning, messaging, research-backed campaigns
+
+## Clients and work
+- [Clients & Case Studies](https://www.kargatox.com/clients): SEO for Consegic Business Intelligence (150+ keywords ranked), a manufacturing industrial ERP system (C#, ASP.NET MVC, SQL Server), and guest articles on Global Trade Magazine
+
+## More
+- [About Us](https://www.kargatox.com/about-us)
+- [How We Work](https://www.kargatox.com/how-we-work)
+- [FAQ](https://www.kargatox.com/faq)
+- [Contact](https://www.kargatox.com/contact)

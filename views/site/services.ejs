@@ -6,10 +6,11 @@
 <body class="min-h-full flex flex-col bg-paper text-ink font-body">
 <%- include('../partials/site-header', { activePath: '/services' }) %>
 <%
-// Ported from legacy-nextjs-app/src/app/(site)/services/page.tsx. `content`
-// (PAGE_DEFAULTS.services for now) comes from routes/site.js; SERVICES/SUB_SERVICE_HREFS
-// are required directly, matching the pattern used in the shared partials.
-// SERVICES/SUB_SERVICE_HREFS come from app.locals (server.js) — see site-header.ejs.
+// Ported from legacy-nextjs-app/src/app/(site)/services/page.tsx. `content` and `services`
+// come from routes/site.js (Phase 2: `services` is lib/services-data.js's SERVICES with each
+// service's `items` overridden by its SubService DB rows, if any exist yet — same "default
+// until a row exists" merge the admin Services & FAQ editor uses). Per-request, so it's a
+// render local, not app.locals, unlike SUB_SERVICE_HREFS below which stays request-independent.
 %>
 <main class="flex flex-1 flex-col">
   <section class="bg-white text-ink">
@@ -27,7 +28,7 @@
     </div>
   </section>
 
-  <% SERVICES.forEach(function(svc, i) { %>
+  <% services.forEach(function(svc, i) { %>
     <section id="<%= svc.id %>" class="px-6 <%= i === 0 ? 'pt-[40px]' : 'pt-[64px]' %>">
       <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-start gap-x-12 gap-y-8">
         <div class="sticky top-[88px]">

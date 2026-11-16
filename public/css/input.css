@@ -171,3 +171,100 @@
 .kx-contact {
   font-style: normal;
 }
+
+/* Clients page (views/site/clients.ejs) — tag chips for the ERP case study's tech stack
+   /module list, and the embedded-map wrapper also reused by site-footer.ejs's "Our
+   Location" block. */
+.kx-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.kx-tags span {
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: #0f172a;
+  background: #fff;
+}
+.kx-tags-lg span {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  background: rgba(242, 106, 27, 0.08);
+  border-color: rgba(242, 106, 27, 0.3);
+}
+.kx-list.kx-grid {
+  gap: 0 32px;
+}
+.kx-list.kx-grid li,
+.kx-list.kx-grid li:first-child {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 14px;
+}
+.kx-map {
+  position: relative;
+  min-height: 340px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.kx-map iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Blog & case study post body (views/site/blog-post.ejs, Phase 8) — admin enters plain
+   HTML in a <textarea> (lib/post-schema.js), not Tiptap JSON, so there's no structured
+   content to run through a typography plugin; these are hand-rolled element styles for
+   the tags an admin is actually likely to type (p/h2/h3/ul/ol/li/a/strong/blockquote). */
+.kx-prose > * + * {
+  margin-top: 1.25em;
+}
+.kx-prose h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4em;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+.kx-prose h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15em;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+.kx-prose a {
+  color: #f26a1b;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(242, 106, 27, 0.35);
+}
+.kx-prose ul,
+.kx-prose ol {
+  padding-left: 1.4em;
+  display: grid;
+  gap: 0.5em;
+}
+.kx-prose ul {
+  list-style: disc;
+}
+.kx-prose ol {
+  list-style: decimal;
+}
+.kx-prose blockquote {
+  border-left: 3px solid #f26a1b;
+  padding-left: 1em;
+  color: #47536b;
+  font-style: italic;
+}
+.kx-prose strong {
+  font-weight: 700;
+  color: #0f172a;
+}

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+<%- include('../partials/doc-head', { meta: meta }) %>
+</head>
+<body class="min-h-full flex flex-col bg-paper text-ink font-body">
+<%- include('../partials/site-header', { activePath: '/clients' }) %>
+<%
+// New page, no legacy-nextjs-app equivalent (2026-11-14 SEO content pass). Content comes
+// from lib/clients-data.js (STATS/SEO_CASE_STUDY/ERP_CASE_STUDY/AUTHOR/ARTICLES, all
+// passed in by routes/site.js). GEO_LATITUDE/GEO_LONGITUDE come from app.locals.
+%>
+<main class="flex flex-1 flex-col">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="Breadcrumb" class="bg-white px-6 pt-6">
+    <ol class="mx-auto flex max-w-(--width-site) flex-wrap gap-2 font-mono text-[11px] uppercase tracking-[0.1em] text-slate">
+      <li><a href="/" class="transition-colors hover:text-orange-500">Home</a></li>
+      <li aria-hidden="true">/</li>
+      <li aria-current="page" class="text-ink">Clients</li>
+    </ol>
+  </nav>
+
+  <!-- Hero -->
+  <section class="bg-white px-6 text-ink">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-end gap-x-14 gap-y-6 pb-[48px] pt-[40px]">
+      <div>
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500" data-scramble-reveal="OUR CLIENTS">OUR CLIENTS</div>
+        <h1 class="mt-3 font-display text-[clamp(26px,3.4vw,42px)] font-bold leading-[1.08] tracking-[-0.02em]">
+          Clients &amp; Case Studies: SEO and ERP Work <span class="text-slate">from Pune</span>
+        </h1>
+      </div>
+      <div>
+        <p class="text-[15px] leading-[1.6] text-slate">From market research firms to metal manufacturers, here is the work Kargatox has delivered: technical and on-page SEO that ranked 150+ keywords, off-page link building and guest posting, and a full manufacturing ERP system built from the ground up.</p>
+        <p class="mt-3 rounded-input border border-orange-400/35 bg-orange-500/8 px-4 py-3 text-[14px] leading-[1.6] text-ink">
+          <strong class="text-orange-500">150+ keywords ranked</strong> for a Pune market research company, with quality leads to show for it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- At a glance -->
+  <section class="bg-ink px-6 py-[72px] text-white">
+    <div class="mx-auto max-w-(--width-site)">
+      <div class="font-mono text-[12px] tracking-[0.14em] text-orange-400">AT A GLANCE</div>
+      <h2 class="mt-3 max-w-[640px] font-display text-[clamp(22px,2.6vw,34px)] font-bold leading-[1.12] tracking-[-0.02em]">Results across research, manufacturing and media.</h2>
+      <div class="kx-grid mt-10">
+        <% STATS.forEach(function(s) { %>
+          <div class="rounded-card border border-white/10 bg-navy-800 p-6">
+            <span class="font-display text-[34px] font-bold text-orange-400"><%= s.value %></span>
+            <h3 class="mt-2 font-display text-[19px] font-semibold"><%= s.title %></h3>
+            <p class="mt-2 text-[14px] leading-[1.6] text-mist"><%= s.body %></p>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case study 1: SEO -->
+  <section id="consegic-business-intelligence" class="bg-white px-6 py-[72px] text-ink">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] gap-x-14 gap-y-8">
+      <div>
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">CASE STUDY 01 · SEO</div>
+        <h2 class="mt-3 font-display text-[clamp(22px,2.6vw,32px)] font-bold leading-[1.12] tracking-[-0.02em]"><%= SEO_CASE_STUDY.client %> <span class="text-slate"><%= SEO_CASE_STUDY.location %></span></h2>
+        <p class="mt-4 text-[15px] leading-[1.7] text-slate"><%= SEO_CASE_STUDY.intro %></p>
+        <p class="mt-4 text-[15px]"><a href="<%= SEO_CASE_STUDY.url %>" target="_blank" rel="noopener" class="font-semibold text-ink underline decoration-orange-500 underline-offset-4"><%= SEO_CASE_STUDY.urlLabel %> ↗</a></p>
+      </div>
+      <div class="rounded-card border border-line bg-white p-6">
+        <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-slate">What we delivered</span>
+        <ul class="kx-list text-[15px]">
+          <% SEO_CASE_STUDY.deliverables.forEach(function(d) { %>
+            <li><strong><%= d.title %></strong><span><%= d.body %></span></li>
+          <% }) %>
+        </ul>
+        <p class="mt-4 text-[14px] text-slate">Services used:
+          <% SEO_CASE_STUDY.servicesUsed.forEach(function(s, i) { %><% if (i > 0) { %> · <% } %><a href="<%= s.href %>" class="font-semibold text-ink underline decoration-orange-500 underline-offset-4"><%= s.label %></a><% }) %>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case study 2: ERP -->
+  <section id="manufacturing-erp-system" class="border-t border-line bg-white px-6 py-[72px] text-ink">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] gap-x-14 gap-y-8">
+      <div>
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">CASE STUDY 02 · SOFTWARE</div>
+        <h2 class="mt-3 font-display text-[clamp(22px,2.6vw,32px)] font-bold leading-[1.12] tracking-[-0.02em]"><%= ERP_CASE_STUDY.title %> <span class="text-slate"><%= ERP_CASE_STUDY.subtitle %></span></h2>
+        <p class="mt-4 text-[15px] leading-[1.7] text-slate"><%= ERP_CASE_STUDY.intro %></p>
+        <div class="kx-tags mt-5">
+          <% ERP_CASE_STUDY.techStack.forEach(function(t) { %><span><%= t %></span><% }) %>
+        </div>
+      </div>
+      <div class="rounded-card border border-line bg-white p-6">
+        <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-slate"><%= ERP_CASE_STUDY.modules.length %> modules, one system</span>
+        <div class="kx-tags kx-tags-lg mt-4">
+          <% ERP_CASE_STUDY.modules.forEach(function(m) { %><span><%= m %></span><% }) %>
+        </div>
+        <p class="mt-5 text-[14px] leading-[1.6] text-slate"><%= ERP_CASE_STUDY.modulesNote %></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Publications -->
+  <section id="global-trade-magazine" class="border-t border-line bg-white px-6 py-[72px] text-ink">
+    <div class="mx-auto max-w-(--width-site)">
+      <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">CASE STUDY 03 · GUEST POSTING</div>
+      <h2 class="mt-3 max-w-[680px] font-display text-[clamp(22px,2.6vw,34px)] font-bold leading-[1.12] tracking-[-0.02em]">Published on Global Trade Magazine <span class="text-slate">by <%= AUTHOR.name %></span></h2>
+      <p class="mt-4 max-w-[680px] text-[15px] leading-[1.7] text-slate">Guest articles on machinery, supply chain, aviation and fintech topics, written to earn authority backlinks and referral traffic for market research content.</p>
+      <ul class="kx-list kx-grid kx-grid-2 mt-8 text-[15px]">
+        <% ARTICLES.forEach(function(a) { %>
+          <li><a href="<%= a.url %>" target="_blank" rel="noopener"><%= a.title %></a><span><%= a.date %></span></li>
+        <% }) %>
+      </ul>
+      <p class="mt-6 text-[15px]"><a href="<%= AUTHOR.profileUrl %>" target="_blank" rel="noopener" class="font-semibold text-ink transition-colors hover:text-orange-500">View the author profile on Global Trade Magazine ↗</a></p>
+    </div>
+  </section>
+
+  <!-- Location -->
+  <section id="visit-us" class="bg-ink px-6 py-[72px] text-white">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] gap-x-14 gap-y-8">
+      <div class="grid content-start gap-4">
+        <div class="font-mono text-[12px] tracking-[0.14em] text-orange-400">WORK WITH US</div>
+        <h2 class="font-display text-[clamp(22px,2.6vw,34px)] font-bold leading-[1.12] tracking-[-0.02em]">Become our next client in <span class="text-orange-400">Pune</span> or anywhere in India</h2>
+        <address class="kx-contact mt-2 grid gap-5 not-italic">
+          <div>
+            <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">ADDRESS</span>
+            <p class="mt-1 text-[16px] leading-[1.6] text-white">Kargatox, Coffice 24x7 (CO-102),<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India</p>
+            <p class="mt-2"><a href="https://maps.app.goo.gl/NeJyGs6Z2QePoPEL6" target="_blank" rel="noopener" class="text-[14px] font-semibold text-orange-400">Get directions on Google Maps ↗</a></p>
+          </div>
+          <div>
+            <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">PHONE</span>
+            <p class="mt-1"><a href="tel:+917887789471" class="font-display text-[18px] font-bold text-white transition-colors hover:text-orange-400">+91 78877 89471</a></p>
+          </div>
+          <div>
+            <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">EMAIL</span>
+            <p class="mt-1"><a href="mailto:Kargatox@gmail.com" class="font-display text-[18px] font-bold text-white transition-colors hover:text-orange-400">Kargatox@gmail.com</a></p>
+          </div>
+        </address>
+      </div>
+      <div class="kx-map">
+        <iframe title="Kargatox office location on Google Maps" src="https://www.google.com/maps?q=<%= GEO_LATITUDE %>,<%= GEO_LONGITUDE %>&amp;z=17&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('../partials/site-footer', { showCta: true, ctaTopPadding: true }) %>
+</body>
+</html>

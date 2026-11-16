@@ -1,24 +1,31 @@
 const express = require("express");
-const { PAGE_DEFAULTS } = require("../lib/page-content-defaults");
+const { prisma } = require("../lib/db");
+const { mergePublishedPage } = require("../lib/page-content-defaults");
 const { splitFirstSentence, splitLastWord } = require("../lib/text-split");
-const { FAQ_DEFAULTS } = require("../lib/faq-defaults");
+const { faqItemsFromRows } = require("../lib/faq-defaults");
+const { SERVICES, subServicesByKeyFromRows } = require("../lib/services-data");
 const { SERVICE_PAGES, getServicePage, getRelatedServicePages } = require("../lib/service-pages-data");
+const { STATS, SEO_CASE_STUDY, ERP_CASE_STUDY, AUTHOR, ARTICLES } = require("../lib/clients-data");
 const seo = require("../lib/seo-data");
 
 const router = express.Router();
 
-// Phase 1: hardcoded PAGE_DEFAULTS only — Phase 2 swaps these five handlers' `content`
-// for the real DB-backed getPublishedPageContent() merge.
+// Phase 2: each page's `content` is PAGE_DEFAULTS merged with its PageContent row's
+// `published` JSON, if one exists yet (lib/page-content-defaults.js's mergePublishedPage) —
+// same "default until a row exists" pattern the admin Pages editor already uses.
 
-router.get("/", (req, res) => {
-  const content = PAGE_DEFAULTS.home;
+router.get("/", async (req, res) => {
+  const row = await prisma.pageContent.findUnique({ where: { page: "home" } });
+  const content = mergePublishedPage("home", row);
   const [capabilitiesPlain, capabilitiesAccent] = splitFirstSentence(content.capabilitiesHeading);
+  const title = "Kargatox | Market Research & Marketing Agency in Pune";
+  const description =
+    "Pune research and marketing agency for market research, consumer insight, campaign analytics, SEO and social media for businesses across India.";
   const meta = {
-    title: "Kargatox | Research & Marketing Agency in Pune, India",
-    description:
-      "Kargatox is a Pune research and marketing agency helping founders across India with market research, customer insight, SEO and campaigns.",
+    title,
+    description,
     path: "/",
-    jsonLd: seo.graph([seo.ORGANIZATION, seo.WEBSITE, seo.pageEntry("WebPage", { path: "/", name: "Kargatox | Research & Marketing Agency in Pune, India", description: "Kargatox is a Pune research and marketing agency helping founders across India with market research, customer insight, SEO and campaigns." })]),
+    jsonLd: seo.graph([seo.ORGANIZATION, seo.WEBSITE, seo.pageEntry("WebPage", { path: "/", name: title, description })]),
   };
   res.render("site/home", { content, capabilitiesPlain, capabilitiesAccent, meta });
 });
@@ -49,10 +56,21 @@ router.get("/about-us", (req, res) => {
   res.render("site/about-us", { meta });
 });
 
-router.get("/services", (req, res) => {
-  const title = "Research & Marketing Services in India | Kargatox";
+router.get("/services", async (req, res) => {
+  const [row, subServiceRows] = await Promise.all([
+    prisma.pageContent.findUnique({ where: { page: "services" } }),
+    prisma.subService.findMany({ orderBy: { order: "asc" } }),
+  ]);
+  const content = mergePublishedPage("services", row);
+  const subServicesByKey = subServicesByKeyFromRows(subServiceRows);
+  const services = SERVICES.map((svc) => ({
+    ...svc,
+    items: subServicesByKey[svc.id].map((it, i) => ({ ...it, num: String(i + 1).padStart(2, "0") })),
+  }));
+
+  const title = "Research & Marketing Services in Pune, India | Kargatox";
   const description =
-    "Explore Kargatox services: market research, consumer behaviour analysis, campaign analytics, SEO, social media marketing and brand campaigns.";
+    "Market research, consumer behaviour analysis, campaign analytics, SEO, social media and brand campaign services from Kargatox, Pune.";
   const meta = {
     title,
     description,
@@ -68,11 +86,18 @@ router.get("/services", (req, res) => {
           breadcrumb: { "@id": seo.SITE_URL + "/services#breadcrumb" },
           mainEntity: {
             "@type": "ItemList",
+            name: "Kargatox Services",
+            numberOfItems: SERVICE_PAGES.length,
             itemListElement: SERVICE_PAGES.map((p, i) => ({
               "@type": "ListItem",
               position: i + 1,
-              name: p.navTitle,
-              url: `${seo.SITE_URL}/${p.slug}`,
+              item: {
+                "@type": "Service",
+                name: p.navTitle,
+                url: `${seo.SITE_URL}/${p.slug}`,
+                description: p.metaDescription,
+                provider: { "@id": seo.SITE_URL + "/#organization" },
+              },
             })),
           },
         },
@@ -83,13 +108,16 @@ router.get("/services", (req, res) => {
       ]),
     ]),
   };
-  res.render("site/services", { content: PAGE_DEFAULTS.services, meta });
+  res.render("site/services", { content, services, meta });
 });
 
-router.get("/how-we-work", (req, res) => {
-  const title = "How We Work | Our 5-Step Growth Process | Kargatox";
+router.get("/how-we-work", async (req, res) => {
+  const row = await prisma.pageContent.findUnique({ where: { page: "how-we-work" } });
+  const content = mergePublishedPage("how-we-work", row);
+
+  const title = "How We Work | 5-Step Research & Marketing Process";
   const description =
-    "See how Kargatox works: five clear steps from discovery and diagnosis to building, fixing and handing over a growth system your team owns.";
+    "See the Kargatox 5-step process from discovery to handover: we listen, plan, build, fix what is costing you, and hand you the system.";
   const meta = {
     title,
     description,
@@ -109,15 +137,20 @@ router.get("/how-we-work", (req, res) => {
       ]),
     ]),
   };
-  res.render("site/how-we-work", { content: PAGE_DEFAULTS["how-we-work"], meta });
+  res.render("site/how-we-work", { content, meta });
 });
 
-router.get("/faq", (req, res) => {
-  const content = PAGE_DEFAULTS.faq;
+router.get("/faq", async (req, res) => {
+  const [row, faqRows] = await Promise.all([
+    prisma.pageContent.findUnique({ where: { page: "faq" } }),
+    prisma.faqItem.findMany({ orderBy: { order: "asc" } }),
+  ]);
+  const content = mergePublishedPage("faq", row);
+  const faqItems = faqItemsFromRows(faqRows);
   const [headingPlain, headingAccent] = splitFirstSentence(content.heading);
-  const title = "FAQ | Kargatox Research & Marketing Agency, Pune";
+  const title = "FAQ | Research, SEO & Marketing Questions | Kargatox";
   const description =
-    "Straight answers about Kargatox: what we do, how fast we start, whether we replace a full-time hire and what our engagements cost.";
+    "Straight answers about Kargatox: what we do, how fast we start, pricing, and how our research and marketing engagements work.";
   const meta = {
     title,
     description,
@@ -125,7 +158,7 @@ router.get("/faq", (req, res) => {
     jsonLd: seo.graph([
       seo.ORGANIZATION,
       seo.WEBSITE,
-      Object.assign(seo.faqSchema("/faq", FAQ_DEFAULTS, { nested: false, name: title, description }), {
+      Object.assign(seo.faqSchema("/faq", faqItems, { nested: false, name: title, description }), {
         breadcrumb: { "@id": seo.SITE_URL + "/faq#breadcrumb" },
       }),
       seo.breadcrumb("/faq", [
@@ -134,15 +167,16 @@ router.get("/faq", (req, res) => {
       ]),
     ]),
   };
-  res.render("site/faq", { content, headingPlain, headingAccent, faqItems: FAQ_DEFAULTS, meta });
+  res.render("site/faq", { content, headingPlain, headingAccent, faqItems, meta });
 });
 
-router.get("/contact", (req, res) => {
-  const content = PAGE_DEFAULTS.contact;
+router.get("/contact", async (req, res) => {
+  const row = await prisma.pageContent.findUnique({ where: { page: "contact" } });
+  const content = mergePublishedPage("contact", row);
   const [headingPlain, headingAccent] = splitLastWord(content.heading);
-  const title = "Contact Kargatox | Research & Marketing Agency, Pune";
+  const title = "Contact Kargatox | Marketing Agency in Pimple Saudagar";
   const description =
-    "Contact Kargatox in Pimple Saudagar, Pune. Call +91 78877 89471 or email Kargatox@gmail.com for market research, SEO and marketing services.";
+    "Contact Kargatox in Pimple Saudagar, Pune for market research, SEO and marketing. Call +91 78877 89471 or send an inquiry today.";
   const meta = {
     title,
     description,
@@ -163,6 +197,102 @@ router.get("/contact", (req, res) => {
     ]),
   };
   res.render("site/contact", { content, headingPlain, headingAccent, meta });
+});
+
+router.get("/clients", (req, res) => {
+  const title = "Clients & Case Studies | SEO and ERP Projects | Kargatox";
+  const description =
+    "Kargatox client work: SEO that ranked 150+ keywords for a Pune market research firm, a manufacturing ERP system and guest posts.";
+  const authorId = seo.SITE_URL + "/#jayesh-kamble";
+  const pageId = seo.SITE_URL + "/clients";
+
+  const meta = {
+    title,
+    description,
+    path: "/clients",
+    jsonLd: seo.graph([
+      seo.ORGANIZATION,
+      seo.WEBSITE,
+      seo.pageEntry("CollectionPage", {
+        path: "/clients",
+        name: title,
+        description,
+        extra: {
+          breadcrumb: { "@id": pageId + "#breadcrumb" },
+          mainEntity: {
+            "@type": "ItemList",
+            name: "Kargatox clients and case studies",
+            numberOfItems: 3,
+            itemListElement: [
+              { "@type": "ListItem", position: 1, item: { "@id": pageId + "#consegic-business-intelligence" } },
+              { "@type": "ListItem", position: 2, item: { "@id": pageId + "#manufacturing-erp-system" } },
+              { "@type": "ListItem", position: 3, item: { "@id": pageId + "#global-trade-magazine" } },
+            ],
+          },
+        },
+      }),
+      seo.breadcrumb("/clients", [
+        { name: "Home", path: "/" },
+        { name: "Clients", path: "/clients" },
+      ]),
+      {
+        "@type": "CreativeWork",
+        "@id": pageId + "#consegic-business-intelligence",
+        name: "SEO for " + SEO_CASE_STUDY.client,
+        url: pageId + "#consegic-business-intelligence",
+        creator: { "@id": seo.SITE_URL + "/#organization" },
+        contributor: { "@id": authorId },
+        description:
+          "Site audits for crawlability, indexing, metadata and broken links; keyword research and on-page optimisation ranking 150+ keywords; off-page link building, outreach and guest posting.",
+        about: {
+          "@type": "Organization",
+          name: SEO_CASE_STUDY.client,
+          url: SEO_CASE_STUDY.url,
+          description: "Global market research and consulting company",
+          address: { "@type": "PostalAddress", addressLocality: "Pune", addressRegion: "Maharashtra", addressCountry: "IN" },
+        },
+        keywords: "technical SEO, on-page SEO, off-page SEO, keyword research, link building, guest posting",
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": pageId + "#manufacturing-erp-system",
+        name: ERP_CASE_STUDY.title,
+        url: pageId + "#manufacturing-erp-system",
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        creator: { "@id": seo.SITE_URL + "/#organization" },
+        description:
+          "End-to-end ERP for a metal manufacturing company with " + ERP_CASE_STUDY.modules.join(", ") + " modules.",
+        featureList: ERP_CASE_STUDY.modules,
+        softwareRequirements: ERP_CASE_STUDY.techStack.join(", "),
+      },
+      {
+        "@type": "CreativeWorkSeries",
+        "@id": pageId + "#global-trade-magazine",
+        name: "Guest articles on Global Trade Magazine",
+        url: pageId + "#global-trade-magazine",
+        author: { "@id": authorId },
+        hasPart: ARTICLES.map((a) => ({
+          "@type": "Article",
+          headline: a.title,
+          url: a.url,
+          datePublished: a.datePublished,
+          author: { "@id": authorId },
+          publisher: { "@type": "Organization", name: "Global Trade Magazine", url: "https://www.globaltrademag.com/" },
+        })),
+      },
+      {
+        "@type": "Person",
+        "@id": authorId,
+        name: AUTHOR.name,
+        jobTitle: AUTHOR.jobTitle,
+        worksFor: { "@id": seo.SITE_URL + "/#organization" },
+        sameAs: [AUTHOR.profileUrl],
+        knowsAbout: ["Technical SEO", "On-page SEO", "Off-page SEO", "Keyword Research", "Guest Posting", "C#", "ASP.NET MVC", "SQL Server"],
+      },
+    ]),
+  };
+  res.render("site/clients", { STATS, SEO_CASE_STUDY, ERP_CASE_STUDY, AUTHOR, ARTICLES, meta });
 });
 
 // One shared template for all 6 service-landing pages — explicit slug list, not a
@@ -203,10 +333,16 @@ router.get("/:slug", (req, res, next) => {
   res.render("site/service-landing", { content, related, meta });
 });
 
-router.get("/blog", (req, res) => {
-  const title = "Kargatox Blog | Market Research & Marketing Insights";
+router.get("/blog", async (req, res) => {
+  const posts = await prisma.post.findMany({
+    where: { status: "PUBLISHED" },
+    orderBy: { publishedAt: "desc" },
+    include: { author: { select: { name: true } } },
+  });
+
+  const title = "Blog | Research & Marketing Insights | Kargatox";
   const description =
-    "Insights, case studies and updates from Kargatox on market research, consumer behaviour, SEO, social media and brand campaigns in India.";
+    "Insights, case studies and updates on market research, SEO and growth marketing from the Kargatox team in Pune.";
   const meta = {
     title,
     description,
@@ -226,11 +362,40 @@ router.get("/blog", (req, res) => {
       ]),
     ]),
   };
-  res.render("site/blog-list", { meta });
+  res.render("site/blog-list", { posts, meta });
 });
 
-router.get("/blog/:slug", (req, res) => {
-  res.render("site/blog-post", { slug: req.params.slug });
+router.get("/blog/:slug", async (req, res, next) => {
+  const post = await prisma.post.findUnique({
+    where: { slug: req.params.slug },
+    include: { author: { select: { name: true } } },
+  });
+  if (!post || post.status !== "PUBLISHED") return next();
+
+  const title = post.seoTitle || post.title;
+  const description = post.seoDescription || post.excerpt || title;
+  const path = "/blog/" + post.slug;
+  const meta = {
+    title,
+    description,
+    path,
+    jsonLd: seo.graph([
+      seo.ORGANIZATION,
+      seo.WEBSITE,
+      seo.pageEntry("WebPage", {
+        path,
+        name: title,
+        description,
+        extra: { breadcrumb: { "@id": seo.SITE_URL + path + "#breadcrumb" } },
+      }),
+      seo.breadcrumb(path, [
+        { name: "Home", path: "/" },
+        { name: "Blog", path: "/blog" },
+        { name: post.title, path },
+      ]),
+    ]),
+  };
+  res.render("site/blog-post", { post, meta });
 });
 
 module.exports = router;

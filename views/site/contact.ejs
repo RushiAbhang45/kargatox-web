@@ -108,6 +108,22 @@ const SERVICE_OPTIONS = [
       </div>
     </div>
   </section>
+
+  <!-- Location map -->
+  <section id="location" class="bg-white px-6 py-[72px] text-ink" style="border-top:1px solid #e2e8f0">
+    <div class="mx-auto grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] gap-x-14 gap-y-8">
+      <div class="grid content-start gap-4">
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">FIND US</div>
+        <h2 class="font-display text-[clamp(22px,2.6vw,30px)] font-bold tracking-[-0.02em]">Our office in Pimple Saudagar, Pune</h2>
+        <address class="not-italic text-[15px] leading-[1.7] text-slate" style="font-style:normal">Kargatox, Coffice 24x7 (CO-102),<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India<br/>
+          <a href="tel:+917887789471" class="font-semibold text-ink">+91 78877 89471</a> · <a href="mailto:Kargatox@gmail.com" class="font-semibold text-ink">Kargatox@gmail.com</a></address>
+        <p><a href="https://maps.app.goo.gl/NeJyGs6Z2QePoPEL6" target="_blank" rel="noopener" class="text-[15px] font-semibold text-orange-500">Get directions on Google Maps ↗</a></p>
+      </div>
+      <div class="kx-map" style="border-color:#e2e8f0">
+        <iframe title="Kargatox office location on Google Maps" src="https://www.google.com/maps?q=<%= GEO_LATITUDE %>,<%= GEO_LONGITUDE %>&amp;z=17&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
 </main>
 <%- include('../partials/site-footer', { showCta: false }) %>
 </body>

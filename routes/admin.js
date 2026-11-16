@@ -9,10 +9,11 @@ const bcrypt = require("bcryptjs");
 const { prisma, Prisma } = require("../lib/db");
 const { getSession, setSessionCookie, clearSessionCookie } = require("../lib/admin-auth");
 const { ENQUIRY_STATUSES, STATUS_LABEL, STATUS_COLOR_CLASS } = require("../lib/enquiry-status");
-const { PAGE_KEYS, PAGE_LABELS, PAGE_ROUTES, PAGE_FIELDS, PAGE_DEFAULTS } = require("../lib/page-content-defaults");
+const { PAGE_KEYS, PAGE_LABELS, PAGE_ROUTES, PAGE_FIELDS, PAGE_DEFAULTS, mergePublishedPage } = require("../lib/page-content-defaults");
 const { POST_TYPES, POST_TYPE_LABEL, validatePost } = require("../lib/post-schema");
-const { SERVICES } = require("../lib/services-data");
-const { FAQ_DEFAULTS } = require("../lib/faq-defaults");
+const { SERVICES, subServicesByKeyFromRows } = require("../lib/services-data");
+const { faqItemsFromRows } = require("../lib/faq-defaults");
+const { sendMail } = require("../lib/mailer");
 
 const router = express.Router();
 
@@ -289,6 +290,14 @@ router.post("/enquiries/:id/reply", requireAuth, requireEnquiryAccess, async (re
       if (enquiry.status === "NEW") {
         await prisma.enquiry.update({ where: { id: enquiry.id }, data: { status: "CONTACTED" } });
       }
+      // The reply is already saved and the status already updated — don't let a flaky SMTP
+      // connection surface as a failed reply (and risk a duplicate on retry), per the
+      // already-reviewed legacy sendReply() ordering.
+      try {
+        await sendMail({ to: enquiry.email, subject: "Re: your enquiry — Kargatox", text: body });
+      } catch (err) {
+        console.error("[enquiries] sendReply sendMail failed:", err);
+      }
     }
   }
   res.redirect("/admin/enquiries?id=" + req.params.id);
@@ -332,7 +341,7 @@ router.get("/pages", requireAuth, requireContentAccess, async (req, res) => {
   const selectedPage = PAGE_KEYS.includes(req.query.page) ? req.query.page : PAGE_KEYS[0];
 
   const row = rowsByPage[selectedPage];
-  const published = { ...PAGE_DEFAULTS[selectedPage], ...(row ? row.published : {}) };
+  const published = mergePublishedPage(selectedPage, row);
   const draft = row && row.draft ? { ...published, ...row.draft } : null;
 
   res.render("admin/pages", {
@@ -383,19 +392,8 @@ router.get("/services-faq", requireAuth, requireContentAccess, async (req, res) 
     prisma.faqItem.findMany({ orderBy: { order: "asc" } }),
   ]);
 
-  const subServicesByKey = {};
-  SERVICES.forEach((svc) => {
-    const rows = subServiceRows.filter((r) => r.serviceKey === svc.id);
-    subServicesByKey[svc.id] =
-      rows.length > 0
-        ? rows.map((r) => ({ title: r.title, body: r.body, link: r.link || "" }))
-        : svc.items.map((it) => ({ title: it.title, body: it.body, link: it.link || "" }));
-  });
-
-  const faqItems =
-    faqRows.length > 0
-      ? faqRows.map((r) => ({ question: r.question, answer: r.answer }))
-      : FAQ_DEFAULTS.map((f) => ({ question: f.question, answer: f.answer }));
+  const subServicesByKey = subServicesByKeyFromRows(subServiceRows);
+  const faqItems = faqItemsFromRows(faqRows);
 
   res.render("admin/services-faq", {
     currentUser: req.adminUser,

@@ -1,11 +1,16 @@
 <%
 // Ported from legacy-nextjs-app/src/components/site-footer.tsx. `showCta` defaults to
-// true, false only on Contact — matches today's prop. NAV_LINKS/SERVICE_PAGES come from
-// app.locals (server.js) — see site-header.ejs for why.
+// true, false only on Contact — matches today's prop. `ctaTopPadding` (2026-11-14 SEO
+// content pass) defaults to false; About Us and Clients pass true since their last
+// section ends flush with no bottom padding of its own, unlike every other page's. NAV_LINKS/
+// SERVICE_PAGES come from app.locals (server.js) — see site-header.ejs for why.
+// GEO_LATITUDE/GEO_LONGITUDE (also app.locals, from lib/seo-data.js) drive the "Our
+// Location" embedded-map section added in the same pass.
 const _showCta = typeof showCta !== "undefined" ? showCta : true;
+const _ctaTopPadding = typeof ctaTopPadding !== "undefined" && ctaTopPadding;
 %>
 <% if (_showCta) { %>
-  <section class="bg-paper px-6 pb-[120px]">
+  <section class="bg-paper px-6 pb-[120px]<%= _ctaTopPadding ? ' pt-[80px]' : '' %>">
     <div class="mx-auto max-w-(--width-site) rounded-panel bg-orange-500 p-[clamp(40px,7vw,96px)] text-white">
       <div class="max-w-[640px]">
         <h2 class="font-display text-[clamp(30px,3.6vw,52px)] font-bold leading-[1.08] tracking-[-0.028em]">We move the only number that matters. Yours.</h2>
@@ -22,11 +27,6 @@ const _showCta = typeof showCta !== "undefined" ? showCta : true;
     <div class="grid max-w-[340px] gap-3.5">
       <span class="font-display text-[26px] font-bold tracking-[-0.02em] text-white">Karga<span class="text-orange-400">tox</span></span>
       <p class="text-[15px] leading-[1.6]">Strategy, research and marketing for founders and leadership teams across India.</p>
-      <address class="mt-2 grid gap-2 text-[14px] leading-[1.6] text-mist" style="font-style:normal">
-        <span>Kargatox, Coffice 24x7, Sai Vision,<br/>Pimple Saudagar, Pune 411027</span>
-        <a href="tel:+917887789471" class="text-mist transition-colors hover:text-orange-400">+91 78877 89471</a>
-        <a href="mailto:Kargatox@gmail.com" class="text-mist transition-colors hover:text-orange-400">Kargatox@gmail.com</a>
-      </address>
     </div>
     <div class="flex flex-wrap gap-7 text-[15px]">
       <% NAV_LINKS.forEach(function(l) { %>
@@ -40,5 +40,17 @@ const _showCta = typeof showCta !== "undefined" ? showCta : true;
       <% }) %>
     </div>
   </div>
-  <div class="mx-auto mt-12 max-w-(--width-site) border-t border-white/10 pt-6 text-sm">© 2026 Kargatox. All rights reserved.</div>
+  <div id="footer-location" class="mx-auto mt-8 grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-start gap-x-14 gap-y-6 border-t border-white/10 pt-8">
+    <div class="grid gap-2.5">
+      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Our Location</span>
+      <address class="kx-contact text-[15px] leading-[1.6] text-white">Kargatox, Coffice 24x7 (CO-102),<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India</address>
+      <a href="tel:+917887789471" class="text-[14px] text-mist transition-colors hover:text-orange-400">+91 78877 89471</a>
+      <a href="mailto:Kargatox@gmail.com" class="text-[14px] text-mist transition-colors hover:text-orange-400">Kargatox@gmail.com</a>
+      <a href="https://maps.app.goo.gl/NeJyGs6Z2QePoPEL6" target="_blank" rel="noopener" class="text-[14px] font-semibold text-orange-400">Get directions on Google Maps ↗</a>
+    </div>
+    <div class="h-[200px] overflow-hidden rounded-card border border-white/10">
+      <iframe title="Kargatox office location on Google Maps" src="https://www.google.com/maps?q=<%= GEO_LATITUDE %>,<%= GEO_LONGITUDE %>&amp;z=16&amp;output=embed" class="h-full w-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    </div>
+  </div>
+  <div class="mx-auto mt-8 max-w-(--width-site) border-t border-white/10 pt-6 text-sm">© 2026 Kargatox. All rights reserved.</div>
 </footer>

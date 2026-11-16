@@ -2,15 +2,20 @@
 // the same Express/EJS app `npm run dev` uses, so the static output is byte-for-byte what the
 // dev server would have rendered for that route. Run via `npm run build:static` (or
 // `npm run build`, which also rebuilds the CSS first) after any content/template change, then
-// commit the regenerated public/*.html — Vercel deploys that folder directly, no build step.
+// commit the regenerated public/*.html — this is a secondary express.static fallback in
+// production now, not the deploy mechanism (see CLAUDE.md's "Deploy target" note).
 //
 // Setting VERCEL before requiring server.js reuses the guard server.js already has to skip its
 // own app.listen() (meant for Vercel's serverless runtime) so this script can run its own
-// ephemeral-port listener instead, without touching server.js.
+// ephemeral-port listener instead, without touching server.js. But server.js's own
+// dotenv.config() call is gated on that exact same flag, so setting VERCEL here would silently
+// skip loading .env too, right before routes/site.js needs DATABASE_URL (Phase 2/8) — load
+// dotenv directly, first, so this script doesn't depend on server.js's now-shadowed call.
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 process.env.VERCEL = "1";
 
 const http = require("http");
-const path = require("path");
 const fs = require("fs");
 
 const app = require("../server.js");

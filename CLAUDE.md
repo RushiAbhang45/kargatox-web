@@ -14,43 +14,67 @@ not run or edited going forward. It exists so later rewrite phases can port its 
 real source file to diff against, not a guess.
 
 **Where the rewrite stands:** Phase 1 is done (commit `c8ecbf2`) — an Express entry point, Tailwind v4
-CLI pipeline, and all 11 public page templates (home, services, how-we-work, faq, contact, the 6
+CLI pipeline, and all 11 original public page templates (home, services, how-we-work, faq, contact, the 6
 service-landing pages via one shared template, plus placeholder blog routes) rendering hardcoded content,
-no database. Phase 10 is also mostly done (commit `afdb1c0`, see `public/js/site.js`). After that, the
-site's deploy target briefly changed to a prerendered static build (commit `775b6fd`), then changed back
-to a live Node function (commit `dcdc668`) once the admin panel below needed real server-side DB/session
-handling — see "Deploy target: live Node function on Vercel" in Architecture below; don't trust the
-static-prerender framing as current. The remaining phases are tracked only as inline code comments (grep
-for `Phase \d`), not a separate plan doc:
-- **Phase 2** — wire a database back in **for the public site**; swap the hardcoded
-  `PAGE_DEFAULTS`/`FAQ_DEFAULTS`/sub-service content in `routes/site.js` for a real DB-backed merge (the
-  "default until a row exists" pattern the legacy app used). The DB this would read from already exists
-  (see "Admin panel, auth, and database" below) — `routes/site.js` just doesn't query it yet. Note this
-  would also need to feed the static-prerender script (see Architecture) or that script's output goes
-  stale against the DB.
-- **Phase 3** — `POST /api/enquiries`: real submit handling for the Contact form, including the
-  honeypot/prefill logic currently only sketched as static markup in `views/site/contact.ejs`. Move
-  `SERVICE_OPTIONS` (currently inlined in that template) into a shared `lib/enquiry-schema.js` once this
-  lands, so the API route and the `<select>` read from one place. The admin Dashboard already reads
-  `Enquiry` rows (see below) but will show all-zero counts until this phase actually creates any.
-- **Phase 8** — blog & case studies rendering (`views/site/blog-list.ejs` / `blog-post.ejs` are placeholder
-  routes today; the admin sidebar's "Blog & case studies" link is also still a placeholder, see below).
+no database. Phase 10 is also mostly done (commit `afdb1c0`, see `public/js/site.js`). Since then, several
+things landed outside the phase numbering: a 12th public page (`/about-us`, commit `ba5d63d`, no legacy
+equivalent) plus a real SEO/JSON-LD layer (`lib/seo-data.js`, same commit — see Architecture); a
+from-scratch admin panel (commits `5a6b9d0` then `a9b179b`, then the DB-wiring/email pass below — see
+"Admin panel, auth, and database", which is now feature-complete); and a **2026-11-14 SEO content pass**
+(no dedicated commit yet — delivered as a batch of prerendered `public/*.html` output that had to be
+reverse-engineered back into `lib/`/`views/`/`routes/site.js`, since the live app never reads `public/`
+for a routed path): a 13th public page (`/clients` — `lib/clients-data.js`, `views/site/clients.ejs`, no
+legacy or design-handoff equivalent either), richer JSON-LD/meta on every page (`lib/seo-data.js`'s
+`ORGANIZATION`/`pageEntry()`/`serviceSchema()` — alternateName, geo/hasMap, areaServed as City/State/
+Country, knowsAbout, speakable, primaryImageOfPage, a fixed `dateModified`/`og:updated_time` of
+`CONTENT_UPDATED_DATE`), new hreflang/geo/business-contact `doc-head.ejs` meta tags, a few revised page
+titles/descriptions (`routes/site.js`, `lib/service-pages-data.js`'s `metaDescription` fields), and a new
+sitewide "Our Location" embedded-map block in `site-footer.ejs`. Site body copy otherwise did **not**
+change in this pass — don't assume a future `public/*.html` upload is low-risk to diff away without
+checking; this one happened to be meta/schema-only plus one new page, not a rewrite of existing pages'
+content. The site's deploy target also briefly changed to a prerendered static build (commit `775b6fd`),
+then changed back to a live Node function (commit `dcdc668`) once the admin panel needed real server-side
+DB/session handling — see "Deploy target: live Node function on Vercel" in Architecture below; don't trust
+the static-prerender framing as current. The remaining phases are tracked only as inline code comments
+(grep for `Phase \d`), not a separate plan doc:
+- **Phase 2 — done.** `routes/site.js`'s five page handlers (`/`, `/services`, `/how-we-work`, `/faq`,
+  `/contact`) and `/services`'/`/faq`'s sub-service/FAQ content all read real DB rows now
+  (`PageContent`/`SubService`/`FaqItem`), merged over the hardcoded `lib/*-defaults.js` fallback via
+  `mergePublishedPage()`/`faqItemsFromRows()`/`subServicesByKeyFromRows()` — the same "default until a row
+  exists" helpers the admin Pages and Services & FAQ editors use (and were extracted from). Publishing in
+  the admin now has a real, visible effect on the live public pages.
+- **Phase 3 — still not done.** `POST /api/enquiries`: real submit handling for the Contact form,
+  including the honeypot/prefill logic currently only sketched as static markup in
+  `views/site/contact.ejs`. Move `SERVICE_OPTIONS` (currently inlined in that template) into a shared
+  `lib/enquiry-schema.js` once this lands, so the API route and the `<select>` read from one place. The
+  admin Dashboard and the Enquiries/Revenue checks sections (see below) already read real
+  `Enquiry`/`RevenueCheck` rows and `lib/mailer.js` can already send a reply email — but nothing public-
+  facing creates an `Enquiry` row yet, so those views stay empty until this phase lands. Settings'
+  `autoReplyMessage`/`sendAutoReply`/`notificationEmail`/`alsoNotify` fields save correctly but are
+  likewise inert until this phase gives them a trigger to fire on.
+- **Phase 8 — done.** `routes/site.js`'s `GET /blog` / `GET /blog/:slug` read real `Post` rows
+  (`status: "PUBLISHED"` only; an unpublished/unknown slug falls through to the 404 handler, same pattern
+  the service-slug allowlist uses). `views/site/blog-list.ejs` / `blog-post.ejs` render real listings/posts
+  instead of the old "being ported in a later phase" placeholder copy — `post.body` renders as raw HTML
+  (`<%- %>`, not escaped), styled by `public/css/input.css`'s `.kx-prose` rules, since it's a plain
+  `<textarea>` value, not Tiptap JSON (see `lib/post-schema.js`'s header comment). Publishing a post in the
+  admin now makes it live at `/blog` and `/blog/<slug>` immediately.
 - **Phase 10 (mostly done, one piece left)** — `public/js/site.js` wires the mobile nav drawer toggle
   (`site-header.ejs`'s `#mobile-menu-toggle`/`#mobile-menu`), the FAQ accordion's click-to-toggle
   (`faq-accordion.ejs`'s `data-faq-trigger`/`data-faq-panel` hooks), and the scramble-text effect
   (`data-scramble-reveal` attributes). **Not done:** `numbered-rows.ejs`'s grow-in underline animation —
   its own header comment still says the underline "renders at its final (fully grown) width" and the
   grow-in itself remains unbuilt; don't assume it's covered by the rest of Phase 10 landing.
-- **Phases 4–7/9, partially started** — a minimal admin panel (login, Dashboard, Team, Settings — commit
-  `5a6b9d0`) now exists with a real Postgres/Prisma DB and its own cookie-based auth, built directly into
-  this app rather than ported from `legacy-nextjs-app/`. See "Admin panel, auth, and database" below for
-  what's real vs. still a placeholder link — Enquiries, Revenue checks, Pages, and Services & FAQ have no
-  backing routes yet, so treat the legacy app's equivalent sections as the spec for those, same as
-  Phase 1–3/8/10 above.
+- **Phases 4–7/9 — done.** A full admin panel (login, Dashboard, Team, Settings, Enquiries, Revenue
+  checks, Pages, Services & FAQ, Blog & case studies — commits `5a6b9d0`, `a9b179b`, and the DB-wiring/
+  email pass below) exists with a real Postgres/Prisma DB, its own cookie-based auth, and outbound email
+  for the one action that has a real trigger today (Enquiries "Send reply" — see "Admin panel, auth, and
+  database" for the precise split of what's wired vs. still waiting on Phase 3).
 
 Don't assume feature parity with `legacy-nextjs-app/` just because this is "the current app" — anything
-not listed as done above (DB-backed *public-site* content, the enquiries API, revenue-check quiz, most of
-the admin panel, blog rendering, the one remaining animation) simply isn't built yet in this rewrite.
+not listed as done above (the public contact-form submit API and the auto-reply/notification email it
+would trigger, the revenue-check quiz, the one remaining animation) simply isn't built yet in this
+rewrite.
 
 ## Commands
 
@@ -64,7 +88,10 @@ the admin panel, blog rendering, the one remaining animation) simply isn't built
   on an ephemeral port, HTTP-fetches every known public route, and writes each response verbatim to a flat
   `public/<slug>.html` (plus a static `public/404.html`). These generated HTML files **are committed** — re-run
   this (or `npm run build`) and commit the diff after any route/content/template change, or the deployed
-  static output silently drifts from what `npm run dev` renders.
+  static output silently drifts from what `npm run dev` renders. Now that `routes/site.js` is DB-backed
+  (Phase 2/8), this script needs `DATABASE_URL` to actually get through the prerender — it loads `.env`
+  itself (before setting `process.env.VERCEL = "1"`, which would otherwise skip `server.js`'s own
+  now-shadowed `dotenv.config()` call), so this still works locally with no extra setup.
 - `npm run build` — runs `build:css` then `build:static`. Still worth running after a public-page content/
   template change (see the deploy-target note in Architecture for why this no longer gates production the
   way it used to), but it is **not** the deploy mechanism anymore.
@@ -72,13 +99,15 @@ the admin panel, blog rendering, the one remaining animation) simply isn't built
   exist at all; there's no `prisma migrate`/`db:seed` script in `package.json` yet (migrations are owned
   by `legacy-nextjs-app/`, which shares this DB — see "Admin panel, auth, and database" below).
 - No lint script and no test suite in this rewrite (the legacy app had both; neither has been re-added here).
-- Public-site pages still need no `.env`. The admin panel does: `DATABASE_URL`, `DATABASE_URL_UNPOOLED`,
-  and `AUTH_SECRET` are now genuinely read (`lib/db.js`, `lib/admin-auth.js`) and required for anything
-  under `/admin` to work — `/admin/login` throws if `AUTH_SECRET` is unset. The committed `.env.example`'s
-  `SMTP_*`/`ADMIN_NOTIFY_EMAIL` block is still **not** consumed by anything here (no `lib/mailer.js` exists;
-  that comment block still literally points at `src/lib/mailer.ts`, a `legacy-nextjs-app/`-only path) —
-  check `server.js`/`routes/`/`lib/` for actual `process.env` reads before assuming any given env var does
-  something in this app.
+- Public-site pages still need no `.env` beyond `DATABASE_URL`/`DATABASE_URL_UNPOOLED` now that Phase 2/8
+  read the DB (previously the public site needed no `.env` at all). The admin panel also needs
+  `AUTH_SECRET` (`lib/admin-auth.js`) — `/admin/login` throws if it's unset. `SMTP_HOST`/`SMTP_PORT`/
+  `SMTP_USER`/`SMTP_PASSWORD`/`SMTP_FROM` are now genuinely read by `lib/mailer.js`; if any are missing,
+  `sendMail()` just logs and no-ops rather than throwing, so the admin panel still works without them —
+  only outbound email silently doesn't happen. `ADMIN_NOTIFY_EMAIL` and `.env.example`'s `db:seed` mention
+  are still **not** consumed by anything here (no seed script exists; `ADMIN_NOTIFY_EMAIL`/Settings'
+  notification fields have no trigger until Phase 3 lands) — check `server.js`/`routes/`/`lib/` for actual
+  `process.env` reads before assuming any given env var does something in this app.
 
 ## Architecture
 
@@ -93,26 +122,59 @@ the admin panel, blog rendering, the one remaining animation) simply isn't built
   only calls `.listen()` when `process.env.VERCEL` isn't set.
 - **Shared, request-independent data goes on `app.locals`, not `require()` inside templates.** EJS
   templates rendered via `res.render()` don't close over `server.js`'s `require` — so `NAV_LINKS`,
-  `SERVICE_PAGES`/`SERVICE_PAGE_GROUPS`/`SUB_SERVICE_HREFS`, `PROCESS_STEPS`, and `SERVICES` are all
-  attached to `app.locals` in `server.js` and read by name directly in partials (e.g. `site-header.ejs`
-  references `NAV_LINKS`, `SERVICE_PAGE_GROUPS`, `SERVICE_PAGES` with no `include(...)` argument passing
-  them in). Anything that's per-request or page-specific instead comes in as a `res.render()` locals object
-  from the route handler — that split (locals-for-shared vs. render-args-for-per-page) is the pattern to
-  follow for new data.
-- **`routes/site.js`** is a single router: one `GET` handler per public page, a `Set`-checked `GET /:slug`
-  for the six service-landing pages (explicit slug allowlist, not a catch-all — an unknown path falls
-  through to the final 404 handler in `server.js` instead of rendering with undefined content), and
-  placeholder `GET /blog` / `GET /blog/:slug` routes. Each handler does any server-side content shaping
-  (e.g. `splitFirstSentence`/`splitLastWord` from `lib/text-split.js`) before calling `res.render()` — views
-  stay free of that logic.
-- **`lib/*.js`** holds plain CommonJS modules ported from the legacy app's `src/lib/*.ts` — same data,
-  same shape, no TypeScript/zod: `page-content-defaults.js` (`PAGE_DEFAULTS`, the hardcoded fallback copy
-  per page), `faq-defaults.js`, `nav-links.js`, `process-steps.js`, `services-data.js` (the Services page's
-  non-editable "SAMPLE DATA" dashboard panel content), `service-pages-data.js` (all six service-landing
-  pages' copy/FAQs/related-links, sourced word-for-word from the client's "Kargatox – SEO Content for 6
-  Service update" doc), and `text-split.js` (`splitFirstSentence`/`splitLastWord`, the two-tone-heading
-  helpers). Each file's header comment names its `legacy-nextjs-app/src/lib/*.ts` source — check that file
-  first if behavior looks wrong, since it's the originally-reviewed version.
+  `SERVICE_PAGES`/`SERVICE_PAGE_GROUPS`/`SUB_SERVICE_HREFS`, and `PROCESS_STEPS` are all attached to
+  `app.locals` in `server.js` and read by name directly in partials (e.g. `site-header.ejs` references
+  `NAV_LINKS`, `SERVICE_PAGE_GROUPS`, `SERVICE_PAGES` with no `include(...)` argument passing them in).
+  Anything that's per-request or page-specific instead comes in as a `res.render()` locals object from the
+  route handler — that split (locals-for-shared vs. render-args-for-per-page) is the pattern to follow for
+  new data. `SERVICES` (`lib/services-data.js`) used to be on `app.locals` too, but Phase 2 made
+  `services.ejs`'s rendering of it per-request (each service's `items` now depends on `SubService` DB
+  rows) — it's gone from `app.locals` and is `require()`'d directly by `routes/site.js`/`routes/admin.js`
+  instead, matching how `routes/admin.js` already consumed it before this change.
+- **`routes/site.js`** is a single router: one (now `async`) `GET` handler per public page, a
+  `Set`-checked `GET /:slug` for the six service-landing pages (explicit slug allowlist, not a catch-all —
+  an unknown path falls through to the final 404 handler in `server.js` instead of rendering with
+  undefined content), and `GET /blog` / `GET /blog/:slug` reading real `Post` rows (Phase 8 — an
+  unpublished/unknown slug also falls through to the 404 handler via the same `next()` pattern). Each
+  handler does any server-side content shaping (e.g. `splitFirstSentence`/`splitLastWord` from
+  `lib/text-split.js`, or the Phase 2 DB merge below) before calling `res.render()` — views stay free of
+  that logic. Express 5 (the version in use) auto-forwards a rejected async handler's promise to the
+  default error handler, so there's no manual try/catch scaffolding around the `await prisma.*` calls here
+  — matches the pattern `routes/admin.js`'s async handlers already relied on.
+- **`lib/*.js`** holds plain CommonJS modules, mostly ported from the legacy app's `src/lib/*.ts` — same
+  data, same shape, no TypeScript/zod: `page-content-defaults.js` (`PAGE_DEFAULTS`, the hardcoded fallback
+  copy per page, `PAGE_KEYS`/`PAGE_LABELS`/`PAGE_ROUTES`/`PAGE_FIELDS` which drive the admin Pages editor,
+  and `mergePublishedPage(pageKey, row)` — the shared "default until a row exists" merge used by both the
+  admin Pages editor and `routes/site.js`, Phase 2), `faq-defaults.js` (`FAQ_DEFAULTS` plus
+  `faqItemsFromRows(faqRows)`, the same merge pattern for `FaqItem` rows, shared by the admin Services &
+  FAQ editor and the public `/faq` page), `nav-links.js` (now includes the non-legacy `/about-us` and
+  `/clients` entries — both `site-header.ejs`'s desktop/mobile nav and `site-footer.ejs`'s link list read
+  this one array, so adding a plain (non-dropdown) page here is a one-line change),
+  `process-steps.js`, `services-data.js` (`SERVICES`, the Services page's non-editable "SAMPLE DATA"
+  dashboard panel content, plus `subServicesByKeyFromRows(subServiceRows)` — same merge pattern, grouping
+  `SubService` rows by `serviceKey` with a fallback to each service's hardcoded `items`), `service-pages-data.js`
+  (all six service-landing pages' copy/FAQs/related-links, sourced word-for-word from the client's
+  "Kargatox – SEO Content for 6 Service update" doc), `enquiry-status.js` and `post-schema.js` (status/type
+  enums + validation for Enquiries and Blog in the admin panel — `post-schema.js` swaps the legacy app's
+  zod schema for a plain `validatePost()` function), `mailer.js` (ported from `legacy-nextjs-app/src/lib/mailer.ts`
+  verbatim — lazy `nodemailer` transporter from `SMTP_*` env vars, `sendMail({to,subject,text})` logs and
+  no-ops instead of throwing if they're unset), and `text-split.js` (`splitFirstSentence`/`splitLastWord`,
+  the two-tone-heading helpers). Each ported file's header comment names its `legacy-nextjs-app/src/lib/*.ts`
+  source — check that file first if behavior looks wrong, since it's the originally-reviewed version.
+  `seo-data.js` and `clients-data.js` have no legacy equivalent — `clients-data.js` (2026-11-14 SEO content
+  pass) holds the `/clients` page's content (`STATS`/`SEO_CASE_STUDY`/`ERP_CASE_STUDY`/`AUTHOR`/`ARTICLES`),
+  reverse-engineered from the client's uploaded static build with no design-handoff source to check it
+  against — treat it as the first-draft source of truth for that page, not an already-reviewed port.
+  `seo-data.js` is a new module (commit `ba5d63d`, enriched further in the 2026-11-14 pass) holding
+  JSON-LD building blocks (`ORGANIZATION`, `WEBSITE`, `seo.graph()`, `seo.breadcrumb()`,
+  `seo.serviceSchema()`, `seo.pageEntry()` — the last two now also bake in `audience`/`areaServed` and
+  `primaryImageOfPage`/`dateModified`/`speakable`/a default `mainEntity` respectively, so callers only
+  override `mainEntity` when they need something other than the organization) and plain constants
+  (`SITE_URL`, `GA_MEASUREMENT_ID`, `GOOGLE_SITE_VERIFICATION`, `LOGO_URL`, `GEO_LATITUDE`/`GEO_LONGITUDE`,
+  `CONTENT_UPDATED_DATE`) sourced from the client's SEO upload; `routes/site.js` handlers build a per-page
+  `meta` object (title/description/path/`jsonLd`) from it and pass it to `res.render()`, consumed by
+  `views/partials/doc-head.ejs`, while the plain constants are also exposed directly on `app.locals` for
+  `doc-head.ejs`/`site-footer.ejs` to read without the `meta` indirection.
 - **EJS view conventions** (`views/site/*.ejs` = full pages, `views/partials/*.ejs` = includable
   fragments):
   - Every page/partial opens with a comment naming its `legacy-nextjs-app/src/.../*.tsx` source and listing
@@ -120,7 +182,10 @@ the admin panel, blog rendering, the one remaining animation) simply isn't built
   - Partials take "props" as the object literal passed to `include('partial-name', { ... })`; optional
     props are read defensively with `typeof x !== "undefined" ? x : default` since EJS doesn't error on a
     missing local the way a TS component would on a missing prop (see `logo.ejs`'s `variant`/`className`,
-    `numbered-rows.ejs`'s `className`, `site-footer.ejs`'s `showCta`).
+    `numbered-rows.ejs`'s `className`, `site-footer.ejs`'s `showCta`/`ctaTopPadding` — the latter added in
+    the 2026-11-14 pass so About Us and Clients can add `pt-[80px]` to the shared CTA section without
+    forcing it on every other page, since those two pages' last section ends flush with no bottom padding
+    of its own).
   - Page-local static arrays that aren't DB-editable (e.g. home's `PILLARS`/`CAPABILITY_SERVICES`/`TICKER`,
     contact's `STEPS`/`SERVICE_OPTIONS`) are declared inline in a `<% ... %>` block at the top of the
     template, mirroring where the legacy `page.tsx` had them in module scope — don't hoist these into
@@ -145,32 +210,48 @@ the admin panel, blog rendering, the one remaining animation) simply isn't built
     its display-font stand-in; if fidelity to the legacy app's rendered look matters, check which one is
     actually intended before assuming they're interchangeable. Real Clash Display/Satoshi self-hosting
     (the design handoff's actual spec) still hasn't been done in either app.
-- **Admin panel, auth, and database now exist** — see the dedicated section below. Prisma/bcryptjs are
-  real dependencies now (`package.json`), not legacy-only patterns to avoid; just don't assume the rest of
-  the legacy admin's feature set (Auth.js, nodemailer, enquiries pipeline, revenue-check quiz) carried over
-  too — most of it didn't, see that section for exactly what's real vs. placeholder.
+  - Below the `@theme inline` block, a handful of hand-rolled component classes exist for markup that
+    doesn't fit Tailwind's utility syntax (not run through a plugin like `@tailwindcss/typography`):
+    `.kx-grid`/`.kx-list`/`.kx-contact` for `views/site/about-us.ejs`, and `.kx-prose` for rendering a
+    blog/case-study post's HTML `body` (`views/site/blog-post.ejs`, Phase 8) — targets the plain tags an
+    admin is actually likely to type (`h2`/`h3`/`a`/`ul`/`ol`/`blockquote`/`strong`), not a general-purpose
+    typography reset.
+- **Admin panel, auth, and database exist, and the admin panel is feature-complete** — see the dedicated
+  section below. Prisma/bcryptjs/nodemailer are real dependencies now (`package.json`), not legacy-only
+  patterns to avoid. Auth.js itself was not ported (replaced by `lib/admin-auth.js`'s own cookie session);
+  what's still missing is purely on the *public* side — nothing yet creates an `Enquiry` row outside the
+  admin panel itself (the enquiry submit API, the revenue-check quiz) — see that section for the precise
+  split of what's wired vs. still waiting on Phase 3.
 - **Deploy target: live Node function on Vercel, not the static build.** `vercel.json` now uses the
   explicit v2 `builds`/`routes` form — `@vercel/node` on `server.js`, every path routed to it (commit
   `dcdc668`) — after briefly trying (and reverting, commits `43575cd`/`5bbcf58`) a hybrid multi-build
   config and, before that, a pure static deploy (`"outputDirectory": "public"`, commit `775b6fd`). The
   live Node function was necessary once the admin panel needed real per-request DB reads and signed-cookie
-  session checks, which a static prerender can't do. **`scripts/build-static.js`'s own header comment is
-  now stale** — it still claims "Vercel deploys that folder directly, no build step"; trust `vercel.json`,
-  not that comment. In production, `server.js` behaves exactly like it does locally: its live EJS routers
-  are mounted before `express.static`, so the committed `public/*.html` files (still regenerated by
-  `npm run build:static`) are shadowed by the live render for every path that has a real route, and now
-  only actually serve as `express.static` fallback content for paths with no matching route. Keep running
-  `npm run build:css` after Tailwind/token changes regardless — `styles.css` is a static asset nothing
-  rebuilds automatically on deploy. `scripts/build-static.js`'s `ROUTES` array is a hardcoded list derived
-  from `NAV_LINKS` + `SERVICE_PAGES`; a new route added to `routes/site.js` also needs an entry there or it
-  won't get prerendered. `/blog/:slug` is deliberately excluded (no real posts exist pre-Phase-8).
+  session checks, which a static prerender can't do. `scripts/build-static.js`'s header comment has been
+  corrected to match this — trust `vercel.json` over any older framing you find elsewhere (e.g. in
+  `.env.example` or other comments not touched by this note). In production, `server.js` behaves exactly
+  like it does locally: its live EJS routers are mounted before `express.static`, so the committed
+  `public/*.html` files (still regenerated by `npm run build:static`) are shadowed by the live render for
+  every path that has a real route, and now only actually serve as `express.static` fallback content for
+  paths with no matching route. Keep running `npm run build:css` after Tailwind/token changes regardless —
+  `styles.css` is a static asset nothing rebuilds automatically on deploy. `scripts/build-static.js`'s
+  `ROUTES` array is a hardcoded list derived from `NAV_LINKS` + `SERVICE_PAGES`; a new route added to
+  `routes/site.js` also needs an entry there or it won't get prerendered. `/blog/:slug` is still
+  deliberately excluded even after Phase 8 — individual post slugs are DB content, not a fixed list, and
+  since this static output is only a fallback (not the deploy mechanism), scanning the DB for every
+  published slug at build time wasn't judged worth the added complexity; `/blog`'s list page is prerendered
+  as a snapshot of whatever's published at build time.
 
 ## Admin panel, auth, and database
 
-A minimal admin panel exists, built directly into this app (`routes/admin.js`, `views/admin/*.ejs`,
-`views/partials/admin-sidebar.ejs`, commit `5a6b9d0`) — **not** ported from `legacy-nextjs-app/`, unlike
-everything else in this rewrite. `server.js` mounts it at `/admin` before `routes/site.js`, so admin
-routes always take precedence over the public router and over `express.static`.
+A full admin panel exists, built directly into this app (`routes/admin.js`, `views/admin/*.ejs`,
+`views/partials/admin-sidebar.ejs`, commits `5a6b9d0` then `a9b179b`) — **not** ported from
+`legacy-nextjs-app/`, unlike everything else in this rewrite (each section instead uses the equivalent
+already-reviewed legacy `page.tsx`/`actions.ts` as its spec, named in `routes/admin.js`'s section comments).
+`server.js` mounts it at `/admin` before `routes/site.js`, so admin routes always take precedence over the
+public router and over `express.static`. Every sidebar link (`/admin/enquiries`, `/admin/revenue-checks`,
+`/admin/pages`, `/admin/services-faq`, `/admin/blog`, plus Team/Settings) now has a real route — there are
+no more placeholder 404s in the admin panel itself.
 
 - **Database**: `prisma/schema.prisma` is a real data model (`User`, `Enquiry`, `RevenueCheck`,
   `EnquiryMessage`, `PageContent`, `SubService`, `FaqItem`, `Post`, `Settings`) describing a Postgres DB
@@ -181,24 +262,74 @@ routes always take precedence over the public router and over `express.static`.
   a new one per request.
 - **Auth**: `lib/admin-auth.js` is a stateless, signed-cookie session (`kx_admin_session`, HMAC-SHA256 over
   `AUTH_SECRET`, 30-day expiry, `HttpOnly`/`SameSite=Lax`/`Secure`-when-on-Vercel) — deliberately *not*
-  Auth.js, even though it reads/writes the same `User` table the legacy app's Auth.js adapter used.
-  `routes/admin.js`'s `requireAuth` / `requireTeamAccess` / `requireSettingsAccess` middlewares gate routes
-  by session presence and by `role` (`OWNER`/`ADMIN`/`EDITOR`/`SALES` — only `OWNER`/`ADMIN` can reach Team
-  or Settings).
-- **What's actually built**: login (`GET`/`POST /admin/login`, `POST /admin/logout`), a Dashboard
-  (`GET /admin`, reading real `Enquiry` rows for 30-day/total counts and a 12-week chart — see the Phase 3
-  note above for why these currently read as zero), Team (seat-limited to `MAX_TEAM_SEATS = 5`, mirrors the
-  already-reviewed "admin sets the password directly" flow from
-  `legacy-nextjs-app/src/app/admin/(protected)/team/actions.ts`), and Settings (a `Settings` singleton row
-  for site name/notification email/auto-reply message/GA measurement id).
-- **What's still placeholder**: `views/partials/admin-sidebar.ejs` links to `/admin/enquiries`,
-  `/admin/revenue-checks`, `/admin/pages`, and `/admin/services-faq` — none of those routes exist in
-  `routes/admin.js` yet, so clicking them 404s. A link existing in the sidebar is not evidence the page
-  behind it is built — check `routes/admin.js` directly.
-- **Email is still not wired**: there's no `lib/mailer.js`. Don't assume `SMTP_*`/`ADMIN_NOTIFY_EMAIL` do
-  anything here yet (see the Commands section's `.env` note).
-- Required env for any of this to work locally: `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `AUTH_SECRET`
-  (see `.env.example`) — public-site pages still need none of it.
+  Auth.js, even though it reads/writes the same `User` table the legacy app's Auth.js adapter used. Being
+  stateless means there's no server-side revocation: `requireAuth` only verifies the cookie's signature and
+  expiry, it never re-checks the `User` row, so removing someone in Team (or changing their role) doesn't
+  invalidate a session they're already holding — confirmed by testing (a cookie for a just-deleted user
+  still authenticated) — it just expires naturally after 30 days. This is the cost of the stateless design,
+  not a bug to silently patch; if immediate revocation matters, that needs a deliberate follow-up (a
+  session table/blacklist, or re-deriving role from a fresh DB read per request) — a real architecture
+  change, not a fix folded into this pass.
+- **Role gating**: `routes/admin.js` defines four role groups as plain arrays (same role set as
+  `legacy-nextjs-app/src/lib/roles.ts`: `TEAM_ACCESS_ROLES`/`SETTINGS_ACCESS_ROLES` = `OWNER`/`ADMIN`,
+  `ENQUIRY_ACCESS_ROLES` = `OWNER`/`ADMIN`/`SALES`, `CONTENT_ACCESS_ROLES` = `OWNER`/`ADMIN`/`EDITOR`) and a
+  `requireRole(roles, title)` factory that both `requireTeamAccess`/`requireSettingsAccess` and the newer
+  `requireEnquiryAccess`/`requireContentAccess` are built from. A role mismatch renders the normal sidebar
+  layout with an inline message (`views/admin/forbidden.ejs`, HTTP 403) rather than a dead-end page — the
+  same UX the legacy app used. `requireAuth` (session presence) always runs first.
+- **Dashboard** (`GET /admin`) reads real `Enquiry` rows for 30-day/total counts and a 12-week chart — see
+  the Phase 3 note above for why these currently read as zero/empty.
+- **Team** (seat-limited to `MAX_TEAM_SEATS = 5`) mirrors the already-reviewed "admin sets the password
+  directly" flow from `legacy-nextjs-app/src/app/admin/(protected)/team/actions.ts`.
+- **Settings** is a `Settings` singleton row for site name/notification email/auto-reply message/GA
+  measurement id. Saves correctly, but nothing reads it back yet on the public side (`doc-head.ejs`'s GA
+  snippet still reads the hardcoded `lib/seo-data.js` constant, not this row) and the auto-reply/
+  notification fields have no trigger until Phase 3 exists — out of scope for the DB-wiring/email pass
+  that closed Phase 2/8, not an oversight within it.
+- **Enquiries** (`GET /admin/enquiries`, mirrors legacy's `enquiries/{page.tsx,actions.ts}`): list with
+  status filter + counts, a detail panel (`?id=`) for pipeline status / assignment / replying. Replying
+  (`POST /admin/enquiries/:id/reply`) writes an `EnquiryMessage` row, bumps `NEW`→`CONTACTED`, and sends the
+  reply by email via `lib/mailer.js` (`sendMail()` wrapped in its own try/catch — a flaky SMTP connection
+  never turns an already-saved reply into a user-visible failure, same ordering as the already-reviewed
+  legacy `sendReply()`). Verified against the live DB and a real Gmail SMTP send.
+- **Revenue checks** (`GET /admin/revenue-checks`) is read-only — stats + table over `RevenueCheck` rows;
+  there's no `actions.ts` equivalent because there's nothing to mutate, mirroring the legacy page.
+- **Pages** (`GET /admin/pages`, mirrors legacy's `pages/{page.tsx,actions.ts}`): a draft/publish editor
+  over `PageContent` rows, using `PAGE_KEYS`/`PAGE_LABELS`/`PAGE_ROUTES`/`PAGE_FIELDS` from
+  `lib/page-content-defaults.js`. **Publishing here now changes the live public page** (Phase 2,
+  `routes/site.js` reads the same `PageContent.published` JSON via `mergePublishedPage()`) — verified
+  end-to-end against the live DB (publish → page changes; draft alone → page doesn't).
+- **Services & FAQ** (`GET`/`POST /admin/services-faq`, mirrors legacy's
+  `services-faq/{page.tsx,actions.ts}`): one combined editor/save across all services' `SubService` rows
+  and the global `FaqItem` list. Falls back to `lib/services-data.js` / `lib/faq-defaults.js` content until
+  rows exist (same "default until edited" pattern as Pages, now shared via `subServicesByKeyFromRows()`/
+  `faqItemsFromRows()` with `routes/site.js`'s `/services`/`/faq`). Save does a full delete+recreate per
+  `serviceKey` (and for `FaqItem` globally) using Prisma's **array-form (batch) `$transaction`**, not the
+  interactive/callback form — the callback form reliably hit Prisma error `P2028` ("Unable to start a
+  transaction in the given time") over Neon's pooled connection (`DATABASE_URL`, pgbouncer); the batched
+  form was verified to work. If a future change needs an interactive transaction against this DB, expect
+  the same issue and prefer the array form again.
+- **Blog & case studies** (`GET/POST /admin/blog`, `/admin/blog/new`, `/admin/blog/:id`,
+  `/admin/blog/:id/delete`, mirrors legacy's `blog/{page.tsx,[id]/page.tsx,new/page.tsx,actions.ts}`): list
+  + new/edit editor + delete over `Post` rows (type `BLOG`/`CASE_STUDY`, status `DRAFT`/`PUBLISHED`).
+  `body` is a plain HTML/text `<textarea>`, **not** the legacy app's Tiptap JSON — there's no rich-text
+  editor dependency in this app, and this is a deliberate scope cut (see `lib/post-schema.js`'s header
+  comment), not an oversight. **Publishing now makes the post live** at `/blog` and `/blog/<slug>` (Phase
+  8) — verified end-to-end (publish → appears on both; delete → 404s again, same `next()` fallthrough the
+  service-slug allowlist uses).
+- **`public/js/admin.js`** is admin-only client JS (separate from `public/js/site.js`/Phase 10, same
+  build-free `<script defer>` pattern) — a generic repeater (reorder/add/remove rows without a page reload)
+  used by Services & FAQ's and Blog's editors, plus the Blog editor's slug-autofill-from-title and live
+  search-result preview.
+- **Email**: `lib/mailer.js` (ported from `legacy-nextjs-app/src/lib/mailer.ts`) is wired into Enquiries'
+  reply action — its only real caller today. Settings' `sendAutoReply`/`autoReplyMessage`/
+  `notificationEmail`/`alsoNotify` fields save but stay inert; they're meant for a Phase-3 contact-form
+  submission to trigger (an auto-reply to the enquirer, a notification to the team), and that trigger
+  doesn't exist yet in this rewrite. `ADMIN_NOTIFY_EMAIL` likewise still does nothing here.
+- Required env for any of this to work locally: `DATABASE_URL`/`DATABASE_URL_UNPOOLED` (now needed by the
+  public site too, since Phase 2/8 — see the Commands section) and `AUTH_SECRET` for anything under
+  `/admin` (see `.env.example`). `SMTP_*` is optional — without it, `lib/mailer.js` just logs instead of
+  sending, it doesn't block anything from working.
 
 ## Design reference material
 
@@ -212,7 +343,9 @@ the repo root so the root only shows the actual deployable Express/EJS project.
   this rewrite, same as it was for the legacy app. **Read it before implementing a new section.**
 - **`design-reference/design_handoff_kargatox/content/Website-content.pdf`** — the client's source copy.
   Site copy must be taken from it **word for word** — this rule carried over unchanged from the legacy app
-  and governs the content already ported into `lib/*.js`.
+  and governs the content already ported into `lib/*.js`. **Exception:** `/clients` (`lib/clients-data.js`)
+  and blog posts (DB `Post` rows) postdate this PDF and have no entry in it — their content came from the
+  2026-11-14 upload and the admin Blog editor respectively, not this file.
 - **`design-reference/design_handoff_kargatox/designs/*.dc.html`** — Divhunt-style component prototypes
   (template markup + a `class Component extends DCLogic` script with logic/sample data), not plain HTML and
   not code to copy verbatim. Open directly in a browser (`support.js` must sit alongside); rebuild the
@@ -236,10 +369,11 @@ the repo root so the root only shows the actual deployable Express/EJS project.
   files, not in the legacy copy.
 - The prototype/legacy **data** (dashboard numbers, sample enquiries, team names, "SAMPLE DATA" panels on
   Services) is placeholder and must not be treated as real content.
-- When a later phase re-adds role permissions, server-side rate limiting, or the honeypot spam check,
-  check `legacy-nextjs-app/` for the already-reviewed implementation (`requireEnquiryAccess()`,
-  `src/lib/rate-limit.ts`, the `company`-field honeypot naming note in that app's contact form) before
-  re-designing it from scratch — most of this logic was already debugged once.
+- Admin-side role permissions are already ported (`routes/admin.js`'s `requireRole()`/role-array pattern,
+  see "Admin panel, auth, and database"). When Phase 3 adds the public contact-form submit API, it still
+  needs server-side rate limiting and the honeypot spam check — check `legacy-nextjs-app/` for the
+  already-reviewed implementation (`src/lib/rate-limit.ts`, the `company`-field honeypot naming note in
+  that app's contact form) before re-designing it from scratch.
 - Animations must respect `prefers-reduced-motion: reduce` — `public/css/input.css` already disables the
   CSS-keyframe ones, and `public/js/site.js` has its own `prefersReducedMotion()` helper (a plain
   `matchMedia` check) that `initScrambleReveal()` already uses to skip straight to the final text. Reuse

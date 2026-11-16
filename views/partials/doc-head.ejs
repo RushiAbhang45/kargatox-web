@@ -1,11 +1,14 @@
 <%
 // Takes one `meta` object: { title, description, path, robots?, jsonLd? }. `path` is
-// the page's own route (e.g. "/", "/about-us") — canonical/OG/Twitter URLs and the
-// google-site-verification tag are derived from it. SITE_URL/GA_MEASUREMENT_ID/
-// GOOGLE_SITE_VERIFICATION/LOGO_URL come from app.locals (server.js) — partials have
-// no `require`. See lib/seo-data.js for how callers build `meta.jsonLd`.
+// the page's own route (e.g. "/", "/about-us") — canonical/OG/Twitter/hreflang URLs and
+// the google-site-verification tag are derived from it. SITE_URL/GA_MEASUREMENT_ID/
+// GOOGLE_SITE_VERIFICATION/LOGO_URL/GEO_LATITUDE/GEO_LONGITUDE/CONTENT_UPDATED_DATE come
+// from app.locals (server.js) — partials have no `require`. See lib/seo-data.js for how
+// callers build `meta.jsonLd`, and for where GEO_LATITUDE/LONGITUDE/CONTENT_UPDATED_DATE
+// are defined (2026-11-14 SEO content pass — same fixed values on every page).
 const canonicalUrl = SITE_URL + meta.path;
-const robots = meta.robots || "index, follow, max-image-preview:large";
+const robots = meta.robots || "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
+const updatedTimeIso = CONTENT_UPDATED_DATE + "T00:00:00+05:30";
 %>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=<%= GA_MEASUREMENT_ID %>"></script>
@@ -24,6 +27,14 @@ const robots = meta.robots || "index, follow, max-image-preview:large";
 <meta name="description" content="<%= meta.description %>" />
 <meta name="robots" content="<%= robots %>" />
 <link rel="canonical" href="<%= canonicalUrl %>" />
+<link rel="alternate" hreflang="en-IN" href="<%= canonicalUrl %>" />
+<link rel="alternate" hreflang="x-default" href="<%= canonicalUrl %>" />
+<meta name="author" content="Kargatox" />
+
+<meta name="geo.region" content="IN-MH" />
+<meta name="geo.placename" content="Pimple Saudagar, Pune, Maharashtra" />
+<meta name="geo.position" content="<%= GEO_LATITUDE %>;<%= GEO_LONGITUDE %>" />
+<meta name="ICBM" content="<%= GEO_LATITUDE %>, <%= GEO_LONGITUDE %>" />
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Kargatox" />
@@ -32,13 +43,24 @@ const robots = meta.robots || "index, follow, max-image-preview:large";
 <meta property="og:description" content="<%= meta.description %>" />
 <meta property="og:url" content="<%= canonicalUrl %>" />
 <meta property="og:image" content="<%= LOGO_URL %>" />
+<meta property="og:image:secure_url" content="<%= LOGO_URL %>" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:alt" content="Kargatox — Knowledge Partners logo" />
+<meta property="og:updated_time" content="<%= updatedTimeIso %>" />
+<meta property="place:location:latitude" content="<%= GEO_LATITUDE %>" />
+<meta property="place:location:longitude" content="<%= GEO_LONGITUDE %>" />
+<meta property="business:contact_data:street_address" content="Coffice 24x7 (CO-102), Sai Vision, Pimple Saudagar" />
+<meta property="business:contact_data:locality" content="Pune" />
+<meta property="business:contact_data:region" content="Maharashtra" />
+<meta property="business:contact_data:postal_code" content="411027" />
+<meta property="business:contact_data:country_name" content="India" />
+<meta property="business:contact_data:email" content="Kargatox@gmail.com" />
+<meta property="business:contact_data:phone_number" content="+91 78877 89471" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="<%= meta.title %>" />
 <meta name="twitter:description" content="<%= meta.description %>" />
 <meta name="twitter:image" content="<%= LOGO_URL %>" />
-
-<meta name="geo.region" content="IN-MH" />
-<meta name="geo.placename" content="Pimple Saudagar, Pune" />
+<meta name="twitter:image:alt" content="Kargatox — Knowledge Partners logo" />
 
 <% if (meta.path === "/") { %>
 <meta name="google-site-verification" content="<%= GOOGLE_SITE_VERIFICATION %>" />
