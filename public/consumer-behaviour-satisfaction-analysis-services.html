@@ -12,6 +12,19 @@
   gtag('config', 'G-B6FXMCJE9H');
 </script>
 
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "zddpq7gv8o");
+</script>
+
+<!-- Calendly widget assets (site-footer.ejs's "Book a call" popup, contact.ejs's inline embed) -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Consumer Behaviour &amp; Satisfaction Analysis | Kargatox</title>
@@ -550,6 +563,7 @@
         <div class="mt-9 flex flex-wrap gap-3.5">
           <a href="/contact" class="rounded-pill bg-ink px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-700">Start an Inquiry →</a>
           <a href="/services" class="rounded-pill bg-white px-7 py-4 text-base font-semibold text-ink transition-colors hover:text-orange-500">See our services</a>
+          <a href="https://calendly.com/kargatox/REPLACE_WITH_EVENT_SLUG" onclick="if (window.Calendly) { Calendly.initPopupWidget({ url: 'https://calendly.com/kargatox/REPLACE_WITH_EVENT_SLUG' }); return false; }" target="_blank" rel="noopener" class="rounded-pill border border-white/40 px-7 py-4 text-base font-semibold text-white transition-colors hover:border-white">Book a call →</a>
         </div>
       </div>
     </div>
@@ -595,19 +609,19 @@
       
     </div>
   </div>
-  <div id="footer-location" class="mx-auto mt-12 max-w-(--width-site) border-t border-white/10" style="padding-top:40px;display:grid;gap:28px 56px;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));align-items:start">
+  <div id="footer-location" class="mx-auto mt-8 grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-start gap-x-14 gap-y-6 border-t border-white/10 pt-8">
     <div class="grid gap-2.5">
       <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Our Location</span>
-      <address style="font-style:normal" class="text-[15px] leading-[1.6] text-white">Kargatox, Coffice 24x7 (CO-102),<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India</address>
+      <address class="kx-contact text-[15px] leading-[1.6] text-white">Kargatox, Coffice 24x7 (CO-102),<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India</address>
       <a href="tel:+917887789471" class="text-[14px] text-mist transition-colors hover:text-orange-400">+91 78877 89471</a>
       <a href="mailto:Kargatox@gmail.com" class="text-[14px] text-mist transition-colors hover:text-orange-400">Kargatox@gmail.com</a>
       <a href="https://maps.app.goo.gl/NeJyGs6Z2QePoPEL6" target="_blank" rel="noopener" class="text-[14px] font-semibold text-orange-400">Get directions on Google Maps ↗</a>
     </div>
-    <div style="height:200px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1)">
-      <iframe title="Kargatox office location on Google Maps" src="https://www.google.com/maps?q=18.5925265,73.8015733&amp;z=16&amp;output=embed" style="border:0;width:100%;height:100%" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    <div class="h-[200px] overflow-hidden rounded-card border border-white/10">
+      <iframe title="Kargatox office location on Google Maps" src="https://www.google.com/maps?q=18.5925265,73.8015733&amp;z=16&amp;output=embed" class="h-full w-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
     </div>
   </div>
-  <div class="mx-auto mt-10 max-w-(--width-site) border-t border-white/10 pt-6 text-sm">© 2026 Kargatox. All rights reserved.</div>
+  <div class="mx-auto mt-8 max-w-(--width-site) border-t border-white/10 pt-6 text-sm">© 2026 Kargatox. All rights reserved.</div>
 </footer>
 
 </body>

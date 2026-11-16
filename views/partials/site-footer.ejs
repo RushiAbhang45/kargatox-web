@@ -5,7 +5,9 @@
 // section ends flush with no bottom padding of its own, unlike every other page's. NAV_LINKS/
 // SERVICE_PAGES come from app.locals (server.js) — see site-header.ejs for why.
 // GEO_LATITUDE/GEO_LONGITUDE (also app.locals, from lib/seo-data.js) drive the "Our
-// Location" embedded-map section added in the same pass.
+// Location" embedded-map section added in the same pass. CALENDLY_URL (also app.locals)
+// drives the "Book a call" button below — opens Calendly's popup widget via its documented
+// JS API (Calendly.initPopupWidget), the script for which doc-head.ejs loads sitewide.
 const _showCta = typeof showCta !== "undefined" ? showCta : true;
 const _ctaTopPadding = typeof ctaTopPadding !== "undefined" && ctaTopPadding;
 %>
@@ -17,6 +19,7 @@ const _ctaTopPadding = typeof ctaTopPadding !== "undefined" && ctaTopPadding;
         <div class="mt-9 flex flex-wrap gap-3.5">
           <a href="/contact" class="rounded-pill bg-ink px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-700">Start an Inquiry →</a>
           <a href="/services" class="rounded-pill bg-white px-7 py-4 text-base font-semibold text-ink transition-colors hover:text-orange-500">See our services</a>
+          <a href="<%= CALENDLY_URL %>" onclick="if (window.Calendly) { Calendly.initPopupWidget({ url: '<%= CALENDLY_URL %>' }); return false; }" target="_blank" rel="noopener" class="rounded-pill border border-white/40 px-7 py-4 text-base font-semibold text-white transition-colors hover:border-white">Book a call →</a>
         </div>
       </div>
     </div>

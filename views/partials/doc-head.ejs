@@ -2,10 +2,15 @@
 // Takes one `meta` object: { title, description, path, robots?, jsonLd? }. `path` is
 // the page's own route (e.g. "/", "/about-us") — canonical/OG/Twitter/hreflang URLs and
 // the google-site-verification tag are derived from it. SITE_URL/GA_MEASUREMENT_ID/
-// GOOGLE_SITE_VERIFICATION/LOGO_URL/GEO_LATITUDE/GEO_LONGITUDE/CONTENT_UPDATED_DATE come
-// from app.locals (server.js) — partials have no `require`. See lib/seo-data.js for how
-// callers build `meta.jsonLd`, and for where GEO_LATITUDE/LONGITUDE/CONTENT_UPDATED_DATE
-// are defined (2026-11-14 SEO content pass — same fixed values on every page).
+// GOOGLE_SITE_VERIFICATION/LOGO_URL/GEO_LATITUDE/GEO_LONGITUDE/CONTENT_UPDATED_DATE/
+// CLARITY_PROJECT_ID/CALENDLY_URL come from app.locals (server.js) — partials have no
+// `require`. See lib/seo-data.js for how callers build `meta.jsonLd`, and for where
+// GEO_LATITUDE/LONGITUDE/CONTENT_UPDATED_DATE are defined (2026-11-14 SEO content pass —
+// same fixed values on every page). CLARITY_PROJECT_ID/CALENDLY_URL are still placeholder
+// values (lib/seo-data.js's header comment) until the real Microsoft Clarity/Calendly
+// accounts for Kargatox@gmail.com exist — the Calendly widget script is loaded sitewide
+// here since both site-footer.ejs's "Book a call" button and contact.ejs's inline embed
+// need it, and loading it twice isn't worth avoiding one shared `<script>` tag for.
 const canonicalUrl = SITE_URL + meta.path;
 const robots = meta.robots || "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 const updatedTimeIso = CONTENT_UPDATED_DATE + "T00:00:00+05:30";
@@ -19,6 +24,19 @@ const updatedTimeIso = CONTENT_UPDATED_DATE + "T00:00:00+05:30";
 
   gtag('config', '<%= GA_MEASUREMENT_ID %>');
 </script>
+
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "<%= CLARITY_PROJECT_ID %>");
+</script>
+
+<!-- Calendly widget assets (site-footer.ejs's "Book a call" popup, contact.ejs's inline embed) -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
