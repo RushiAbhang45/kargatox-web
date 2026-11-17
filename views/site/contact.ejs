@@ -2,29 +2,20 @@
 <html lang="en" class="h-full antialiased">
 <head>
 <%- include('../partials/doc-head', { meta: meta }) %>
+<script defer src="/js/contact-form.js"></script>
 </head>
 <body class="min-h-full flex flex-col bg-paper text-ink font-body">
 <%- include('../partials/site-header', { activePath: '/contact' }) %>
 <%
 // Ported from legacy-nextjs-app/src/app/(site)/contact/{page,contact-form}.tsx.
 // `content` (PAGE_DEFAULTS.contact for now), `headingPlain`/`headingAccent` (via
-// splitLastWord) come from routes/site.js. The form below is static markup only —
-// no submit handling yet (Phase 3 wires POST /api/enquiries + the honeypot/prefill
-// logic via public/js/contact-form.js); SERVICE_OPTIONS is inlined here for now and
-// should move to lib/enquiry-schema.js once Phase 3 creates it, so both the route's
-// zod schema and this <select> read from one place.
+// splitLastWord), and `SERVICE_OPTIONS` (lib/enquiry-schema.js, shared with the real
+// POST /api/enquiries route's validation) all come from routes/site.js. The form's
+// submit handling (fetch to /api/enquiries, inline field errors, the honeypot) is
+// public/js/contact-form.js, loaded above.
 const STEPS = [
   { num: "01", title: "Discovery Call", body: "A brief technical discussion to align on your data needs and current workflow gaps." },
   { num: "02", title: "Scope Definition", body: "We outline the specific deliverables, methodologies, and timeline." },
-];
-const SERVICE_OPTIONS = [
-  "General Inquiry",
-  "Market Research",
-  "Consumer Behaviour & Satisfaction Analysis",
-  "Campaign Analytics",
-  "SEO Services",
-  "Social Media Marketing",
-  "Brand Campaigns Strategy",
 ];
 %>
 <main class="flex flex-1 flex-col bg-ink text-white">
@@ -99,7 +90,9 @@ const SERVICE_OPTIONS = [
                deliberately avoid recognizable autofill keywords ("Company", "Organization",
                etc.) — a label literally reading "Company" got silently autofilled by a real
                browser during testing, which dropped a genuine submission. Sent to the server
-               under the JSON key "company" regardless (see lib/enquiry-schema.js, Phase 3). -->
+               under the JSON key "company" regardless (routes/api.js checks it before
+               validating anything else) — unrelated to the real Enquiry.company DB column,
+               which this form never sets. -->
           <div class="absolute h-px w-px overflow-hidden" style="clip: rect(0,0,0,0);" aria-hidden="true">
             <label>
               Leave this field blank

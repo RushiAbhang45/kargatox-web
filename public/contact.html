@@ -84,6 +84,7 @@
 <link rel="stylesheet" href="/css/styles.css" />
 <script src="/js/site.js" defer></script>
 
+<script defer src="/js/contact-form.js"></script>
 </head>
 <body class="min-h-full flex flex-col bg-paper text-ink font-body">
 
@@ -337,7 +338,9 @@
                deliberately avoid recognizable autofill keywords ("Company", "Organization",
                etc.) — a label literally reading "Company" got silently autofilled by a real
                browser during testing, which dropped a genuine submission. Sent to the server
-               under the JSON key "company" regardless (see lib/enquiry-schema.js, Phase 3). -->
+               under the JSON key "company" regardless (routes/api.js checks it before
+               validating anything else) — unrelated to the real Enquiry.company DB column,
+               which this form never sets. -->
           <div class="absolute h-px w-px overflow-hidden" style="clip: rect(0,0,0,0);" aria-hidden="true">
             <label>
               Leave this field blank

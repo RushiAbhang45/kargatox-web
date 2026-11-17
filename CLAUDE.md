@@ -43,15 +43,26 @@ the static-prerender framing as current. The remaining phases are tracked only a
   `mergePublishedPage()`/`faqItemsFromRows()`/`subServicesByKeyFromRows()` — the same "default until a row
   exists" helpers the admin Pages and Services & FAQ editors use (and were extracted from). Publishing in
   the admin now has a real, visible effect on the live public pages.
-- **Phase 3 — still not done.** `POST /api/enquiries`: real submit handling for the Contact form,
-  including the honeypot/prefill logic currently only sketched as static markup in
-  `views/site/contact.ejs`. Move `SERVICE_OPTIONS` (currently inlined in that template) into a shared
-  `lib/enquiry-schema.js` once this lands, so the API route and the `<select>` read from one place. The
-  admin Dashboard and the Enquiries/Revenue checks sections (see below) already read real
-  `Enquiry`/`RevenueCheck` rows and `lib/mailer.js` can already send a reply email — but nothing public-
-  facing creates an `Enquiry` row yet, so those views stay empty until this phase lands. Settings'
-  `autoReplyMessage`/`sendAutoReply`/`notificationEmail`/`alsoNotify` fields save correctly but are
-  likewise inert until this phase gives them a trigger to fire on.
+- **Phase 3 — done.** `routes/api.js`'s `POST /api/enquiries` is the Contact form's real submit handler —
+  mirrors the already-reviewed `legacy-nextjs-app/src/app/api/enquiries/route.ts`: a per-IP rate limit
+  (`lib/rate-limit.js`, 5 requests / 10 min), a honeypot short-circuit (a filled `company` JSON field —
+  unrelated to the real `Enquiry.company` DB column — returns a fake `201` without saving or emailing
+  anything), field validation (`lib/enquiry-schema.js`'s `validateEnquiry()`, the zod-free equivalent of the
+  legacy app's `enquirySchema`; `SERVICE_OPTIONS` now lives here instead of being inlined in
+  `views/site/contact.ejs`, and `routes/site.js`'s `/contact` handler passes it into the template so the
+  route and the `<select>` can't drift apart), and an `Enquiry` row create (`source: "Contact form"`).
+  `public/js/contact-form.js` (loaded only by `views/site/contact.ejs`) wires the static form's
+  `data-error-for` spans/`#contact-form-error`/honeypot to a `fetch` call against this route, with inline
+  field errors and a "Thanks, {firstName}." success state, same shape as the legacy
+  `contact-form.tsx` minus the React. `lib/enquiry-mail.js` (ported from the legacy app's
+  `src/lib/email.ts`) now gives Settings' `autoReplyMessage`/`sendAutoReply`/`notificationEmail`/
+  `alsoNotify` fields their trigger — a real submission sends a team notification and, if enabled, an
+  auto-reply, both via `lib/mailer.js`'s `sendMail()` wrapped in its own try/catch (an already-saved
+  enquiry never becomes a user-visible failure just because SMTP hiccuped) — verified end-to-end against
+  the live DB (honeypot → no row; invalid input → `400` + field errors; valid submission → `201` + a real
+  `Enquiry` row, immediately visible in the admin Dashboard/Enquiries). The admin Dashboard and the
+  Enquiries/Revenue checks sections (see below) now have real data to show instead of reading as
+  zero/empty.
 - **Phase 8 — done.** `routes/site.js`'s `GET /blog` / `GET /blog/:slug` read real `Post` rows
   (`status: "PUBLISHED"` only; an unpublished/unknown slug falls through to the 404 handler, same pattern
   the service-slug allowlist uses). `views/site/blog-list.ejs` / `blog-post.ejs` render real listings/posts
@@ -67,14 +78,13 @@ the static-prerender framing as current. The remaining phases are tracked only a
   grow-in itself remains unbuilt; don't assume it's covered by the rest of Phase 10 landing.
 - **Phases 4–7/9 — done.** A full admin panel (login, Dashboard, Team, Settings, Enquiries, Revenue
   checks, Pages, Services & FAQ, Blog & case studies — commits `5a6b9d0`, `a9b179b`, and the DB-wiring/
-  email pass below) exists with a real Postgres/Prisma DB, its own cookie-based auth, and outbound email
-  for the one action that has a real trigger today (Enquiries "Send reply" — see "Admin panel, auth, and
-  database" for the precise split of what's wired vs. still waiting on Phase 3).
+  email pass below) exists with a real Postgres/Prisma DB, its own cookie-based auth, and outbound email,
+  now with two real triggers (Enquiries "Send reply", and Phase 3's Contact-form-submission notification/
+  auto-reply — see "Admin panel, auth, and database").
 
 Don't assume feature parity with `legacy-nextjs-app/` just because this is "the current app" — anything
-not listed as done above (the public contact-form submit API and the auto-reply/notification email it
-would trigger, the revenue-check quiz, the one remaining animation) simply isn't built yet in this
-rewrite.
+not listed as done above (the revenue-check quiz, the one remaining animation) simply isn't built yet in
+this rewrite.
 
 ## Commands
 
@@ -104,10 +114,11 @@ rewrite.
   `AUTH_SECRET` (`lib/admin-auth.js`) — `/admin/login` throws if it's unset. `SMTP_HOST`/`SMTP_PORT`/
   `SMTP_USER`/`SMTP_PASSWORD`/`SMTP_FROM` are now genuinely read by `lib/mailer.js`; if any are missing,
   `sendMail()` just logs and no-ops rather than throwing, so the admin panel still works without them —
-  only outbound email silently doesn't happen. `ADMIN_NOTIFY_EMAIL` and `.env.example`'s `db:seed` mention
-  are still **not** consumed by anything here (no seed script exists; `ADMIN_NOTIFY_EMAIL`/Settings'
-  notification fields have no trigger until Phase 3 lands) — check `server.js`/`routes/`/`lib/` for actual
-  `process.env` reads before assuming any given env var does something in this app.
+  only outbound email silently doesn't happen. `.env.example`'s `db:seed` mention is still **not** consumed
+  by anything here (no seed script exists). `ADMIN_NOTIFY_EMAIL` **is** now read (Phase 3,
+  `lib/enquiry-mail.js`) as the fallback "new enquiry" notification recipient when Settings'
+  `notificationEmail` is unset — check `server.js`/`routes/`/`lib/` for actual `process.env` reads before
+  assuming any given env var does something in this app.
 
 ## Architecture
 
@@ -141,6 +152,11 @@ rewrite.
   that logic. Express 5 (the version in use) auto-forwards a rejected async handler's promise to the
   default error handler, so there's no manual try/catch scaffolding around the `await prisma.*` calls here
   — matches the pattern `routes/admin.js`'s async handlers already relied on.
+- **`routes/api.js`** (Phase 3) is the public, unauthenticated JSON API — currently just
+  `POST /enquiries`, mounted at `/api` in `server.js` between `/admin` and `/` (alongside
+  `app.use(express.json())`, added for this, next to the pre-existing `express.urlencoded()`). Separate
+  router from `routes/site.js` on purpose: it returns JSON error bodies (`{ error, fieldErrors? }`), not
+  rendered pages, so it shouldn't share `routes/site.js`'s 404-via-`next()` conventions.
 - **`lib/*.js`** holds plain CommonJS modules, mostly ported from the legacy app's `src/lib/*.ts` — same
   data, same shape, no TypeScript/zod: `page-content-defaults.js` (`PAGE_DEFAULTS`, the hardcoded fallback
   copy per page, `PAGE_KEYS`/`PAGE_LABELS`/`PAGE_ROUTES`/`PAGE_FIELDS` which drive the admin Pages editor,
@@ -158,9 +174,19 @@ rewrite.
   enums + validation for Enquiries and Blog in the admin panel — `post-schema.js` swaps the legacy app's
   zod schema for a plain `validatePost()` function), `mailer.js` (ported from `legacy-nextjs-app/src/lib/mailer.ts`
   verbatim — lazy `nodemailer` transporter from `SMTP_*` env vars, `sendMail({to,subject,text})` logs and
-  no-ops instead of throwing if they're unset), and `text-split.js` (`splitFirstSentence`/`splitLastWord`,
-  the two-tone-heading helpers). Each ported file's header comment names its `legacy-nextjs-app/src/lib/*.ts`
-  source — check that file first if behavior looks wrong, since it's the originally-reviewed version.
+  no-ops instead of throwing if they're unset), `text-split.js` (`splitFirstSentence`/`splitLastWord`,
+  the two-tone-heading helpers), and four Phase-3 modules backing `routes/api.js`: `enquiry-schema.js`
+  (`SERVICE_OPTIONS` — also read by `routes/site.js`'s `/contact` handler for the `<select>` — plus
+  `validateEnquiry()`, the zod-free equivalent of the legacy app's `enquirySchema`), `rate-limit.js`
+  (`rateLimit(key, limit, windowMs)`, ported from `src/lib/rate-limit.ts` verbatim — in-memory per-instance
+  buckets, fine for a single small deploy but not a multi-instance one), `settings.js` (`SETTINGS_ID`/
+  `SETTINGS_DEFAULTS`/`getSettings()`, ported from `src/lib/settings.ts` — note `routes/admin.js`'s
+  Settings section still keeps its own copy of `SETTINGS_ID`/the defaults object inline rather than
+  importing this, a small pre-existing duplication this pass didn't touch), and `enquiry-mail.js`
+  (`sendEnquiryEmails()`, ported from `src/lib/email.ts` — builds the team-notification and auto-reply
+  emails and sends both via `mailer.js`'s `sendMail()`). Each ported file's header comment names its
+  `legacy-nextjs-app/src/lib/*.ts` source — check that file first if behavior looks wrong, since it's the
+  originally-reviewed version.
   `seo-data.js` and `clients-data.js` have no legacy equivalent — `clients-data.js` (2026-11-14 SEO content
   pass) holds the `/clients` page's content (`STATS`/`SEO_CASE_STUDY`/`ERP_CASE_STUDY`/`AUTHOR`/`ARTICLES`),
   reverse-engineered from the client's uploaded static build with no design-handoff source to check it
@@ -169,7 +195,12 @@ rewrite.
   JSON-LD building blocks (`ORGANIZATION`, `WEBSITE`, `seo.graph()`, `seo.breadcrumb()`,
   `seo.serviceSchema()`, `seo.pageEntry()` — the last two now also bake in `audience`/`areaServed` and
   `primaryImageOfPage`/`dateModified`/`speakable`/a default `mainEntity` respectively, so callers only
-  override `mainEntity` when they need something other than the organization) and plain constants
+  override `mainEntity` when they need something other than the organization — and `seo.faqSchema(path,
+  faqs, { nested, name, description })`: `nested: true` emits a standalone `#faq` entry alongside the
+  page's own separate `WebPage`/`seo.serviceSchema()` entry (the 6 service-landing pages, which have FAQs
+  but aren't primarily an FAQ page); `nested: false` makes the `FAQPage` entry itself the page's full
+  `#webpage` entry via `pageEntry()` (`/faq`, which has no separate `WebPage` entry of its own)) and plain
+  constants
   (`SITE_URL`, `GA_MEASUREMENT_ID`, `GOOGLE_SITE_VERIFICATION`, `LOGO_URL`, `GEO_LATITUDE`/`GEO_LONGITUDE`,
   `CONTENT_UPDATED_DATE`) sourced from the client's SEO upload; `routes/site.js` handlers build a per-page
   `meta` object (title/description/path/`jsonLd`) from it and pass it to `res.render()`, consumed by
@@ -230,10 +261,9 @@ rewrite.
     typography reset.
 - **Admin panel, auth, and database exist, and the admin panel is feature-complete** — see the dedicated
   section below. Prisma/bcryptjs/nodemailer are real dependencies now (`package.json`), not legacy-only
-  patterns to avoid. Auth.js itself was not ported (replaced by `lib/admin-auth.js`'s own cookie session);
-  what's still missing is purely on the *public* side — nothing yet creates an `Enquiry` row outside the
-  admin panel itself (the enquiry submit API, the revenue-check quiz) — see that section for the precise
-  split of what's wired vs. still waiting on Phase 3.
+  patterns to avoid. Auth.js itself was not ported (replaced by `lib/admin-auth.js`'s own cookie session).
+  The Contact form (Phase 3, `routes/api.js`) now creates real `Enquiry` rows from the public side too —
+  the revenue-check quiz is the one thing left that doesn't — see that section for the full rundown.
 - **Deploy target: live Node function on Vercel, not the static build.** `vercel.json` now uses the
   explicit v2 `builds`/`routes` form — `@vercel/node` on `server.js`, every path routed to it (commit
   `dcdc668`) — after briefly trying (and reverting, commits `43575cd`/`5bbcf58`) a hybrid multi-build
@@ -289,15 +319,16 @@ no more placeholder 404s in the admin panel itself.
   `requireEnquiryAccess`/`requireContentAccess` are built from. A role mismatch renders the normal sidebar
   layout with an inline message (`views/admin/forbidden.ejs`, HTTP 403) rather than a dead-end page — the
   same UX the legacy app used. `requireAuth` (session presence) always runs first.
-- **Dashboard** (`GET /admin`) reads real `Enquiry` rows for 30-day/total counts and a 12-week chart — see
-  the Phase 3 note above for why these currently read as zero/empty.
+- **Dashboard** (`GET /admin`) reads real `Enquiry` rows for 30-day/total counts and a 12-week chart —
+  populated now that Phase 3's `POST /api/enquiries` is the real public-facing source of those rows.
 - **Team** (seat-limited to `MAX_TEAM_SEATS = 5`) mirrors the already-reviewed "admin sets the password
   directly" flow from `legacy-nextjs-app/src/app/admin/(protected)/team/actions.ts`.
 - **Settings** is a `Settings` singleton row for site name/notification email/auto-reply message/GA
-  measurement id. Saves correctly, but nothing reads it back yet on the public side (`doc-head.ejs`'s GA
-  snippet still reads the hardcoded `lib/seo-data.js` constant, not this row) and the auto-reply/
-  notification fields have no trigger until Phase 3 exists — out of scope for the DB-wiring/email pass
-  that closed Phase 2/8, not an oversight within it.
+  measurement id. Saves correctly, but `doc-head.ejs`'s GA snippet still reads the hardcoded
+  `lib/seo-data.js` constant rather than this row's `gaMeasurementId`/`gaEnabled` — that part is still not
+  wired up. The auto-reply/notification fields (`autoReplyMessage`/`sendAutoReply`/`notificationEmail`/
+  `alsoNotify`) **do** have a real trigger now — Phase 3's `lib/enquiry-mail.js`, fired from
+  `routes/api.js`'s `POST /enquiries` on every real Contact form submission.
 - **Enquiries** (`GET /admin/enquiries`, mirrors legacy's `enquiries/{page.tsx,actions.ts}`): list with
   status filter + counts, a detail panel (`?id=`) for pipeline status / assignment / replying. Replying
   (`POST /admin/enquiries/:id/reply`) writes an `EnquiryMessage` row, bumps `NEW`→`CONTACTED`, and sends the
@@ -333,11 +364,13 @@ no more placeholder 404s in the admin panel itself.
   build-free `<script defer>` pattern) — a generic repeater (reorder/add/remove rows without a page reload)
   used by Services & FAQ's and Blog's editors, plus the Blog editor's slug-autofill-from-title and live
   search-result preview.
-- **Email**: `lib/mailer.js` (ported from `legacy-nextjs-app/src/lib/mailer.ts`) is wired into Enquiries'
-  reply action — its only real caller today. Settings' `sendAutoReply`/`autoReplyMessage`/
-  `notificationEmail`/`alsoNotify` fields save but stay inert; they're meant for a Phase-3 contact-form
-  submission to trigger (an auto-reply to the enquirer, a notification to the team), and that trigger
-  doesn't exist yet in this rewrite. `ADMIN_NOTIFY_EMAIL` likewise still does nothing here.
+- **Email**: `lib/mailer.js` (ported from `legacy-nextjs-app/src/lib/mailer.ts`) now has two real callers:
+  Enquiries' reply action, and (Phase 3) `lib/enquiry-mail.js`'s `sendEnquiryEmails()`, called from
+  `routes/api.js` on every real Contact form submission. Settings' `sendAutoReply`/`autoReplyMessage`/
+  `notificationEmail`/`alsoNotify` fields now have that real trigger: a team notification always sends
+  (if a recipient is configured), and an auto-reply to the enquirer sends additionally when
+  `sendAutoReply` is on. `ADMIN_NOTIFY_EMAIL` is the fallback notification recipient when
+  `notificationEmail` is unset.
 - Required env for any of this to work locally: `DATABASE_URL`/`DATABASE_URL_UNPOOLED` (now needed by the
   public site too, since Phase 2/8 — see the Commands section) and `AUTH_SECRET` for anything under
   `/admin` (see `.env.example`). `SMTP_*` is optional — without it, `lib/mailer.js` just logs instead of
@@ -382,10 +415,10 @@ the repo root so the root only shows the actual deployable Express/EJS project.
 - The prototype/legacy **data** (dashboard numbers, sample enquiries, team names, "SAMPLE DATA" panels on
   Services) is placeholder and must not be treated as real content.
 - Admin-side role permissions are already ported (`routes/admin.js`'s `requireRole()`/role-array pattern,
-  see "Admin panel, auth, and database"). When Phase 3 adds the public contact-form submit API, it still
-  needs server-side rate limiting and the honeypot spam check — check `legacy-nextjs-app/` for the
-  already-reviewed implementation (`src/lib/rate-limit.ts`, the `company`-field honeypot naming note in
-  that app's contact form) before re-designing it from scratch.
+  see "Admin panel, auth, and database"). The public Contact form's submit API (Phase 3, `routes/api.js`)
+  already has server-side rate limiting (`lib/rate-limit.js`) and the honeypot spam check — both ported
+  from `legacy-nextjs-app/src/lib/rate-limit.ts` and that app's contact form's `company`-field honeypot
+  naming convention respectively; check those source files first if either needs changing.
 - Animations must respect `prefers-reduced-motion: reduce` — `public/css/input.css` already disables the
   CSS-keyframe ones, and `public/js/site.js` has its own `prefersReducedMotion()` helper (a plain
   `matchMedia` check) that `initScrambleReveal()` already uses to skip straight to the final text. Reuse

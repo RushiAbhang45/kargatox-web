@@ -6,6 +6,7 @@ const { faqItemsFromRows } = require("../lib/faq-defaults");
 const { SERVICES, subServicesByKeyFromRows } = require("../lib/services-data");
 const { SERVICE_PAGES, getServicePage, getRelatedServicePages } = require("../lib/service-pages-data");
 const { STATS, SEO_CASE_STUDY, ERP_CASE_STUDY, AUTHOR, ARTICLES } = require("../lib/clients-data");
+const { SERVICE_OPTIONS } = require("../lib/enquiry-schema");
 const seo = require("../lib/seo-data");
 
 const router = express.Router();
@@ -196,7 +197,7 @@ router.get("/contact", async (req, res) => {
       ]),
     ]),
   };
-  res.render("site/contact", { content, headingPlain, headingAccent, meta });
+  res.render("site/contact", { content, headingPlain, headingAccent, meta, SERVICE_OPTIONS });
 });
 
 router.get("/clients", (req, res) => {

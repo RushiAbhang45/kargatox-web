@@ -17,6 +17,7 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // EJS templates rendered via res.render() don't close over this module's `require` —
 // shared, request-independent data the partials need (nav links, service pages) goes
@@ -46,10 +47,9 @@ app.locals.CONTENT_UPDATED_DATE = seoData.CONTENT_UPDATED_DATE;
 // silently re-write the same stale content back to itself. Static stays mounted for
 // genuine assets (/css, /js, /images, /favicon.ico) that have no matching route.
 app.use("/admin", require("./routes/admin"));
+app.use("/api", require("./routes/api"));
 app.use("/", require("./routes/site"));
 app.use(express.static(path.join(__dirname, "public")));
-// Later phases mount:
-// app.use("/api", require("./routes/api"));
 
 app.use((req, res) => {
   res.status(404).send("Not found");
