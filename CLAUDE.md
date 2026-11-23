@@ -83,8 +83,44 @@ the static-prerender framing as current. The remaining phases are tracked only a
   auto-reply — see "Admin panel, auth, and database").
 
 Don't assume feature parity with `legacy-nextjs-app/` just because this is "the current app" — anything
-not listed as done above (the revenue-check quiz, the one remaining animation) simply isn't built yet in
-this rewrite.
+not listed as done above (the one remaining animation) simply isn't built yet in this rewrite.
+
+### Client change list 2026-11-02 (branch `client-changes-nov-2026`)
+
+The client's "Changes to be made in Website" PDF, item by item:
+1. **Gmail address removed.** The public address is `lib/seo-data.js`'s `CONTACT_EMAIL`
+   (`hello@kargatox.com`, also on `app.locals`) — footer, About Us, Clients, Contact, meta and JSON-LD all
+   read it. `Kargatox@gmail.com` survives only in comments, as the owner of the Calendly/Clarity accounts.
+2. **Services panels** — the legacy "SAMPLE DATA" dashboards are gone; each service in
+   `lib/services-data.js` has a `panel` (tag/heading/body/3 stats/sources) with the client's copy.
+3. **Footer** is one 4-column grid (brand + address/contact, Company links, Services, map) instead of two
+   half-empty rows.
+4. **Client logos** — `lib/clients-data.js`'s `CLIENT_LOGOS` + `views/partials/client-logos.ejs`, on
+   `/clients` (with captions) and the home page (compact strip). Drop logo files into
+   `public/images/clients/<slug>.{svg,png,webp,jpg}`; until then a monogram tile shows. Each client's
+   `work` caption is `null` until the client supplies it — don't invent one.
+5./8. **Contact form** — see `routes/api.js`'s header comment for the abuse-protection layers (body-size
+   limit, per-IP/per-email/per-instance rate limits, honeypot, signed form token `lib/form-token.js` with a
+   3s minimum fill time, optional Cloudflare Turnstile, email-domain check `lib/email-check.js`). New
+   fields: country code + digits-only phone (`COUNTRY_CODES` in `lib/enquiry-schema.js`, whose
+   `normalizeEnquiry()` is now what the route saves), LinkedIn, website, "book a meeting?" yes/no. Selects
+   use a custom chevron inside the field (`.kx-select` in `public/css/input.css`). The welcome email
+   (`lib/enquiry-mail.js`) is branded HTML whose body is still Settings → Auto-reply message, so the
+   client's own welcome copy goes in via the admin panel. A website triggers `lib/site-scan.js` after the
+   response (via `@vercel/functions`' `waitUntil`): an SSRF-guarded fetch + deterministic audit, plus a
+   Claude write-up when `ANTHROPIC_API_KEY` is set; results show in admin → Enquiries (with Re-scan).
+   **Email OTP verification was deliberately not built** — the client asked for it to be discussed first.
+6. **Revenue check** — the "being ported in a later phase" placeholder is replaced by the real quiz
+   (`views/partials/revenue-check.ejs`, `public/js/revenue-check.js`, `lib/revenue-check-data.js`,
+   `POST /api/revenue-checks`), whose "Fix my …" link prefills `/contact?service=&note=&checkId=`.
+7. **How we work** — steps 3–5 bodies in `lib/process-steps.js` replaced with the client's copy (lightly
+   proofread).
+
+New `Enquiry` columns (`linkedinUrl`, `website`, `wantsMeeting`, `siteAuditStatus`, `siteAudit`,
+`siteAuditAt`) are added by `legacy-nextjs-app/prisma/migrations/20261123090000_enquiry_contact_fields/`
+(migrations still live there — the only legacy-folder change) and mirrored in both `schema.prisma` files.
+Apply it to production **before** deploying this code:
+`npx prisma migrate deploy --schema legacy-nextjs-app/prisma/schema.prisma` (uses `DATABASE_URL_UNPOOLED`).
 
 ## Commands
 

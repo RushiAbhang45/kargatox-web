@@ -268,3 +268,200 @@
   font-weight: 700;
   color: #0f172a;
 }
+
+/* Revenue check (views/partials/revenue-check.ejs + public/js/revenue-check.js): each new
+   question/result fades up in place of the last. */
+@keyframes kx-rc-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.kx-rc-enter {
+  animation: kx-rc-enter 0.45s var(--ease-kx) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kx-rc-enter { animation: none; }
+}
+
+/* Contact form (views/site/contact.ejs + public/js/contact-form.js). Underline fields on
+   the navy card; selects use a custom chevron that sits inside the field (client change
+   list 2026-11-02 — the native arrow used to float outside the column). */
+.kx-field-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #fff;
+}
+.kx-field {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  padding: 8px 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  border-radius: 0;
+  transition: border-color 0.2s;
+}
+.kx-field:focus {
+  border-bottom-color: var(--color-orange-400);
+}
+.kx-field[aria-invalid="true"] {
+  border-bottom-color: var(--color-orange-400);
+}
+.kx-field-error {
+  min-height: 16px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-orange-400);
+}
+.kx-field-error.is-hint {
+  color: var(--color-mist-2);
+}
+.kx-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 26px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.kx-select-chevron {
+  pointer-events: none;
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  color: var(--color-mist);
+}
+.kx-choice {
+  cursor: pointer;
+}
+.kx-choice span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 14px;
+  color: var(--color-mist);
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+.kx-choice span::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.kx-choice:hover span {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
+}
+.kx-choice input:checked + span {
+  border-color: var(--color-orange-400);
+  background: rgba(242, 106, 27, 0.12);
+  color: #fff;
+}
+.kx-choice input:checked + span::before {
+  background: var(--color-orange-400);
+  border-color: var(--color-orange-400);
+  box-shadow: inset 0 0 0 2px var(--color-navy-800);
+}
+.kx-choice input:focus-visible + span {
+  outline: 2px solid var(--color-orange-400);
+  outline-offset: 2px;
+}
+
+/* Submitted state: the form card collapses into a confirmation — the check draws itself,
+   rings pulse out once, then the message lines rise in one after another. */
+.kx-form-leave {
+  animation: kx-form-leave 0.35s var(--ease-kx) both;
+}
+@keyframes kx-form-leave {
+  to { opacity: 0; transform: translateY(-8px) scale(0.98); }
+}
+.kx-sent {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 28px 0 20px;
+  text-align: center;
+}
+.kx-sent-badge {
+  position: relative;
+  width: 76px;
+  height: 76px;
+}
+.kx-sent-badge::before,
+.kx-sent-badge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-orange-400);
+  opacity: 0;
+  animation: kx-sent-ring 1.4s 0.35s var(--ease-kx) both;
+}
+.kx-sent-badge::after {
+  animation-delay: 0.6s;
+}
+@keyframes kx-sent-ring {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.9); }
+}
+.kx-sent-badge svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.kx-sent-circle {
+  fill: var(--color-orange-500);
+  transform-origin: center;
+  animation: kx-sent-pop 0.5s var(--ease-kx) both;
+}
+@keyframes kx-sent-pop {
+  0% { transform: scale(0.2); opacity: 0; }
+  70% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.kx-sent-check {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: kx-sent-draw 0.45s 0.35s ease-out forwards;
+}
+@keyframes kx-sent-draw {
+  to { stroke-dashoffset: 0; }
+}
+.kx-sent-line {
+  animation: kx-rc-enter 0.5s var(--ease-kx) both;
+}
+.kx-sent-line:nth-child(2) { animation-delay: 0.55s; }
+.kx-sent-line:nth-child(3) { animation-delay: 0.7s; }
+.kx-sent-line:nth-child(4) { animation-delay: 0.85s; }
+.kx-sent-line:nth-child(5) { animation-delay: 1s; }
+@media (prefers-reduced-motion: reduce) {
+  .kx-form-leave,
+  .kx-sent-badge::before,
+  .kx-sent-badge::after,
+  .kx-sent-circle,
+  .kx-sent-line {
+    animation: none;
+  }
+  .kx-sent-check {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

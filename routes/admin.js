@@ -14,6 +14,8 @@ const { POST_TYPES, POST_TYPE_LABEL, validatePost } = require("../lib/post-schem
 const { SERVICES, subServicesByKeyFromRows } = require("../lib/services-data");
 const { faqItemsFromRows } = require("../lib/faq-defaults");
 const { sendMail } = require("../lib/mailer");
+const { waitUntil } = require("@vercel/functions");
+const { scanEnquiryWebsite } = require("../lib/site-scan");
 
 const router = express.Router();
 
@@ -278,6 +280,18 @@ router.post("/enquiries/:id/status", requireAuth, requireEnquiryAccess, async (r
 router.post("/enquiries/:id/assign", requireAuth, requireEnquiryAccess, async (req, res) => {
   const ownerId = String(req.body.ownerId || "").trim() || null;
   await prisma.enquiry.update({ where: { id: req.params.id }, data: { ownerId } }).catch(() => {});
+  res.redirect("/admin/enquiries?id=" + req.params.id);
+});
+
+// Re-run the contact-form website scan (lib/site-scan.js) — e.g. after the prospect fixes
+// their site, or if the first scan failed. Runs after the redirect; the panel shows
+// "Scanning…" until it finishes.
+router.post("/enquiries/:id/scan", requireAuth, requireEnquiryAccess, async (req, res) => {
+  const enquiry = await prisma.enquiry.findUnique({ where: { id: req.params.id }, select: { id: true, website: true } });
+  if (enquiry && enquiry.website) {
+    await prisma.enquiry.update({ where: { id: enquiry.id }, data: { siteAuditStatus: "PENDING" } });
+    waitUntil(scanEnquiryWebsite(prisma, enquiry.id, enquiry.website));
+  }
   res.redirect("/admin/enquiries?id=" + req.params.id);
 });
 

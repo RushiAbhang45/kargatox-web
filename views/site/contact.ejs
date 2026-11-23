@@ -3,6 +3,7 @@
 <head>
 <%- include('../partials/doc-head', { meta: meta }) %>
 <script defer src="/js/contact-form.js"></script>
+<% if (TURNSTILE_SITE_KEY) { %><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script><% } %>
 </head>
 <body class="min-h-full flex flex-col bg-paper text-ink font-body">
 <%- include('../partials/site-header', { activePath: '/contact' }) %>
@@ -12,7 +13,10 @@
 // splitLastWord), and `SERVICE_OPTIONS` (lib/enquiry-schema.js, shared with the real
 // POST /api/enquiries route's validation) all come from routes/site.js. The form's
 // submit handling (fetch to /api/enquiries, inline field errors, the honeypot) is
-// public/js/contact-form.js, loaded above.
+// public/js/contact-form.js, loaded above. Client change list 2026-11-02 added the
+// country-code phone field (COUNTRY_CODES), LinkedIn/website/meeting fields, the
+// `prefill` from ?service=&note=&checkId=, the signed `formToken` (lib/form-token.js)
+// and optional Cloudflare Turnstile (TURNSTILE_SITE_KEY) — all from routes/site.js.
 const STEPS = [
   { num: "01", title: "Discovery Call", body: "A brief technical discussion to align on your data needs and current workflow gaps." },
   { num: "02", title: "Scope Definition", body: "We outline the specific deliverables, methodologies, and timeline." },
@@ -43,7 +47,7 @@ const STEPS = [
         <div class="mt-3 grid grid-cols-2 gap-5 border-t border-white/10 pt-4">
           <div class="grid gap-1">
             <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">PREFER EMAIL?</span>
-            <a href="mailto:hello@kargatox.com" class="font-display text-[17px] font-bold text-white transition-colors hover:text-orange-400">hello@kargatox.com</a>
+            <a href="mailto:<%= CONTACT_EMAIL %>" class="font-display text-[17px] font-bold text-white transition-colors hover:text-orange-400"><%= CONTACT_EMAIL %></a>
           </div>
           <div class="grid gap-1">
             <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">PREFER A CALL?</span>
@@ -53,37 +57,78 @@ const STEPS = [
       </div>
 
       <div id="contact-form-container" class="rounded-panel border border-white/10 bg-navy-800 p-[clamp(20px,3vw,32px)]">
-        <form id="contact-form" novalidate class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-x-6 gap-y-6">
-          <label class="grid gap-2">
-            <span class="font-mono text-[11px] tracking-[0.1em] text-white">FULL NAME *</span>
-            <input id="cf-name" name="name" placeholder="Jane Doe" class="border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400" />
-            <span class="min-h-4 text-[12px] text-orange-400" data-error-for="name"></span>
+        <form id="contact-form" novalidate class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-x-6 gap-y-5"
+              data-calendly-url="<%= CALENDLY_URL %>" data-contact-email="<%= CONTACT_EMAIL %>">
+          <label class="grid content-start gap-2">
+            <span class="kx-field-label">FULL NAME *</span>
+            <input id="cf-name" name="name" autocomplete="name" maxlength="120" placeholder="Jane Doe" class="kx-field" />
+            <span class="kx-field-error" data-error-for="name"></span>
           </label>
 
-          <label class="grid gap-2">
-            <span class="font-mono text-[11px] tracking-[0.1em] text-white">WORK EMAIL *</span>
-            <input type="email" id="cf-email" name="email" placeholder="jane@company.com" class="border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400" />
-            <span class="min-h-4 text-[12px] text-orange-400" data-error-for="email"></span>
+          <label class="grid content-start gap-2">
+            <span class="kx-field-label">WORK EMAIL *</span>
+            <input type="email" id="cf-email" name="email" autocomplete="email" maxlength="254" placeholder="jane@company.com" class="kx-field" />
+            <span class="kx-field-error" data-error-for="email"></span>
           </label>
 
-          <label class="grid gap-2">
-            <span class="font-mono text-[11px] tracking-[0.1em] text-white">PHONE NUMBER <span class="text-[#737373]">(optional)</span></span>
-            <input type="tel" id="cf-phone" name="phone" placeholder="+91 98765 43210" class="border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400" />
+          <div class="grid content-start gap-2">
+            <label for="cf-phone" class="kx-field-label">PHONE NUMBER <span class="text-[#737373]">(optional)</span></label>
+            <div class="flex items-end gap-3">
+              <div class="relative w-[112px] shrink-0">
+                <select id="cf-phone-country" name="phoneCountry" aria-label="Country code" class="kx-field kx-select">
+                  <% COUNTRY_CODES.forEach(function(c) { %>
+                    <option value="<%= c.iso %>" data-dial="<%= c.dial %>" data-min="<%= c.digits[0] %>" data-max="<%= c.digits[1] %>" style="color:#0f172a;background-color:#ffffff;"><%= c.dial ? c.dial + ' ' + c.name : c.name %></option>
+                  <% }) %>
+                </select>
+                <svg class="kx-select-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <input type="tel" id="cf-phone" name="phone" inputmode="numeric" autocomplete="tel-national" maxlength="10" pattern="[0-9]*" placeholder="98765 43210" class="kx-field min-w-0 flex-1" />
+            </div>
+            <span class="kx-field-error" data-error-for="phone"></span>
+          </div>
+
+          <label class="grid content-start gap-2">
+            <span class="kx-field-label">SERVICE REQUIRED</span>
+            <span class="relative block">
+              <select id="cf-service" name="service" class="kx-field kx-select">
+                <% SERVICE_OPTIONS.forEach(function(o) { %>
+                  <option value="<%= o %>" <%= o === prefill.service ? 'selected' : '' %> style="color:#0f172a;background-color:#ffffff;"><%= o %></option>
+                <% }) %>
+              </select>
+              <svg class="kx-select-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 7.5 10 12l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
           </label>
 
-          <label class="grid gap-2">
-            <span class="font-mono text-[11px] tracking-[0.1em] text-white">SERVICE REQUIRED</span>
-            <select id="cf-service" name="service" class="cursor-pointer border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400">
-              <% SERVICE_OPTIONS.forEach(function(o) { %>
-                <option value="<%= o %>" style="color:#0f172a;background-color:#ffffff;"><%= o %></option>
-              <% }) %>
-            </select>
+          <label class="grid content-start gap-2">
+            <span class="kx-field-label">LINKEDIN PROFILE <span class="text-[#737373]">(optional)</span></span>
+            <input type="url" id="cf-linkedin" name="linkedinUrl" maxlength="300" autocomplete="url" placeholder="linkedin.com/in/janedoe" class="kx-field" />
+            <span class="kx-field-error" data-error-for="linkedinUrl"></span>
           </label>
+
+          <label class="grid content-start gap-2">
+            <span class="kx-field-label">COMPANY WEBSITE <span class="text-[#737373]">(optional)</span></span>
+            <input type="text" id="cf-website" name="website" inputmode="url" maxlength="300" placeholder="yourcompany.com" class="kx-field" />
+            <span class="kx-field-error is-hint" data-error-for="website" data-hint="We'll run a quick health check on it before we talk.">We'll run a quick health check on it before we talk.</span>
+          </label>
+
+          <fieldset class="col-span-full grid gap-2.5 border-0 p-0">
+            <legend class="kx-field-label mb-2.5">WOULD YOU LIKE TO BOOK A MEETING?</legend>
+            <div class="flex flex-wrap gap-2.5">
+              <label class="kx-choice">
+                <input type="radio" name="wantsMeeting" value="yes" class="sr-only" />
+                <span>Yes, let's set up a call</span>
+              </label>
+              <label class="kx-choice">
+                <input type="radio" name="wantsMeeting" value="no" class="sr-only" />
+                <span>Not yet, email me first</span>
+              </label>
+            </div>
+          </fieldset>
 
           <label class="grid gap-2 col-span-full">
-            <span class="font-mono text-[11px] tracking-[0.1em] text-white">PROJECT DETAILS *</span>
-            <textarea id="cf-details" name="details" rows="4" placeholder="Tell us about your requirements..." class="resize-y border-0 border-b border-white/20 bg-transparent py-2 font-body text-[14px] text-white outline-none focus:border-orange-400"></textarea>
-            <span class="min-h-4 text-[12px] text-orange-400" data-error-for="details"></span>
+            <span class="kx-field-label">PROJECT DETAILS *</span>
+            <textarea id="cf-details" name="details" rows="4" maxlength="5000" placeholder="Tell us about your requirements..." class="kx-field resize-y"><%= prefill.note ? prefill.note + '\n\n' : '' %></textarea>
+            <span class="kx-field-error" data-error-for="details"></span>
           </label>
 
           <!-- Honeypot — visually hidden and out of tab order/screen-reader flow. Label/name
@@ -99,10 +144,17 @@ const STEPS = [
               <input type="text" id="cf-hp" name="hp-field" tabindex="-1" autocomplete="off" />
             </label>
           </div>
+          <input type="hidden" id="cf-token" value="<%= formToken %>" />
+          <input type="hidden" id="cf-check-id" value="<%= prefill.checkId %>" />
+          <input type="hidden" id="cf-source" value="<%= prefill.checkId || prefill.note ? 'Revenue check' : 'Contact form' %>" />
 
-          <p id="contact-form-error" class="col-span-full text-[13px] text-orange-400 hidden"></p>
+          <% if (TURNSTILE_SITE_KEY) { %>
+            <div class="col-span-full cf-turnstile" data-sitekey="<%= TURNSTILE_SITE_KEY %>" data-theme="dark"></div>
+          <% } %>
 
-          <button type="submit" class="rounded-xl bg-orange-500 py-3.5 font-body text-[15px] font-semibold text-white transition-colors hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-60 col-span-full">Submit Inquiry</button>
+          <p id="contact-form-error" role="alert" class="col-span-full text-[13px] text-orange-400 hidden"></p>
+
+          <button type="submit" class="kx-submit col-span-full rounded-xl bg-orange-500 py-3.5 font-body text-[15px] font-semibold text-white transition-colors hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-60">Submit Inquiry</button>
         </form>
       </div>
     </div>
@@ -125,7 +177,7 @@ const STEPS = [
         <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">FIND US</div>
         <h2 class="font-display text-[clamp(22px,2.6vw,30px)] font-bold tracking-[-0.02em]">Our office in Pimple Saudagar, Pune</h2>
         <address class="not-italic text-[15px] leading-[1.7] text-slate" style="font-style:normal">Kargatox, Coffice 24x7 (CO-102),<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India<br/>
-          <a href="tel:+917887789471" class="font-semibold text-ink">+91 78877 89471</a> · <a href="mailto:Kargatox@gmail.com" class="font-semibold text-ink">Kargatox@gmail.com</a></address>
+          <a href="tel:+917887789471" class="font-semibold text-ink">+91 78877 89471</a> · <a href="mailto:<%= CONTACT_EMAIL %>" class="font-semibold text-ink"><%= CONTACT_EMAIL %></a></address>
         <p><a href="https://maps.app.goo.gl/NeJyGs6Z2QePoPEL6" target="_blank" rel="noopener" class="text-[15px] font-semibold text-orange-500">Get directions on Google Maps ↗</a></p>
       </div>
       <div class="kx-map" style="border-color:#e2e8f0">

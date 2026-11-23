@@ -7,7 +7,7 @@
 <%- include('../partials/site-header', { activePath: '/clients' }) %>
 <%
 // New page, no legacy-nextjs-app equivalent (2026-11-14 SEO content pass). Content comes
-// from lib/clients-data.js (STATS/SEO_CASE_STUDY/ERP_CASE_STUDY/AUTHOR/ARTICLES, all
+// from lib/clients-data.js (STATS/SEO_CASE_STUDY/ERP_CASE_STUDY/AUTHOR/ARTICLES/CLIENT_LOGOS, all
 // passed in by routes/site.js). GEO_LATITUDE/GEO_LONGITUDE come from app.locals.
 %>
 <main class="flex flex-1 flex-col">
@@ -35,6 +35,17 @@
         <p class="mt-3 rounded-input border border-orange-400/35 bg-orange-500/8 px-4 py-3 text-[14px] leading-[1.6] text-ink">
           <strong class="text-orange-500">150+ keywords ranked</strong> for a Pune market research company, with quality leads to show for it.
         </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Client logos (client change list 2026-11-02) -->
+  <section id="client-logos" class="bg-paper px-6 py-[64px] text-ink">
+    <div class="mx-auto max-w-(--width-site)">
+      <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">WHO WE WORK WITH</div>
+      <h2 class="mt-3 max-w-[640px] font-display text-[clamp(22px,2.6vw,34px)] font-bold leading-[1.12] tracking-[-0.02em]">Businesses that trust Kargatox.</h2>
+      <div class="mt-8">
+        <%- include('../partials/client-logos', { clients: CLIENT_LOGOS }) %>
       </div>
     </div>
   </section>
@@ -133,7 +144,7 @@
           </div>
           <div>
             <span class="font-mono text-[11px] tracking-[0.12em] text-mist-2">EMAIL</span>
-            <p class="mt-1"><a href="mailto:Kargatox@gmail.com" class="font-display text-[18px] font-bold text-white transition-colors hover:text-orange-400">Kargatox@gmail.com</a></p>
+            <p class="mt-1"><a href="mailto:<%= CONTACT_EMAIL %>" class="font-display text-[18px] font-bold text-white transition-colors hover:text-orange-400"><%= CONTACT_EMAIL %></a></p>
           </div>
         </address>
       </div>

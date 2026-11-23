@@ -26,34 +26,38 @@ const _ctaTopPadding = typeof ctaTopPadding !== "undefined" && ctaTopPadding;
   </section>
 <% } %>
 <footer class="bg-ink px-6 pb-10 pt-16 text-mist-2 font-body">
-  <div class="mx-auto flex max-w-(--width-site) flex-wrap items-start justify-between gap-8">
-    <div class="grid max-w-[340px] gap-3.5">
+  <%# Client request 2026-11-02: the old layout left a large empty band under the brand
+      block and above the nav. Brand + contact details, page links, services and the map
+      now share one row (stacking on small screens) instead of two half-empty rows. %>
+  <div class="mx-auto grid max-w-(--width-site) grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.7fr)_minmax(0,1fr)_minmax(0,1.35fr)]">
+    <div class="grid content-start gap-3.5">
       <span class="font-display text-[26px] font-bold tracking-[-0.02em] text-white">Karga<span class="text-orange-400">tox</span></span>
       <p class="text-[15px] leading-[1.6]">Strategy, research and marketing for founders and leadership teams across India.</p>
+      <address id="footer-location" class="kx-contact mt-2 grid gap-2 not-italic">
+        <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Our Location</span>
+        <span class="text-[14px] leading-[1.6] text-white">Kargatox, Coffice 24x7 (CO-102),<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India</span>
+        <a href="tel:+917887789471" class="text-[14px] text-mist transition-colors hover:text-orange-400">+91 78877 89471</a>
+        <a href="mailto:<%= CONTACT_EMAIL %>" class="text-[14px] text-mist transition-colors hover:text-orange-400"><%= CONTACT_EMAIL %></a>
+      </address>
     </div>
-    <div class="flex flex-wrap gap-7 text-[15px]">
+    <nav aria-label="Footer" class="grid content-start gap-2.5">
+      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Company</span>
       <% NAV_LINKS.forEach(function(l) { %>
-        <a href="<%= l.href %>" class="text-mist transition-colors hover:text-orange-400"><%= l.label %></a>
+        <a href="<%= l.href %>" class="text-[14px] text-mist transition-colors hover:text-orange-400"><%= l.label %></a>
       <% }) %>
-    </div>
-    <div class="grid max-w-[260px] gap-2.5">
+    </nav>
+    <div class="grid content-start gap-2.5">
       <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Services</span>
       <% SERVICE_PAGES.forEach(function(p) { %>
         <a href="/<%= p.slug %>" class="text-[14px] text-mist transition-colors hover:text-orange-400"><%= p.navTitle %></a>
       <% }) %>
     </div>
-  </div>
-  <div id="footer-location" class="mx-auto mt-8 grid max-w-(--width-site) grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-start gap-x-14 gap-y-6 border-t border-white/10 pt-8">
-    <div class="grid gap-2.5">
-      <span class="font-mono text-[11px] uppercase tracking-[0.1em] text-mist">Our Location</span>
-      <address class="kx-contact text-[15px] leading-[1.6] text-white">Kargatox, Coffice 24x7 (CO-102),<br/>Sai Vision, Pimple Saudagar,<br/>Pune, Maharashtra 411027, India</address>
-      <a href="tel:+917887789471" class="text-[14px] text-mist transition-colors hover:text-orange-400">+91 78877 89471</a>
-      <a href="mailto:Kargatox@gmail.com" class="text-[14px] text-mist transition-colors hover:text-orange-400">Kargatox@gmail.com</a>
+    <div class="grid content-start gap-3">
+      <div class="h-[210px] overflow-hidden rounded-card border border-white/10">
+        <iframe title="Kargatox office location on Google Maps" src="https://www.google.com/maps?q=<%= GEO_LATITUDE %>,<%= GEO_LONGITUDE %>&amp;z=16&amp;output=embed" class="h-full w-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
       <a href="https://maps.app.goo.gl/NeJyGs6Z2QePoPEL6" target="_blank" rel="noopener" class="text-[14px] font-semibold text-orange-400">Get directions on Google Maps ↗</a>
     </div>
-    <div class="h-[200px] overflow-hidden rounded-card border border-white/10">
-      <iframe title="Kargatox office location on Google Maps" src="https://www.google.com/maps?q=<%= GEO_LATITUDE %>,<%= GEO_LONGITUDE %>&amp;z=16&amp;output=embed" class="h-full w-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-    </div>
   </div>
-  <div class="mx-auto mt-8 max-w-(--width-site) border-t border-white/10 pt-6 text-sm">© 2026 Kargatox. All rights reserved.</div>
+  <div class="mx-auto mt-10 max-w-(--width-site) border-t border-white/10 pt-6 text-sm">© 2026 Kargatox. All rights reserved.</div>
 </footer>

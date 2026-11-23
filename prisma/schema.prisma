@@ -44,6 +44,15 @@ model Enquiry {
   source         String // "Contact form" | "Revenue check"
   revenueCheckId String?
   revenueCheck   RevenueCheck? @relation(fields: [revenueCheckId], references: [id])
+  // Contact form additions (client change list 2026-11-02): optional LinkedIn profile and
+  // website, whether they'd like a meeting booked, and the automated website scan
+  // (lib/site-scan.js) — status PENDING | DONE | FAILED, result JSON in siteAudit.
+  linkedinUrl     String?
+  website         String?
+  wantsMeeting    Boolean   @default(false)
+  siteAuditStatus String?
+  siteAudit       Json?
+  siteAuditAt     DateTime?
   createdAt      DateTime      @default(now())
   messages       EnquiryMessage[]
 }

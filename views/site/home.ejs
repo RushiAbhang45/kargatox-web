@@ -2,6 +2,7 @@
 <html lang="en" class="h-full antialiased">
 <head>
 <%- include('../partials/doc-head', { meta: meta }) %>
+<script defer src="/js/revenue-check.js"></script>
 </head>
 <body class="min-h-full flex flex-col bg-paper text-ink font-body">
 <%- include('../partials/site-header', { activePath: '/' }) %>
@@ -104,12 +105,17 @@ const heroWords = content.heroHeadline.split(" ");
     </div>
   </section>
 
-  <section class="px-6 py-[48px]">
-    <div class="mx-auto max-w-(--width-site) rounded-panel border border-line bg-paper p-8 text-center text-slate">
-      <p class="font-mono text-[12px] uppercase tracking-[0.12em] text-orange-500">Revenue check</p>
-      <p class="mt-2 text-[15px]">The interactive revenue-check quiz is being ported in a later phase — not yet live on this build.</p>
+  <section id="clients-strip" class="px-6 pb-[24px] pt-[8px]">
+    <div class="mx-auto max-w-(--width-site)">
+      <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500">TRUSTED BY</div>
+        <a href="/clients" class="text-[14px] font-semibold text-orange-500 transition-colors hover:text-ink">See our client work →</a>
+      </div>
+      <%- include('../partials/client-logos', { clients: CLIENT_LOGOS, compact: true }) %>
     </div>
   </section>
+
+  <%- include('../partials/revenue-check', { rc: REVENUE_CHECK }) %>
 
   <section class="relative overflow-hidden bg-ink px-6 py-[64px] text-white">
     <div aria-hidden="true" class="pointer-events-none absolute -right-[15%] top-0 h-full w-[60%] opacity-[0.16]" style="background-image: repeating-linear-gradient(90deg, transparent 0 110px, rgba(255,255,255,1) 110px 111px), repeating-linear-gradient(0deg, transparent 0 110px, rgba(255,255,255,1) 110px 111px); mask-image: radial-gradient(circle at 20% 30%, black 0%, transparent 70%);"></div>

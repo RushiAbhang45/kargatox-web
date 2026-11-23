@@ -49,7 +49,7 @@
             <% enquiries.forEach(function(e) { %>
               <tr class="cursor-pointer border-b border-admin-border last:border-0 transition-colors hover:bg-admin-soft <%= selected && selected.id === e.id ? 'bg-admin-soft' : '' %>" onclick="location.href='/admin/enquiries?id=<%= e.id %><%= statusFilter ? '&status=' + statusFilter : '' %>'">
                 <td class="px-5 py-3.5">
-                  <p class="font-medium text-admin-text"><%= e.name %><% if (e.source === "Revenue check") { %> <span class="ml-1.5 rounded-pill bg-chip-blue px-2 py-0.5 text-[10px] font-semibold tracking-[0.04em] text-blue-700">CHECK</span><% } %></p>
+                  <p class="font-medium text-admin-text"><%= e.name %><% if (e.source === "Revenue check") { %> <span class="ml-1.5 rounded-pill bg-chip-blue px-2 py-0.5 text-[10px] font-semibold tracking-[0.04em] text-blue-700">CHECK</span><% } %><% if (e.wantsMeeting) { %> <span class="ml-1.5 rounded-pill bg-orange-500/15 px-2 py-0.5 text-[10px] font-semibold tracking-[0.04em] text-orange-500">MEETING</span><% } %></p>
                   <p class="truncate text-[12px] text-admin-muted"><%= [e.company, e.email].filter(Boolean).join(' · ') %></p>
                 </td>
                 <td class="px-5 py-3.5 text-admin-muted"><%= e.service %></td>
@@ -77,7 +77,47 @@
             <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">PHONE</dt><dd class="text-admin-text"><%= selected.phone || "—" %></dd></div>
             <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">SERVICE</dt><dd class="text-admin-text"><%= selected.service %></dd></div>
             <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">RECEIVED</dt><dd class="text-admin-text"><%= new Date(selected.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) %></dd></div>
+            <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">WANTS A MEETING</dt><dd class="<%= selected.wantsMeeting ? 'font-semibold text-orange-500' : 'text-admin-text' %>"><%= selected.wantsMeeting ? "Yes" : "No" %></dd></div>
+            <div><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">LINKEDIN</dt><dd class="truncate text-admin-text"><% if (selected.linkedinUrl) { %><a href="<%= selected.linkedinUrl %>" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-orange-500"><%= selected.linkedinUrl.replace(/^https?:\/\/(www\.)?/, '') %></a><% } else { %>—<% } %></dd></div>
+            <div class="col-span-2"><dt class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">WEBSITE</dt><dd class="truncate text-admin-text"><% if (selected.website) { %><a href="<%= selected.website %>" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-orange-500"><%= selected.website.replace(/^https?:\/\//, '') %></a><% } else { %>—<% } %></dd></div>
           </dl>
+
+          <% if (selected.website) { %>
+            <%
+              const audit = selected.siteAudit || {};
+              const sevClass = { high: "bg-[#ef4444]", medium: "bg-orange-500", low: "bg-admin-muted" };
+            %>
+            <div class="mt-4 rounded-xl border border-admin-border p-3.5">
+              <div class="flex items-center justify-between gap-2">
+                <p class="font-mono text-[10px] tracking-[0.08em] text-admin-muted">WEBSITE HEALTH CHECK</p>
+                <form method="post" action="/admin/enquiries/<%= selected.id %>/scan">
+                  <button type="submit" class="text-[11px] font-semibold text-admin-muted transition-colors hover:text-orange-500"><%= selected.siteAuditStatus === "PENDING" ? "Scanning…" : "↻ Re-scan" %></button>
+                </form>
+              </div>
+              <% if (selected.siteAuditStatus === "PENDING") { %>
+                <p class="mt-2 text-[13px] text-admin-muted">Scanning the site — refresh in a few seconds.</p>
+              <% } else if (selected.siteAuditStatus === "FAILED") { %>
+                <p class="mt-2 text-[13px] text-admin-muted">Couldn't scan this site: <%= audit.error || "unknown error" %></p>
+              <% } else if (selected.siteAuditStatus === "DONE") { %>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <span class="font-display text-[28px] font-semibold <%= audit.score >= 75 ? 'text-success' : audit.score >= 50 ? 'text-orange-500' : 'text-[#ef4444]' %>"><%= audit.score %></span>
+                  <span class="text-[12px] text-admin-muted">/ 100 · <%= (audit.findings || []).length %> issue<%= (audit.findings || []).length === 1 ? '' : 's' %> · <%= audit.responseMs %> ms · <%= audit.https ? 'HTTPS' : 'no HTTPS' %></span>
+                </div>
+                <% if (audit.ai && audit.ai.text) { %>
+                  <div class="mt-2 whitespace-pre-line rounded-lg bg-admin-soft px-3 py-2.5 text-[13px] leading-[1.55] text-admin-text"><%= audit.ai.text %></div>
+                  <p class="mt-1 text-[10px] text-admin-muted">AI summary · review before quoting it to the client</p>
+                <% } %>
+                <ul class="mt-2.5 grid max-h-[220px] gap-1.5 overflow-y-auto">
+                  <% (audit.findings || []).forEach(function(fd) { %>
+                    <li class="flex gap-2 text-[12px] leading-[1.45] text-admin-text">
+                      <span class="mt-[5px] h-2 w-2 flex-none rounded-full <%= sevClass[fd.severity] %>" title="<%= fd.severity %>"></span>
+                      <span><strong class="font-semibold"><%= fd.area %>:</strong> <%= fd.message %></span>
+                    </li>
+                  <% }) %>
+                </ul>
+              <% } %>
+            </div>
+          <% } %>
 
           <div class="mt-4">
             <p class="mb-2 font-mono text-[10px] tracking-[0.08em] text-admin-muted">PIPELINE</p>

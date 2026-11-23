@@ -17,7 +17,8 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// 16 KB is ample for any form on this site; larger bodies are refused before any route runs.
+app.use(express.json({ limit: "16kb" }));
 
 // EJS templates rendered via res.render() don't close over this module's `require` —
 // shared, request-independent data the partials need (nav links, service pages) goes
@@ -35,6 +36,7 @@ app.locals.GOOGLE_SITE_VERIFICATION = seoData.GOOGLE_SITE_VERIFICATION;
 app.locals.LOGO_URL = seoData.LOGO_URL;
 app.locals.CLARITY_PROJECT_ID = seoData.CLARITY_PROJECT_ID;
 app.locals.CALENDLY_URL = seoData.CALENDLY_URL;
+app.locals.CONTACT_EMAIL = seoData.CONTACT_EMAIL;
 app.locals.GEO_LATITUDE = seoData.GEO_LATITUDE;
 app.locals.GEO_LONGITUDE = seoData.GEO_LONGITUDE;
 app.locals.CONTENT_UPDATED_DATE = seoData.CONTENT_UPDATED_DATE;
@@ -53,6 +55,15 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res) => {
   res.status(404).send("Not found");
+});
+
+// Malformed or oversized JSON sent to /api/* (from express.json above) gets a short JSON
+// error instead of Express's default HTML error page.
+app.use((err, req, res, next) => {
+  if (req.path.startsWith("/api/") && (err.type === "entity.parse.failed" || err.type === "entity.too.large")) {
+    return res.status(err.status || 400).json({ error: err.type === "entity.too.large" ? "Request too large." : "Invalid request body." });
+  }
+  next(err);
 });
 
 module.exports = app;

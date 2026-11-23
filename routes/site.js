@@ -5,8 +5,12 @@ const { splitFirstSentence, splitLastWord } = require("../lib/text-split");
 const { faqItemsFromRows } = require("../lib/faq-defaults");
 const { SERVICES, subServicesByKeyFromRows } = require("../lib/services-data");
 const { SERVICE_PAGES, getServicePage, getRelatedServicePages } = require("../lib/service-pages-data");
-const { STATS, SEO_CASE_STUDY, ERP_CASE_STUDY, AUTHOR, ARTICLES } = require("../lib/clients-data");
-const { SERVICE_OPTIONS } = require("../lib/enquiry-schema");
+const { STATS, SEO_CASE_STUDY, ERP_CASE_STUDY, AUTHOR, ARTICLES, CLIENT_LOGOS } = require("../lib/clients-data");
+const { SERVICE_OPTIONS, COUNTRY_CODES } = require("../lib/enquiry-schema");
+const { issueFormToken } = require("../lib/form-token");
+const { QUESTIONS, RESULTS, ALL_HEALTHY_TITLE, NOTE_PREFIX } = require("../lib/revenue-check-data");
+
+const REVENUE_CHECK = { QUESTIONS, RESULTS, ALL_HEALTHY_TITLE, NOTE_PREFIX };
 const seo = require("../lib/seo-data");
 
 const router = express.Router();
@@ -28,7 +32,7 @@ router.get("/", async (req, res) => {
     path: "/",
     jsonLd: seo.graph([seo.ORGANIZATION, seo.WEBSITE, seo.pageEntry("WebPage", { path: "/", name: title, description })]),
   };
-  res.render("site/home", { content, capabilitiesPlain, capabilitiesAccent, meta });
+  res.render("site/home", { content, capabilitiesPlain, capabilitiesAccent, CLIENT_LOGOS, REVENUE_CHECK, meta });
 });
 
 router.get("/about-us", (req, res) => {
@@ -197,7 +201,27 @@ router.get("/contact", async (req, res) => {
       ]),
     ]),
   };
-  res.render("site/contact", { content, headingPlain, headingAccent, meta, SERVICE_OPTIONS });
+  // ?service=&note=&checkId= prefill (the Home revenue check's "Fix my …" link). Only a
+  // known service is accepted; the note is capped and only seeds the textarea.
+  const q = (k) => (typeof req.query[k] === "string" ? req.query[k] : "");
+  const prefill = {
+    service: SERVICE_OPTIONS.includes(q("service")) ? q("service") : "General Inquiry",
+    note: q("note").slice(0, 300),
+    checkId: /^[a-z0-9]{10,40}$/i.test(q("checkId")) ? q("checkId") : "",
+  };
+  // Never cache this page: it carries a freshly signed form token (lib/form-token.js).
+  res.set("Cache-Control", "no-store");
+  res.render("site/contact", {
+    content,
+    headingPlain,
+    headingAccent,
+    meta,
+    SERVICE_OPTIONS,
+    COUNTRY_CODES,
+    prefill,
+    formToken: issueFormToken(),
+    TURNSTILE_SITE_KEY: process.env.TURNSTILE_SITE_KEY || "",
+  });
 });
 
 router.get("/clients", (req, res) => {
@@ -293,7 +317,7 @@ router.get("/clients", (req, res) => {
       },
     ]),
   };
-  res.render("site/clients", { STATS, SEO_CASE_STUDY, ERP_CASE_STUDY, AUTHOR, ARTICLES, meta });
+  res.render("site/clients", { STATS, SEO_CASE_STUDY, ERP_CASE_STUDY, AUTHOR, ARTICLES, CLIENT_LOGOS, meta });
 });
 
 // One shared template for all 6 service-landing pages — explicit slug list, not a

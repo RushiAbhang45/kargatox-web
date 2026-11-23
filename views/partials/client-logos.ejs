@@ -1,0 +1,25 @@
+<%
+// Client logo wall (client change list 2026-11-02). Props: `clients` (lib/clients-data.js's
+// CLIENT_LOGOS), `compact` (home-page strip: logo tiles only, no captions). A client with
+// no logo file yet gets a monogram tile instead of a broken image.
+const _compact = typeof compact !== "undefined" && compact;
+%>
+<ul class="grid list-none gap-3 p-0 <%= _compact ? 'grid-cols-[repeat(auto-fit,minmax(min(100%,170px),1fr))]' : 'grid-cols-[repeat(auto-fit,minmax(min(100%,210px),1fr))]' %>">
+  <% clients.forEach(function(c) { %>
+    <li class="group grid content-start gap-3 rounded-card border border-line bg-white p-4 transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:-translate-y-1 hover:border-orange-500">
+      <div class="flex h-[72px] items-center justify-center rounded-input bg-paper px-3">
+        <% if (c.logo) { %>
+          <img src="<%= c.logo %>" alt="<%= c.name %> logo" loading="lazy" class="max-h-[52px] max-w-full object-contain grayscale transition-[filter] duration-300 group-hover:grayscale-0" />
+        <% } else { %>
+          <span aria-hidden="true" class="flex h-11 w-11 items-center justify-center rounded-chip bg-ink font-display text-[16px] font-bold text-white"><%= c.monogram %></span>
+        <% } %>
+      </div>
+      <div class="grid gap-1">
+        <span class="font-display text-[15px] font-bold leading-[1.25] tracking-[-0.01em] text-ink"><%= c.name %></span>
+        <% if (!_compact && c.work) { %>
+          <span class="text-[13px] leading-[1.5] text-slate"><%= c.work %></span>
+        <% } %>
+      </div>
+    </li>
+  <% }) %>
+</ul>
