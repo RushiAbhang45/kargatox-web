@@ -7,6 +7,7 @@
     "dev": "node server.js",
     "start": "node server.js",
     "postinstall": "prisma generate",
+    "vercel-build": "prisma migrate deploy --schema legacy-nextjs-app/prisma/schema.prisma",
     "build:css": "tailwindcss -i public/css/input.css -o public/css/styles.css --minify",
     "build:static": "node scripts/build-static.js",
     "build": "npm run build:css && npm run build:static"

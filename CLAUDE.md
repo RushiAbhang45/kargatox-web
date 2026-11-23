@@ -119,8 +119,12 @@ The client's "Changes to be made in Website" PDF, item by item:
 New `Enquiry` columns (`linkedinUrl`, `website`, `wantsMeeting`, `siteAuditStatus`, `siteAudit`,
 `siteAuditAt`) are added by `legacy-nextjs-app/prisma/migrations/20261123090000_enquiry_contact_fields/`
 (migrations still live there — the only legacy-folder change) and mirrored in both `schema.prisma` files.
-Apply it to production **before** deploying this code:
-`npx prisma migrate deploy --schema legacy-nextjs-app/prisma/schema.prisma` (uses `DATABASE_URL_UNPOOLED`).
+**Migrations now apply automatically on every Vercel deploy**: `package.json`'s `vercel-build` script
+(`prisma migrate deploy --schema legacy-nextjs-app/prisma/schema.prisma`) is what `@vercel/node` runs before
+building the function (it checks `vercel-build`/`now-build`, not `build`). It needs `DATABASE_URL_UNPOOLED`
+in Vercel; if the migration fails the deploy fails and the previous version stays live. So any migration
+committed to `legacy-nextjs-app/prisma/migrations/` goes to production with the next push — review them
+accordingly. Manual equivalent: `npm run vercel-build`.
 
 ## Commands
 
