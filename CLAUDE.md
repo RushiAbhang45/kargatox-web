@@ -115,6 +115,14 @@ The client's "Changes to be made in Website" PDF, item by item:
    `POST /api/revenue-checks`), whose "Fix my …" link prefills `/contact?service=&note=&checkId=`.
 7. **How we work** — steps 3–5 bodies in `lib/process-steps.js` replaced with the client's copy (lightly
    proofread).
+9. (Revised PDF, 2026-11-24) **Shorter Marketing sub-service text** on `/services` — new defaults in
+   `lib/services-data.js`; since live text may come from `SubService` rows, migration
+   `20261124090000_shorten_marketing_subservices` updates only rows still holding the original long text
+   (admin edits are left alone).
+10. **"In The Weeds"** (home + About Us) now reads "We sit inside your marketing team, …".
+
+Branding: favicons/app icons are the client's K-arrow mark; the footer shows the header logo recoloured
+for the dark background (`public/images/kargatox-logo-footer.{webp,png}`, white lettering, orange kept).
 
 New `Enquiry` columns (`linkedinUrl`, `website`, `wantsMeeting`, `siteAuditStatus`, `siteAudit`,
 `siteAuditAt`) are added by `legacy-nextjs-app/prisma/migrations/20261123090000_enquiry_contact_fields/`

@@ -77,20 +77,26 @@
       var opt = countrySelect.options[countrySelect.selectedIndex];
       return {
         name: opt.textContent.replace(/^\+\d+\s*/, "").trim(),
+        dial: (opt.getAttribute("data-dial") || "").replace(/\D+/g, ""),
         min: Number(opt.getAttribute("data-min")),
         max: Number(opt.getAttribute("data-max")),
       };
     }
-    function syncPhoneLimits() {
+    // The length limit is applied here, after non-digits are stripped, not with a maxlength
+    // attribute: maxlength cuts pasted text first, so "+91 98765 43210" lost its last digits.
+    // A pasted country code or leading trunk 0 is dropped when the number is otherwise too long.
+    function cleanPhone(value) {
       var c = selectedCountry();
-      phoneInput.maxLength = c.max;
-      if (phoneInput.value.length > c.max) phoneInput.value = phoneInput.value.slice(0, c.max);
+      var digits = value.replace(/\D+/g, "");
+      if (digits.length > c.max && c.dial && digits.indexOf(c.dial) === 0) digits = digits.slice(c.dial.length);
+      if (digits.length > c.max && digits.charAt(0) === "0") digits = digits.slice(1);
+      return digits.slice(0, c.max);
     }
-    phoneInput.addEventListener("input", function () {
-      var digits = phoneInput.value.replace(/\D+/g, "");
-      if (digits !== phoneInput.value) phoneInput.value = digits;
-      syncPhoneLimits();
-    });
+    function syncPhoneLimits() {
+      var cleaned = cleanPhone(phoneInput.value);
+      if (cleaned !== phoneInput.value) phoneInput.value = cleaned;
+    }
+    phoneInput.addEventListener("input", syncPhoneLimits);
     phoneInput.addEventListener("keydown", function (e) {
       if (e.key.length === 1 && !/\d/.test(e.key) && !e.ctrlKey && !e.metaKey) e.preventDefault();
     });
