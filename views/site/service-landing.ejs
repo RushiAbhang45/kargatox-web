@@ -15,7 +15,12 @@
     <div class="mx-auto grid max-w-(--width-site) gap-5 px-6 pb-[48px] pt-[56px]">
       <div class="font-mono text-[12px] tracking-[0.12em] text-orange-500" data-scramble-reveal="<%= content.eyebrow %>"><%= content.eyebrow %></div>
       <h1 class="max-w-[760px] font-display text-[clamp(26px,3.4vw,42px)] font-bold leading-[1.1] tracking-[-0.022em]"><%= content.h1 %></h1>
-      <p class="max-w-[760px] text-[15px] leading-[1.7] text-slate"><%= content.intro %></p>
+      <%# intro paragraphs are separated by a blank line ("\n\n") in lib/service-pages-data.js %>
+      <div class="grid max-w-[760px] gap-4">
+        <% content.intro.split(/\n\s*\n/).forEach(function(para) { %>
+          <p class="text-[15px] leading-[1.7] text-slate"><%= para %></p>
+        <% }) %>
+      </div>
       <div class="mt-1 flex flex-wrap gap-3">
         <a href="/contact" class="rounded-pill bg-ink px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-orange-500">Start an Inquiry →</a>
         <a href="/services" class="rounded-pill border border-line px-6 py-3 text-[14px] font-semibold text-ink transition-colors hover:border-orange-500">← Back to Services</a>
