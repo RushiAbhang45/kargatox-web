@@ -4,17 +4,19 @@
 // no logo file yet gets a monogram tile instead of a broken image.
 const _compact = typeof compact !== "undefined" && compact;
 %>
-<ul class="grid list-none gap-3 p-0 <%= _compact ? 'grid-cols-[repeat(auto-fit,minmax(min(100%,170px),1fr))]' : 'grid-cols-[repeat(auto-fit,minmax(min(100%,210px),1fr))]' %>">
+<ul class="grid list-none gap-3 p-0 <%= _compact ? 'grid-cols-[repeat(auto-fit,minmax(min(100%,140px),1fr))]' : 'grid-cols-[repeat(auto-fit,minmax(min(100%,150px),1fr))]' %>">
   <% clients.forEach(function(c) { %>
-    <li class="group grid content-start gap-3 rounded-card border border-line bg-white p-4 transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:-translate-y-1 hover:border-orange-500">
-      <div class="flex h-[72px] items-center justify-center rounded-input bg-paper px-3">
+    <li class="group grid content-start gap-3 rounded-card border border-line bg-white p-4 text-center transition-[transform,border-color] duration-500 ease-[var(--ease-kx)] hover:-translate-y-1 hover:border-orange-500">
+      <%# Fixed-height white logo area so every card lines up whatever the logo's shape; logos
+          show in their own colours (several have white backgrounds, hence bg-white, not paper). %>
+      <div class="flex <%= _compact ? 'h-[88px]' : 'h-[112px]' %> items-center justify-center rounded-input bg-white px-2">
         <% if (c.logo) { %>
-          <img src="<%= c.logo %>" alt="<%= c.name %> logo" loading="lazy" class="max-h-[52px] max-w-full object-contain grayscale transition-[filter] duration-300 group-hover:grayscale-0" />
+          <img src="<%= c.logo %>" alt="<%= c.name %> logo" loading="lazy" class="<%= _compact ? 'max-h-[76px]' : 'max-h-[96px]' %> max-w-full object-contain" />
         <% } else { %>
-          <span aria-hidden="true" class="flex h-11 w-11 items-center justify-center rounded-chip bg-ink font-display text-[16px] font-bold text-white"><%= c.monogram %></span>
+          <span aria-hidden="true" class="flex h-14 w-14 items-center justify-center rounded-chip bg-ink font-display text-[19px] font-bold text-white"><%= c.monogram %></span>
         <% } %>
       </div>
-      <div class="grid gap-1">
+      <div class="grid gap-1 justify-items-center">
         <span class="font-display text-[15px] font-bold leading-[1.25] tracking-[-0.01em] text-ink"><%= c.name %></span>
         <% if (!_compact && c.work) { %>
           <span class="text-[13px] leading-[1.5] text-slate"><%= c.work %></span>
