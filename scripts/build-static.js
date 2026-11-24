@@ -62,7 +62,7 @@ function notFoundPageHtml() {
 <title>Page Not Found | Kargatox</title>
 <meta name="description" content="The page you are looking for does not exist. Explore Kargatox research and marketing services or contact our Pune team." />
 <meta name="robots" content="noindex, follow" />
-<link rel="icon" href="/favicon.ico" />
+<link rel="icon" href="/favicon.ico?v=2" />
 <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body class="min-h-full flex flex-col items-center justify-center gap-4 bg-ink text-white font-body px-6 text-center">
